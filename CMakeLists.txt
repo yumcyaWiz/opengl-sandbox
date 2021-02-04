@@ -11,7 +11,7 @@ find_package(OpenGL REQUIRED)
 find_package(ASSIMP REQUIRED)
 
 # common library
-add_library(rtgs)
+add_library(rtgs src/shader.cpp)
 target_compile_features(rtgs PUBLIC cxx_std_17)
 set_target_properties(rtgs PROPERTIES CXX_EXTENSIONS OFF)
 target_include_directories(rtgs PUBLIC include)
