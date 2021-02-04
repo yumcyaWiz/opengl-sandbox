@@ -20,3 +20,6 @@ target_link_libraries(rtgs PUBLIC glad)
 target_link_libraries(rtgs PUBLIC glm)
 target_link_libraries(rtgs PUBLIC assimp)
 target_link_libraries(rtgs PUBLIC stb)
+
+# sandbox
+add_subdirectory(sandbox)
