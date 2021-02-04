@@ -41,9 +41,7 @@ void handleInput(GLFWwindow* window, const ImGuiIO& io) {
 
   // camera look around
   if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
-    const float orbitSpeed = 1.0f;
-    camera->lookAround(orbitSpeed * io.MouseDelta.x,
-                       orbitSpeed * io.MouseDelta.y);
+    camera->lookAround(io.MouseDelta.x, io.MouseDelta.y);
   }
 }
 
@@ -139,6 +137,11 @@ int main() {
   }
 
   // exit
+  shader.destroy();
+  model.destroy();
+  ImGui_ImplOpenGL3_Shutdown();
+  ImGui_ImplGlfw_Shutdown();
+  ImGui::DestroyContext();
   glfwDestroyWindow(window);
   glfwTerminate();
 
