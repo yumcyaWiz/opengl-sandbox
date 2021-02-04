@@ -8,7 +8,7 @@ target_link_libraries(model PRIVATE imgui)
 target_link_libraries(model PRIVATE imgui_glfw_opengl3)
 
 # set cmake source dir macro
-target_compile_definitions(model PRIVATE CMAKE_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
+target_compile_definitions(model PRIVATE CMAKE_SOURCE_DIR="${CMAKE_SOURCE_DIR}" CMAKE_CURRENT_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
 
 # copy shaders under build directory
 add_custom_command(TARGET model POST_BUILD 

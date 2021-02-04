@@ -102,12 +102,11 @@ int main() {
   glEnable(GL_MULTISAMPLE);
 
   // load model
-  const std::string assetPath =
-      std::string(CMAKE_SOURCE_DIR) + std::string("/assets/sponza/sponza.obj");
-  Model model(assetPath);
+  Model model(std::string(CMAKE_SOURCE_DIR) + "/assets/sponza/sponza.obj");
 
   // setup shader
-  Shader shader{"shaders/shader.vert", "shaders/shader.frag"};
+  Shader shader{std::string(CMAKE_CURRENT_SOURCE_DIR) + "/shaders/shader.vert",
+                std::string(CMAKE_CURRENT_SOURCE_DIR) + "/shaders/shader.frag"};
 
   // app loop
   while (!glfwWindowShouldClose(window)) {
