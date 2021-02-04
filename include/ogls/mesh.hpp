@@ -25,6 +25,11 @@ struct Material {
 
 class Mesh {
  public:
+  std::vector<Vertex> vertices;
+  std::vector<unsigned int> indices;
+  Material material;
+  std::vector<unsigned int> indicesOfTextures;  // indices of textures
+
   Mesh(const std::vector<Vertex>& vertices,
        const std::vector<unsigned int>& indices, const Material& material,
        const std::vector<unsigned int>& indicesOfTextures);
@@ -36,11 +41,6 @@ class Mesh {
   void draw(const Shader& shader, const std::vector<Texture>& textures) const;
 
  private:
-  std::vector<Vertex> vertices;
-  std::vector<unsigned int> indices;
-  Material material;
-  std::vector<unsigned int> indicesOfTextures;  // indices of textures
-
   GLuint VAO;
   GLuint VBO;
   GLuint EBO;
