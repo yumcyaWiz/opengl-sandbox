@@ -11,7 +11,7 @@ find_package(OpenGL REQUIRED)
 find_package(ASSIMP REQUIRED)
 
 # ogls
-add_library(ogls src/shader.cpp src/camera.cpp src/texture.cpp)
+add_library(ogls src/shader.cpp src/camera.cpp src/texture.cpp src/mesh.cpp)
 target_compile_features(ogls PUBLIC cxx_std_17)
 set_target_properties(ogls PROPERTIES CXX_EXTENSIONS OFF)
 target_include_directories(ogls PUBLIC include)
