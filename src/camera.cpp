@@ -26,8 +26,8 @@ glm::mat4 Camera::computeProjectionMatrix(int width, int height) const {
 
 void Camera::reset() { Camera(); }
 
-void Camera::move(const CameraMovement& direction, float deltaTime) {
-  const float velocity = movementSpeed * deltaTime;
+void Camera::move(const CameraMovement& direction, float ds) {
+  const float velocity = movementSpeed * ds;
   switch (direction) {
     case CameraMovement::FORWARD:
       camPos += velocity * camForward;

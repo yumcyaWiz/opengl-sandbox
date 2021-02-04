@@ -34,11 +34,11 @@ class Camera {
   glm::mat4 computeViewMatrix() const;
   glm::mat4 computeProjectionMatrix(int width, int height) const;
 
-  // initialize camera position, directions
+  // reset camera parameters
   void reset();
 
   // move camera
-  void move(const CameraMovement& direction, float deltaTime);
+  void move(const CameraMovement& direction, float ds);
 
   // look around camera forward
   void lookAround(float dPhi, float dTheta);
