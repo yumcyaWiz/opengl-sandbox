@@ -64,12 +64,12 @@ int main() {
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
   float vertices[] = {
-      -0.5f, 0.0f, 0.0f,  // position1
-      1.0f,  0.0f, 0.0f,  // color1
-      0.5f,  0.0f, 0.0f,  // position2
-      0.0f,  1.0f, 0.0f,  // color2
-      0.0f,  0.5f, 0.0f,  // position3
-      0.0f,  0.0f, 1.0f   // color3
+      -0.5f, -0.5f, 0.0f,  // position1
+      1.0f,  0.0f,  0.0f,  // color1
+      0.5f,  -0.5f, 0.0f,  // position2
+      0.0f,  1.0f,  0.0f,  // color2
+      0.0f,  0.5f,  0.0f,  // position3
+      0.0f,  0.0f,  1.0f   // color3
   };
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
