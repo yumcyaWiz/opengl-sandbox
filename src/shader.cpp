@@ -1,4 +1,4 @@
-#include "rtgs/shader.h"
+#include "rtgs/shader.hpp"
 
 #include <fstream>
 #include <iostream>
