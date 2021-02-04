@@ -9,7 +9,7 @@ experiment environment for realtime graphics methods in OpenGL.
 * C++17
 * CMake 3.12 or Higher
 * OpenGL 3.3
-* [assimp](https://github.com/assimp/assimp
+* [assimp](https://github.com/assimp/assimp)
 
 ## Setup
 
@@ -25,6 +25,12 @@ cd build
 cmake ..
 make
 ```
+
+## Gallery
+
+### triangle
+
+![](./img/triangle.jpg)
 
 ## Externals
 
