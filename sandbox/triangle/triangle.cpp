@@ -49,6 +49,39 @@ int main() {
     return EXIT_FAILURE;
   }
 
+  // setup VAO
+  GLuint VAO;
+  glGenVertexArrays(1, &VAO);
+  glBindVertexArray(VAO);
+
+  // setup VBO
+  GLuint VBO;
+  glGenBuffers(1, &VBO);
+  glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+  float vertices[] = {
+      -0.5f, 0.0f, 0.0f,  // position1
+      1.0f,  0.0f, 0.0f,  // color1
+      0.5f,  0.0f, 0.0f,  // position2
+      0.0f,  1.0f, 0.0f,  // color2
+      0.0f,  0.5f, 0.0f,  // position3
+      0.0f,  0.0f, 1.0f   // color3
+  };
+  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+  // position
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+                        reinterpret_cast<void*>(0));
+
+  // color
+  glEnableVertexAttribArray(1);
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+                        reinterpret_cast<void*>(3 * sizeof(float)));
+
+  glBindVertexArray(0);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+
   // app loop
   while (!glfwWindowShouldClose(window)) {
     glfwPollEvents();
@@ -57,6 +90,9 @@ int main() {
 
     // render
     glClear(GL_COLOR_BUFFER_BIT);
+    glBindVertexArray(VAO);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glBindVertexArray(0);
 
     glfwSwapBuffers(window);
   }
