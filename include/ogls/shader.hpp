@@ -1,5 +1,5 @@
-#ifndef _RTGS_SHADER_H
-#define _RTGS_SHADER_H
+#ifndef _OGLS_SHADER_H
+#define _OGLS_SHADER_H
 
 #include <string>
 #include <variant>
@@ -7,7 +7,7 @@
 #include "glad/glad.h"
 #include "glm/glm.hpp"
 
-namespace rtgs {
+namespace ogls {
 
 class Shader {
  private:
@@ -53,6 +53,6 @@ class Shader {
   void setUBO(const std::string& blockName, GLuint bindingNumber) const;
 };
 
-}  // namespace rtgs
+}  // namespace ogls
 
 #endif

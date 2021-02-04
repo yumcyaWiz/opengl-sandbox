@@ -1,8 +1,8 @@
-#include "rtgs/camera.hpp"
+#include "ogls/camera.hpp"
 
 #include "glm/gtc/matrix_transform.hpp"
 
-namespace rtgs {
+namespace ogls {
 
 Camera::Camera()
     : camPos{0.0f},
@@ -70,4 +70,4 @@ void Camera::lookAround(float dPhi, float dTheta) {
   camUp = glm::normalize(glm::cross(camRight, camForward));
 }
 
-}  // namespace rtgs
+}  // namespace ogls

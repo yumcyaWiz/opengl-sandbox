@@ -10,24 +10,24 @@ find_package(OpenGL REQUIRED)
 # assimp
 find_package(ASSIMP REQUIRED)
 
-# rtgs
-add_library(rtgs src/shader.cpp src/camera.cpp)
-target_compile_features(rtgs PUBLIC cxx_std_17)
-set_target_properties(rtgs PROPERTIES CXX_EXTENSIONS OFF)
-target_include_directories(rtgs PUBLIC include)
+# ogls
+add_library(ogls src/shader.cpp src/camera.cpp)
+target_compile_features(ogls PUBLIC cxx_std_17)
+set_target_properties(ogls PROPERTIES CXX_EXTENSIONS OFF)
+target_include_directories(ogls PUBLIC include)
 
 # compile options
-target_compile_options(rtgs PRIVATE
+target_compile_options(ogls PRIVATE
   $<$<CXX_COMPILER_ID:MSVC>:/W4>
   $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -pedantic>
 )
 
 # link externals
-target_link_libraries(rtgs PUBLIC OpenGL::GL)
-target_link_libraries(rtgs PUBLIC glad)
-target_link_libraries(rtgs PUBLIC glm)
-target_link_libraries(rtgs PUBLIC assimp)
-target_link_libraries(rtgs PUBLIC stb)
+target_link_libraries(ogls PUBLIC OpenGL::GL)
+target_link_libraries(ogls PUBLIC glad)
+target_link_libraries(ogls PUBLIC glm)
+target_link_libraries(ogls PUBLIC assimp)
+target_link_libraries(ogls PUBLIC stb)
 
 # sandbox
 add_subdirectory(sandbox)

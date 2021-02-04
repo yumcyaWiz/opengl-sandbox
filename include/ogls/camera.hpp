@@ -1,11 +1,11 @@
-#ifndef _RTGS_CAMERA_H
-#define _RTGS_CAMERA_H
+#ifndef _OGLS_CAMERA_H
+#define _OGLS_CAMERA_H
 #include <cmath>
 
 #include "glad/glad.h"
 #include "glm/glm.hpp"
 
-namespace rtgs {
+namespace ogls {
 
 enum class CameraMovement {
   FORWARD,
@@ -44,6 +44,6 @@ class Camera {
   void lookAround(float dPhi, float dTheta);
 };
 
-}  // namespace rtgs
+}  // namespace ogls
 
 #endif

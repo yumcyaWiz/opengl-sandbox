@@ -1,4 +1,4 @@
-#include "rtgs/shader.hpp"
+#include "ogls/shader.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -7,7 +7,7 @@
 
 #include "glm/gtc/type_ptr.hpp"
 
-namespace rtgs {
+namespace ogls {
 
 Shader::Shader() {}
 
@@ -177,4 +177,4 @@ void Shader::linkShader() {
   }
 }
 
-}  // namespace rtgs
+}  // namespace ogls

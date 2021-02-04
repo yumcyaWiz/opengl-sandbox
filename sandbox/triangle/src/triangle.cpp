@@ -4,9 +4,9 @@
 //
 #include "GLFW/glfw3.h"
 //
-#include "rtgs/shader.hpp"
+#include "ogls/shader.hpp"
 
-using namespace rtgs;
+using namespace ogls;
 
 // globals
 int width = 512;
