@@ -101,6 +101,9 @@ int main() {
   // enable MSAA
   glEnable(GL_MULTISAMPLE);
 
+  // initialize camera
+  camera = std::make_unique<Camera>();
+
   // load model
   Model model(std::string(CMAKE_SOURCE_DIR) + "/assets/sponza/sponza.obj");
 
@@ -112,6 +115,11 @@ int main() {
   while (!glfwWindowShouldClose(window)) {
     glfwPollEvents();
 
+    // start imgui frame
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
     handleInput(window, io);
 
     // set uniform variables
@@ -122,6 +130,10 @@ int main() {
     // render
     glClear(GL_COLOR_BUFFER_BIT);
     model.draw(shader);
+
+    // render imgui
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
     glfwSwapBuffers(window);
   }
