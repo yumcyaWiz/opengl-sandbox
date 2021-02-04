@@ -3,6 +3,10 @@
 #include "glad/glad.h"
 //
 #include "GLFW/glfw3.h"
+//
+#include "rtgs/shader.hpp"
+
+using namespace rtgs;
 
 // globals
 int width = 512;
@@ -82,6 +86,9 @@ int main() {
   glBindVertexArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+  // setup shader
+  Shader shader{"shaders/shader.vert", "shaders/shader.frag"};
+
   // app loop
   while (!glfwWindowShouldClose(window)) {
     glfwPollEvents();
@@ -91,7 +98,9 @@ int main() {
     // render
     glClear(GL_COLOR_BUFFER_BIT);
     glBindVertexArray(VAO);
+    shader.activate();
     glDrawArrays(GL_TRIANGLES, 0, 3);
+    shader.deactivate();
     glBindVertexArray(0);
 
     glfwSwapBuffers(window);
