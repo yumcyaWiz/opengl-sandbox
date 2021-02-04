@@ -15,6 +15,8 @@ Shader::Shader(const std::string& vertexShaderFilepath,
                const std::string& fragmentShaderFilepath)
     : vertexShaderFilepath(vertexShaderFilepath),
       fragmentShaderFilepath(fragmentShaderFilepath) {
+  std::cout << "[Shader] loading " << vertexShaderFilepath << std::endl;
+  std::cout << "[Shader] loading " << fragmentShaderFilepath << std::endl;
   compileShader();
   linkShader();
 }
