@@ -1,16 +1,11 @@
 #ifndef _RTGS_SHADER_H
 #define _RTGS_SHADER_H
 
-#include <fstream>
-#include <iostream>
-#include <sstream>
 #include <string>
 #include <variant>
-#include <vector>
 
 #include "glad/glad.h"
 #include "glm/glm.hpp"
-#include "glm/gtc/type_ptr.hpp"
 
 namespace rtgs {
 

@@ -1,5 +1,12 @@
 #include "rtgs/shader.h"
 
+#include <fstream>
+#include <iostream>
+#include <sstream>
+#include <vector>
+
+#include "glm/gtc/type_ptr.hpp"
+
 namespace rtgs {
 
 Shader::Shader() {}
