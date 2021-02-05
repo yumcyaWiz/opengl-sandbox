@@ -15,6 +15,11 @@ class Light {
   glm::vec3 ke;
   LightType lightType;
 
+  glm::vec3 position;  // for point light
+  float radius;        // for point light
+
+  glm::vec3 direction;  // for directional light
+
   Light(const glm::vec3& ke, const LightType& lightType)
       : ke(ke), lightType(lightType) {}
 };
