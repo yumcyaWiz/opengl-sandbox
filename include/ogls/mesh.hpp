@@ -14,6 +14,8 @@ struct Vertex {
   glm::vec3 position;   // vertex position
   glm::vec3 normal;     // vertex normal
   glm::vec2 texcoords;  // texture coordinates
+
+  Vertex() : position{0.0f}, normal{0.0f}, texcoords{0.0f} {}
 };
 
 struct Material {
@@ -21,6 +23,8 @@ struct Material {
   glm::vec3 ks;  // specular color
   glm::vec3 ka;  // ambient color
   float shininess;
+
+  Material() : kd{0.0f}, ks{0.0f}, ka{0.0f}, shininess(0.0f) {}
 };
 
 class Mesh {
