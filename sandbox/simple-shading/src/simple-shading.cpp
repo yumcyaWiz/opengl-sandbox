@@ -121,9 +121,15 @@ int main() {
     // imgui
     ImGui::Begin("viewer");
 
-    static char modelPath[100] = {"assets/sponza/sponza.obj"};
+    static char modelPath[100] = {
+        "assets/survival-guitar-backpack-low-poly/Survival_BackPack_2.fbx"};
     ImGui::InputText("Model", modelPath, 100);
     if (ImGui::Button("Load Model")) {
+      // destroy previous model
+      if (model) {
+        model.destroy();
+      }
+
       model.loadModel(std::string(CMAKE_SOURCE_DIR) + "/" + modelPath);
     }
 
