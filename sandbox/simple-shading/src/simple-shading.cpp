@@ -10,6 +10,7 @@
 //
 #include "ogls/camera.hpp"
 #include "ogls/model.hpp"
+#include "ogls/scene.hpp"
 #include "ogls/shader.hpp"
 
 using namespace ogls;
@@ -102,8 +103,8 @@ int main() {
   // initialize camera
   camera = std::make_unique<Camera>();
 
-  // setup model
-  Model model;
+  // setup scene
+  Scene scene;
 
   // setup shader
   Shader shader{std::string(CMAKE_CURRENT_SOURCE_DIR) + "/shaders/shader.vert",
@@ -124,12 +125,7 @@ int main() {
     static char modelPath[100] = {"assets/sponza/sponza.obj"};
     ImGui::InputText("Model", modelPath, 100);
     if (ImGui::Button("Load Model")) {
-      // destroy previous model
-      if (model) {
-        model.destroy();
-      }
-
-      model.loadModel(std::string(CMAKE_SOURCE_DIR) + "/" + modelPath);
+      scene.setModel({std::string(CMAKE_SOURCE_DIR) + "/" + modelPath});
     }
 
     ImGui::InputFloat("FOV", &camera->fov);
@@ -153,7 +149,7 @@ int main() {
 
     // render
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    model.draw(shader);
+    scene.draw(shader);
 
     // render imgui
     ImGui::Render();
@@ -164,7 +160,7 @@ int main() {
 
   // exit
   shader.destroy();
-  model.destroy();
+  scene.destroy();
   ImGui_ImplOpenGL3_Shutdown();
   ImGui_ImplGlfw_Shutdown();
   ImGui::DestroyContext();
