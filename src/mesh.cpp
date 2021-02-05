@@ -70,22 +70,22 @@ void Mesh::draw(const Shader& shader,
     switch (texture.textureType) {
       case TextureType::Diffuse: {
         const std::string uniformName =
-            "diffuseTextures[" + std::to_string(n_diffuse) + "]";
+            "diffuseMaps[" + std::to_string(n_diffuse) + "]";
         shader.setUniformTexture(uniformName, texture.id, textureUnitNumber);
         n_diffuse++;
         break;
       }
       case TextureType::Specular: {
         const std::string uniformName =
-            "specularTextures[" + std::to_string(n_specular) + "]";
+            "specularMaps[" + std::to_string(n_specular) + "]";
         shader.setUniformTexture(uniformName, texture.id, textureUnitNumber);
         n_specular++;
         break;
       }
     }
   }
-  shader.setUniform("hasDiffuseTextures", n_diffuse > 0);
-  shader.setUniform("hasSpecularTextures", n_specular > 0);
+  shader.setUniform("hasDiffuseMaps", n_diffuse > 0);
+  shader.setUniform("hasSpecularmaps", n_specular > 0);
 
   // draw mesh
   glBindVertexArray(VAO);
