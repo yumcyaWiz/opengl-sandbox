@@ -105,6 +105,12 @@ int main() {
 
   // setup scene
   Scene scene;
+  /*
+  scene.setDirectionalLight(DirectionalLight(
+      glm::vec3(1.0f), glm::normalize(glm::vec3(0.5f, 1.0f, 0.0f))));
+  */
+  scene.addPointLight(
+      {glm::vec3(100.0f), glm::vec3(0.0f, 100.0f, 0.0f), 100.0f});
 
   // setup shader
   Shader shader{std::string(CMAKE_CURRENT_SOURCE_DIR) + "/shaders/shader.vert",
@@ -144,7 +150,6 @@ int main() {
     shader.setUniform("view", camera->computeViewMatrix());
     shader.setUniform("projection",
                       camera->computeProjectionMatrix(width, height));
-    shader.setUniform("lightDir", glm::normalize(glm::vec3(1.0f, 1.0f, 0.0f)));
     shader.setUniform("camPos", camera->camPos);
 
     // render

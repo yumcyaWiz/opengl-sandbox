@@ -24,22 +24,38 @@ struct DirectionalLight {
   vec3 direction;
 };
 
+uniform int n_PointLights;
 uniform PointLight pointLights[100];
 uniform DirectionalLight directionalLight;
 
-uniform vec3 lightDir;
 uniform vec3 camPos;
 
+vec3 blinnPhong(in vec3 viewDir, in vec3 normal, in vec3 lightDir, in vec3 kd, in vec3 ks, float shininess) {
+  vec3 diffuse = max(dot(lightDir, normal), 0.0) * kd;
+
+  vec3 h = normalize(lightDir + viewDir); // half-vector
+  vec3 specular = pow(max(dot(h, normal), 0.0), shininess) * ks;
+
+  return diffuse + specular;
+}
+
 void main() {
-  // diffuse
-  vec3 diffuse = max(dot(lightDir, normal), 0.0) * (texture(diffuseMaps[0], texCoords).xyz + kd);
+  vec3 viewDir = normalize(camPos - position); // view direction
 
-  // specular
-  vec3 v = normalize(camPos - position); // view direction
-  vec3 h = normalize(lightDir + v); // half vector
-  vec3 specular = pow(max(dot(h, normal), 0.0), shininess) * (texture(specularMaps[0], texCoords).xyz + ks);
+  vec3 diffuse = texture(diffuseMaps[0], texCoords).xyz + kd;
+  vec3 specular = texture(specularMaps[0], texCoords).xyz + ks;
 
-  vec3 color = diffuse + specular;
+  vec3 color = vec3(0);
+
+  // directional light
+  color += blinnPhong(viewDir, normal, directionalLight.direction, diffuse, specular, shininess) * directionalLight.ke;
+
+  // point lights
+  for(int i = 0; i < n_PointLights; ++i) {
+    vec3 lightDir = normalize(pointLights[i].position - position);
+    float dist = max(distance(pointLights[i].position, position) - pointLights[i].radius, 0.0);
+    color += blinnPhong(viewDir, normal, lightDir, diffuse, specular, shininess) * pointLights[i].ke / pow(dist, 2.0);
+  }
 
   // gamma correction
   color = pow(color, vec3(1.0 / 2.2));
