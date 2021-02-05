@@ -28,6 +28,8 @@ Texture::Texture(const std::string& filepath, const TextureType& textureType)
 void Texture::destroy() { glDeleteTextures(1, &id); }
 
 void Texture::loadImage(const std::string& filepath) const {
+  std::cout << "[Texture] loading " << filepath << std::endl;
+
   // load image with stb_image
   int width, height, channels;
   unsigned char* image =
