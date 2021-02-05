@@ -30,7 +30,15 @@ make
 
 ### triangle
 
+hello world in OpenGL.
+
 ![](./img/triangle.jpg)
+
+### simple-shading
+
+blinn-phong shading example with moving point light.
+
+![](./img/simple-shading.jpg)
 
 ## Externals
 
