@@ -22,14 +22,14 @@ class Scene {
   // destroy scene object
   void destroy();
 
-  void addModel(const Model& light);
+  void setModel(const Model& model);
 
   void addPointLight(const PointLight& light);
 
   void setDirectionalLight(const DirectionalLight& light);
 
  private:
-  std::vector<Model> models;
+  Model model;
 
   std::vector<PointLight> pointLights;
   DirectionalLight directionalLight;

@@ -19,23 +19,25 @@ void Scene::draw(const Shader& shader) const {
   shader.setUniform("directionalLight.direction", directionalLight.direction);
 
   // draw models
-  for (const auto& model : models) {
-    model.draw(shader);
-  }
+  model.draw(shader);
 }
 
 void Scene::destroy() {
-  // destroy each models
-  for (auto& model : models) {
-    model.destroy();
-  }
+  // destroy model
+  model.destroy();
 
   // clear vectors
-  models.clear();
   pointLights.clear();
 }
 
-void Scene::addModel(const Model& model) { models.push_back(model); }
+void Scene::setModel(const Model& model) {
+  // destroy previous model
+  if (this->model) {
+    this->model.destroy();
+  }
+
+  this->model = model;
+}
 
 void Scene::addPointLight(const PointLight& light) {
   pointLights.push_back(light);
