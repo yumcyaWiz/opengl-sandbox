@@ -105,18 +105,14 @@ int main() {
 
   // setup scene
   Scene scene;
-  /*
-  scene.setDirectionalLight(DirectionalLight(
-      glm::vec3(1.0f), glm::normalize(glm::vec3(0.5f, 1.0f, 0.0f))));
-  */
-  scene.addPointLight(
-      {glm::vec3(100.0f), glm::vec3(0.0f, 100.0f, 0.0f), 100.0f});
+  scene.addPointLight({glm::vec3(10000.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f});
 
   // setup shader
   Shader shader{std::string(CMAKE_CURRENT_SOURCE_DIR) + "/shaders/shader.vert",
                 std::string(CMAKE_CURRENT_SOURCE_DIR) + "/shaders/shader.frag"};
 
   // app loop
+  float t = 0.0f;
   while (!glfwWindowShouldClose(window)) {
     glfwPollEvents();
 
@@ -145,6 +141,11 @@ int main() {
     ImGui::End();
 
     handleInput(window, io);
+
+    // update light position
+    t += io.DeltaTime;
+    scene.pointLights[0].position =
+        glm::vec3(100.0f * std::cos(t), 100.0f, 100.0f * std::sin(t));
 
     // set uniform variables
     shader.setUniform("view", camera->computeViewMatrix());

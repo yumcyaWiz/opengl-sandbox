@@ -14,6 +14,11 @@ namespace ogls {
 
 class Scene {
  public:
+  Model model;
+
+  std::vector<PointLight> pointLights;
+  DirectionalLight directionalLight;
+
   Scene();
 
   // draw scene
@@ -27,12 +32,6 @@ class Scene {
   void addPointLight(const PointLight& light);
 
   void setDirectionalLight(const DirectionalLight& light);
-
- private:
-  Model model;
-
-  std::vector<PointLight> pointLights;
-  DirectionalLight directionalLight;
 };
 
 }  // namespace ogls
