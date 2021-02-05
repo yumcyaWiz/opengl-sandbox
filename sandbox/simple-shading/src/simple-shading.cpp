@@ -127,6 +127,14 @@ int main() {
       model.loadModel(std::string(CMAKE_SOURCE_DIR) + "/" + modelPath);
     }
 
+    ImGui::InputFloat("FOV", &camera->fov);
+    ImGui::InputFloat("Movement Speed", &camera->movementSpeed);
+    ImGui::InputFloat("Look Around Speed", &camera->lookAroundSpeed);
+
+    if (ImGui::Button("Reset Camera")) {
+      camera->reset();
+    }
+
     ImGui::End();
 
     handleInput(window, io);
