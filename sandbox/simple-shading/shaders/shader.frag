@@ -25,5 +25,10 @@ void main() {
   vec3 h = normalize(lightDir + v); // half vector
   vec3 specular = pow(max(dot(h, normal), 0.0), shininess) * (texture(specularMaps[0], texCoords).xyz + ks);
 
-  fragColor = vec4(diffuse + specular, 1.0);
+  vec3 color = diffuse + specular;
+
+  // gamma correction
+  color = pow(color, vec3(1.0 / 2.2));
+
+  fragColor = vec4(color, 1.0);
 }
