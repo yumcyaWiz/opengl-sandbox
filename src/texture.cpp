@@ -50,7 +50,10 @@ void Texture::loadImage(const std::string& filepath) const {
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB,
                  GL_UNSIGNED_BYTE, image);
   }
+
+  // generate mipmap
   glGenerateMipmap(GL_TEXTURE_2D);
+
   glBindTexture(GL_TEXTURE_2D, 0);
 
   // free memory
