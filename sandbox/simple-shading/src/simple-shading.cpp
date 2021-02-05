@@ -121,8 +121,7 @@ int main() {
     // imgui
     ImGui::Begin("viewer");
 
-    static char modelPath[100] = {
-        "assets/survival-guitar-backpack-low-poly/Survival_BackPack_2.fbx"};
+    static char modelPath[100] = {"assets/sponza/sponza.obj"};
     ImGui::InputText("Model", modelPath, 100);
     if (ImGui::Button("Load Model")) {
       // destroy previous model
@@ -149,6 +148,8 @@ int main() {
     shader.setUniform("view", camera->computeViewMatrix());
     shader.setUniform("projection",
                       camera->computeProjectionMatrix(width, height));
+    shader.setUniform("lightDir", glm::normalize(glm::vec3(1.0f, 1.0f, 0.0f)));
+    shader.setUniform("camPos", camera->camPos);
 
     // render
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
