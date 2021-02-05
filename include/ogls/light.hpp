@@ -5,23 +5,28 @@
 
 namespace ogls {
 
-enum class LightType {
-  Point,
-  Directional,
-};
-
 class Light {
  public:
   glm::vec3 ke;
-  LightType lightType;
 
+  Light(const glm::vec3& ke) : ke(ke) {}
+};
+
+class PointLight : public Light {
+ public:
   glm::vec3 position;  // for point light
   float radius;        // for point light
 
-  glm::vec3 direction;  // for directional light
+  PointLight(const glm::vec3& ke, const glm::vec3& position, float radius)
+      : Light(ke), position(position), radius(radius) {}
+};
 
-  Light(const glm::vec3& ke, const LightType& lightType)
-      : ke(ke), lightType(lightType) {}
+class DirectionalLight : public Light {
+ public:
+  glm::vec3 direction;  // direction
+
+  DirectionalLight(const glm::vec3& ke, const glm::vec3& direction)
+      : Light(ke), direction(direction) {}
 };
 
 }  // namespace ogls
