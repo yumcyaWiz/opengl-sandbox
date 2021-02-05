@@ -42,8 +42,14 @@ void Texture::loadImage(const std::string& filepath) const {
 
   // send image to texture
   glBindTexture(GL_TEXTURE_2D, id);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB,
-               GL_UNSIGNED_BYTE, image);
+  if (textureType == TextureType::Diffuse) {
+    // read image as sRGB when texture type is diffuse map
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB, width, height, 0, GL_RGB,
+                 GL_UNSIGNED_BYTE, image);
+  } else {
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB,
+                 GL_UNSIGNED_BYTE, image);
+  }
   glGenerateMipmap(GL_TEXTURE_2D);
   glBindTexture(GL_TEXTURE_2D, 0);
 
