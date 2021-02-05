@@ -1,2 +1,2 @@
 add_subdirectory(triangle)
-add_subdirectory(model)
+add_subdirectory(simple-shading)
