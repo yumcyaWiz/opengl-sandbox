@@ -6,6 +6,7 @@ Scene::Scene() {}
 
 void Scene::draw(const Shader& shader) const {
   // set point lights
+  shader.setUniform("n_PointLights", static_cast<GLint>(pointLights.size()));
   for (std::size_t i = 0; i < pointLights.size(); ++i) {
     const PointLight& pointLight = pointLights[i];
     const std::string uniformName = "pointLights[" + std::to_string(i) + "]";
