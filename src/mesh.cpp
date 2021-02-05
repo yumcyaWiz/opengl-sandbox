@@ -102,6 +102,12 @@ void Mesh::draw(const Shader& shader,
   glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
   shader.deactivate();
   glBindVertexArray(0);
+
+  // reset texture uniform
+  for (std::size_t i = 0; i < indicesOfTextures.size(); ++i) {
+    shader.setUniformTexture("diffuseMaps[" + std::to_string(i) + "]", 0, 0);
+    shader.setUniformTexture("specularMaps[" + std::to_string(i) + "]", 0, 0);
+  }
 }
 
 }  // namespace ogls
