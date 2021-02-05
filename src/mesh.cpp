@@ -54,12 +54,6 @@ void Mesh::destroy() {
 
 void Mesh::draw(const Shader& shader,
                 const std::vector<Texture>& textures) const {
-  // set material
-  shader.setUniform("kd", material.kd);
-  shader.setUniform("ks", material.ks);
-  shader.setUniform("ka", material.ka);
-  shader.setUniform("shininess", material.shininess);
-
   // set texture uniform
   std::size_t n_diffuse = 0;
   std::size_t n_specular = 0;
@@ -84,8 +78,23 @@ void Mesh::draw(const Shader& shader,
       }
     }
   }
-  shader.setUniform("hasDiffuseMaps", n_diffuse > 0);
-  shader.setUniform("hasSpecularmaps", n_specular > 0);
+
+  // make kd zero if there are diffuseMaps
+  glm::vec3 kd = material.kd;
+  if (n_diffuse > 0) {
+    kd = glm::vec3(0.0f);
+  }
+  // make ks zero if there are specularMaps
+  glm::vec3 ks = material.ks;
+  if (n_specular > 0) {
+    ks = glm::vec3(0.0f);
+  }
+
+  // set material
+  shader.setUniform("kd", kd);
+  shader.setUniform("ks", ks);
+  shader.setUniform("ka", material.ka);
+  shader.setUniform("shininess", material.shininess);
 
   // draw mesh
   glBindVertexArray(VAO);

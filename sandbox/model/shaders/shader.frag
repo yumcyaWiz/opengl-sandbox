@@ -13,14 +13,6 @@ uniform float shininess;
 uniform sampler2D diffuseMaps[100];
 uniform sampler2D specularMaps[100];
 
-uniform bool hasDiffuseMaps;
-uniform bool hasSpecularMaps;
-
 void main() {
-  if(hasDiffuseMaps) {
-    fragColor = texture(diffuseMaps[0], texCoords);
-  }
-  else {
-    fragColor = vec4(kd, 1.0);
-  }
+  fragColor = vec4(texture(diffuseMaps[0], texCoords).xyz + kd, 1.0);
 }
