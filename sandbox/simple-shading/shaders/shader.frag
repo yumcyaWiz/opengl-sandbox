@@ -13,6 +13,20 @@ uniform float shininess;
 uniform sampler2D diffuseMaps[100];
 uniform sampler2D specularMaps[100];
 
+struct PointLight {
+  vec3 ke;
+  vec3 position;
+  float radius;
+};
+
+struct DirectionalLight {
+  vec3 ke;
+  vec3 direction;
+};
+
+uniform PointLight pointLights[100];
+uniform DirectionalLight directionalLight;
+
 uniform vec3 lightDir;
 uniform vec3 camPos;
 
