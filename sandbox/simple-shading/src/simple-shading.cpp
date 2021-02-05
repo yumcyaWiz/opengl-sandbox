@@ -102,8 +102,8 @@ int main() {
   // initialize camera
   camera = std::make_unique<Camera>();
 
-  // load model
-  Model model(std::string(CMAKE_SOURCE_DIR) + "/assets/sponza/sponza.obj");
+  // setup model
+  Model model;
 
   // setup shader
   Shader shader{std::string(CMAKE_CURRENT_SOURCE_DIR) + "/shaders/shader.vert",
@@ -117,6 +117,17 @@ int main() {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
+
+    // imgui
+    ImGui::Begin("viewer");
+
+    static char modelPath[100] = {"assets/sponza/sponza.obj"};
+    ImGui::InputText("Model", modelPath, 100);
+    if (ImGui::Button("Load Model")) {
+      model.loadModel(std::string(CMAKE_SOURCE_DIR) + "/" + modelPath);
+    }
+
+    ImGui::End();
 
     handleInput(window, io);
 
