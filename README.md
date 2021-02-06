@@ -11,6 +11,10 @@ experiment environment for realtime graphics methods in OpenGL.
 * OpenGL 3.3
 * [assimp](https://github.com/assimp/assimp)
 
+## Features
+
+* Blinn-Phong Shading
+
 ## Setup
 
 ```bash
