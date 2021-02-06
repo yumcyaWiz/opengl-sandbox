@@ -13,3 +13,6 @@
 [submodule "externals/GLSL-Shader-Includes"]
 	path = externals/GLSL-Shader-Includes
 	url = git@github.com:tntmeijs/GLSL-Shader-Includes.git
+[submodule "externals/assimp"]
+	path = externals/assimp
+	url = git@github.com:assimp/assimp.git
