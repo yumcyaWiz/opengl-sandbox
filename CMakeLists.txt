@@ -7,9 +7,6 @@ add_subdirectory(externals)
 # OpenGL
 find_package(OpenGL REQUIRED)
 
-# assimp
-find_package(ASSIMP REQUIRED)
-
 # ogls
 add_library(ogls 
   src/shader.cpp 
@@ -34,7 +31,7 @@ target_compile_options(ogls PRIVATE
 target_link_libraries(ogls PUBLIC OpenGL::GL)
 target_link_libraries(ogls PUBLIC glad)
 target_link_libraries(ogls PUBLIC glm)
-target_link_libraries(ogls PUBLIC assimp)
+target_link_libraries(ogls PUBLIC assimp::assimp)
 target_link_libraries(ogls PUBLIC stb)
 target_link_libraries(ogls PUBLIC glsl-shader-includes)
 
