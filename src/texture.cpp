@@ -34,8 +34,8 @@ void Texture::loadImage(const std::filesystem::path& filepath) const {
 
   // load image with stb_image
   int width, height, channels;
-  unsigned char* image =
-      stbi_load(filepath.c_str(), &width, &height, &channels, 3);
+  unsigned char* image = stbi_load(filepath.generic_string().c_str(), &width,
+                                   &height, &channels, 3);
 
   if (!image) {
     std::cerr << "failed to open " << filepath << std::endl;
