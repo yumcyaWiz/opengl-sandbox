@@ -37,7 +37,7 @@ float testShadow(in vec4 positionLightSpace) {
   // shadow bias
   float bias = max(0.005 * (1.0 - dot(normal, directionalLight.direction)), 0.001);
 
-  return currentDepth - bias > closestDepth ? 1.0 : 0.0;
+  return currentDepth > closestDepth + bias ? 1.0 : 0.0;
 }
 
 void main() {
