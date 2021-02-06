@@ -10,11 +10,11 @@ namespace ogls {
 
 Model::Model() {}
 
-Model::Model(const std::string& filepath) { loadModel(filepath); }
+Model::Model(const std::filesystem::path& filepath) { loadModel(filepath); }
 
 Model::operator bool() const { return meshes.size() > 0; }
 
-void Model::loadModel(const std::string& filepath) {
+void Model::loadModel(const std::filesystem::path& filepath) {
   // load model with assimp
   Assimp::Importer importer;
   const aiScene* scene =
@@ -47,17 +47,20 @@ void Model::loadModel(const std::string& filepath) {
 }
 
 void Model::draw(const Shader& shader) const {
+  // draw all meshes
   for (std::size_t i = 0; i < meshes.size(); i++) {
     meshes[i].draw(shader, textures);
   }
 }
 
 void Model::destroy() {
+  // destroy all meshes
   for (auto& mesh : meshes) {
     mesh.destroy();
   }
   meshes.clear();
 
+  // destroy all textures
   for (auto& texture : textures) {
     texture.destroy();
   }
@@ -65,20 +68,20 @@ void Model::destroy() {
 }
 
 void Model::processNode(const aiNode* node, const aiScene* scene,
-                        const std::string& parentPathStr) {
+                        const std::filesystem::path& parentPath) {
   // process all the node's meshes
   for (std::size_t i = 0; i < node->mNumMeshes; ++i) {
     const aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-    meshes.push_back(processMesh(mesh, scene, parentPathStr));
+    meshes.push_back(processMesh(mesh, scene, parentPath));
   }
 
   for (std::size_t i = 0; i < node->mNumChildren; i++) {
-    processNode(node->mChildren[i], scene, parentPathStr);
+    processNode(node->mChildren[i], scene, parentPath);
   }
 }
 
 Mesh Model::processMesh(const aiMesh* mesh, const aiScene* scene,
-                        const std::string& parentPathStr) {
+                        const std::filesystem::path& parentPath) {
   std::vector<Vertex> vertices;
   std::vector<unsigned int> indices;
   Material material;
@@ -137,11 +140,10 @@ Mesh Model::processMesh(const aiMesh* mesh, const aiScene* scene,
     mat->Get(AI_MATKEY_SHININESS, material.shininess);
 
     // diffuse textures
-    material.diffuseMap = loadTexture(mat, TextureType::Diffuse, parentPathStr);
+    material.diffuseMap = loadTexture(mat, TextureType::Diffuse, parentPath);
 
     // specular textures
-    material.specularMap =
-        loadTexture(mat, TextureType::Specular, parentPathStr);
+    material.specularMap = loadTexture(mat, TextureType::Specular, parentPath);
   }
 
   return Mesh(vertices, indices, material);
@@ -149,7 +151,7 @@ Mesh Model::processMesh(const aiMesh* mesh, const aiScene* scene,
 
 std::optional<std::size_t> Model::loadTexture(
     const aiMaterial* material, const TextureType& type,
-    const std::string& parentPathStr) {
+    const std::filesystem::path& parentPath) {
   aiTextureType aiTexType;
   switch (type) {
     case TextureType::Diffuse:
@@ -167,14 +169,12 @@ std::optional<std::size_t> Model::loadTexture(
   // get texture filepath
   aiString str;
   material->GetTexture(aiTexType, 0, &str);
-  const std::filesystem::path parentPath(parentPathStr);
-  const std::filesystem::path texturePath(str.C_Str());
-  const std::string texturePathStr = (parentPath / texturePath).native();
+  const std::filesystem::path texturePath = (parentPath / str.C_Str());
 
   // load texture if we don't have it
-  const auto index = hasTexture(texturePathStr);
+  const auto index = hasTexture(texturePath);
   if (!index) {
-    textures.emplace_back(texturePathStr, TextureType::Diffuse);
+    textures.emplace_back(texturePath, TextureType::Diffuse);
     return textures.size() - 1;
   } else {
     return index.value();
@@ -182,7 +182,7 @@ std::optional<std::size_t> Model::loadTexture(
 }
 
 std::optional<std::size_t> Model::hasTexture(
-    const std::string& filepath) const {
+    const std::filesystem::path& filepath) const {
   for (std::size_t i = 0; i < textures.size(); ++i) {
     const Texture& texture = textures[i];
     if (texture.filepath == filepath) {

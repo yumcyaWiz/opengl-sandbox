@@ -14,13 +14,13 @@ namespace ogls {
 class Model {
  public:
   Model();
-  Model(const std::string& filepath);
+  Model(const std::filesystem::path& filepath);
 
   // does model have any meshes?
   operator bool() const;
 
   // load model with assimp
-  void loadModel(const std::string& filepath);
+  void loadModel(const std::filesystem::path& filepath);
 
   // draw model by given shader
   void draw(const Shader& shader) const;
@@ -34,17 +34,18 @@ class Model {
 
   // parse assimp node object
   void processNode(const aiNode* node, const aiScene* scene,
-                   const std::string& parentPath);
+                   const std::filesystem::path& parentPath);
 
   // parse assimp mesh object
   Mesh processMesh(const aiMesh* mesh, const aiScene* scene,
-                   const std::string& parentPath);
+                   const std::filesystem::path& parentPath);
 
-  std::optional<std::size_t> loadTexture(const aiMaterial* material,
-                                         const TextureType& type,
-                                         const std::string& parentPath);
+  std::optional<std::size_t> loadTexture(
+      const aiMaterial* material, const TextureType& type,
+      const std::filesystem::path& parentPath);
 
-  std::optional<std::size_t> hasTexture(const std::string& filepath) const;
+  std::optional<std::size_t> hasTexture(
+      const std::filesystem::path& filepath) const;
 };
 
 }  // namespace ogls
