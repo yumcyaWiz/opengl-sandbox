@@ -194,7 +194,9 @@ int main() {
     glViewport(0, 0, DEPTH_MAP_WIDTH, DEPTH_MAP_HEIGHT);
     glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
     glClear(GL_DEPTH_BUFFER_BIT);
+    glCullFace(GL_FRONT);  // prevent peter panning
     scene.draw(makeDepthMap);
+    glCullFace(GL_BACK);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     // render scene with shadow mapping
