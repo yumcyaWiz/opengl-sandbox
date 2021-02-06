@@ -16,9 +16,11 @@
 using namespace ogls;
 
 // globals
-std::unique_ptr<Camera> camera;
-int width = 1600;
-int height = 900;
+std::unique_ptr<Camera> CAMERA;
+int WIDTH = 1600;
+int HEIGHT = 900;
+int DEPTH_MAP_WIDTH = 1024;
+int DEPTH_MAP_HEIGHT = 1024;
 
 void handleInput(GLFWwindow* window, const ImGuiIO& io) {
   // close application
@@ -28,29 +30,28 @@ void handleInput(GLFWwindow* window, const ImGuiIO& io) {
 
   // camera movement
   if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-    camera->move(CameraMovement::FORWARD, io.DeltaTime);
+    CAMERA->move(CameraMovement::FORWARD, io.DeltaTime);
   }
   if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-    camera->move(CameraMovement::LEFT, io.DeltaTime);
+    CAMERA->move(CameraMovement::LEFT, io.DeltaTime);
   }
   if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-    camera->move(CameraMovement::BACKWARD, io.DeltaTime);
+    CAMERA->move(CameraMovement::BACKWARD, io.DeltaTime);
   }
   if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-    camera->move(CameraMovement::RIGHT, io.DeltaTime);
+    CAMERA->move(CameraMovement::RIGHT, io.DeltaTime);
   }
 
   // camera look around
   if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
-    camera->lookAround(io.MouseDelta.x, io.MouseDelta.y);
+    CAMERA->lookAround(io.MouseDelta.x, io.MouseDelta.y);
   }
 }
 
 void framebufferSizeCallback([[maybe_unused]] GLFWwindow* window, int _width,
                              int _height) {
-  width = _width;
-  height = _height;
-  glViewport(0, 0, width, height);
+  WIDTH = _width;
+  HEIGHT = _height;
 }
 
 int main() {
@@ -67,7 +68,7 @@ int main() {
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);  // required for Mac
   glfwWindowHint(GLFW_SAMPLES, 4);                      // 4x MSAA
   GLFWwindow* window =
-      glfwCreateWindow(width, height, "triangle", nullptr, nullptr);
+      glfwCreateWindow(WIDTH, HEIGHT, "triangle", nullptr, nullptr);
   if (!window) {
     std::cerr << "failed to create window" << std::endl;
     return EXIT_FAILURE;
@@ -101,11 +102,34 @@ int main() {
   glEnable(GL_MULTISAMPLE);
 
   // initialize camera
-  camera = std::make_unique<Camera>();
+  CAMERA = std::make_unique<Camera>();
 
   // setup scene
   Scene scene;
   scene.addPointLight({glm::vec3(10000.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f});
+
+  // setup depth map FBO
+  GLuint depthMapFBO;
+  glGenFramebuffers(1, &depthMapFBO);
+
+  // setup depth map texture
+  GLuint depthMap;
+  glGenTextures(1, &depthMap);
+  glBindTexture(GL_TEXTURE_2D, depthMap);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, DEPTH_MAP_WIDTH,
+               DEPTH_MAP_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+  // attach depth map texture to FBO
+  glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
+                         depthMap, 0);
+  glDrawBuffer(GL_NONE);  // disable draw buffer
+  glReadBuffer(GL_NONE);  // disable read buffer
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
   // setup shader
   Shader shader{std::string(CMAKE_CURRENT_SOURCE_DIR) + "/shaders/shader.vert",
@@ -130,12 +154,12 @@ int main() {
       scene.setModel({std::string(CMAKE_SOURCE_DIR) + "/" + modelPath});
     }
 
-    ImGui::InputFloat("FOV", &camera->fov);
-    ImGui::InputFloat("Movement Speed", &camera->movementSpeed);
-    ImGui::InputFloat("Look Around Speed", &camera->lookAroundSpeed);
+    ImGui::InputFloat("FOV", &CAMERA->fov);
+    ImGui::InputFloat("Movement Speed", &CAMERA->movementSpeed);
+    ImGui::InputFloat("Look Around Speed", &CAMERA->lookAroundSpeed);
 
     if (ImGui::Button("Reset Camera")) {
-      camera->reset();
+      CAMERA->reset();
     }
 
     ImGui::End();
@@ -148,12 +172,19 @@ int main() {
         glm::vec3(100.0f * std::cos(t), 100.0f, 100.0f * std::sin(t));
 
     // set uniform variables
-    shader.setUniform("view", camera->computeViewMatrix());
+    shader.setUniform("view", CAMERA->computeViewMatrix());
     shader.setUniform("projection",
-                      camera->computeProjectionMatrix(width, height));
-    shader.setUniform("camPos", camera->camPos);
+                      CAMERA->computeProjectionMatrix(WIDTH, HEIGHT));
+    shader.setUniform("camPos", CAMERA->camPos);
+
+    // render to depth map
+    glViewport(0, 0, DEPTH_MAP_WIDTH, DEPTH_MAP_HEIGHT);
+    glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+    glClear(GL_DEPTH_BUFFER_BIT);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     // render
+    glViewport(0, 0, WIDTH, HEIGHT);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     scene.draw(shader);
 
@@ -165,6 +196,8 @@ int main() {
   }
 
   // exit
+  glDeleteTextures(1, &depthMap);
+  glDeleteFramebuffers(1, &depthMapFBO);
   shader.destroy();
   scene.destroy();
   ImGui_ImplOpenGL3_Shutdown();
