@@ -24,7 +24,7 @@ int HEIGHT = 900;
 int DEPTH_MAP_WIDTH = 1024;
 int DEPTH_MAP_HEIGHT = 1024;
 float DEPTH_MAP_NEAR = 100.0f;
-float DEPTH_MAP_FAR = 1000.0f;
+float DEPTH_MAP_FAR = 10000.0f;
 
 void handleInput(GLFWwindow* window, const ImGuiIO& io) {
   // close application
@@ -111,7 +111,7 @@ int main() {
   // setup scene
   Scene scene;
   scene.setDirectionalLight(
-      {glm::vec3(1.0f), glm::normalize(glm::vec3(0.5f, 1.0f, 0.0f))});
+      {glm::vec3(1.0f), glm::normalize(glm::vec3(0.5f, 1.0f, 0.5f))});
 
   // quad for showing depth map
   Quad quad;
@@ -163,7 +163,7 @@ int main() {
     // imgui
     ImGui::Begin("viewer");
 
-    static char modelPath[100] = {"assets/rungholt/rungholt.obj"};
+    static char modelPath[100] = {"assets/sponza/sponza.obj"};
     ImGui::InputText("Model", modelPath, 100);
     if (ImGui::Button("Load Model")) {
       scene.setModel({std::string(CMAKE_SOURCE_DIR) + "/" + modelPath});
@@ -183,9 +183,9 @@ int main() {
 
     // set view, projection matrix for making depth map
     const glm::mat4 lightView =
-        glm::lookAt(500.0f * glm::normalize(glm::vec3(0.1f, 1.0f, 0)),
-                    glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    glm::mat4 lightProjection = glm::ortho(-500.0f, 500.0f, -500.0f, 500.0f,
+        glm::lookAt(2000.0f * scene.directionalLight.direction, glm::vec3(0.0f),
+                    glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::mat4 lightProjection = glm::ortho(-2000.0f, 2000.0f, -2000.0f, 2000.0f,
                                            DEPTH_MAP_NEAR, DEPTH_MAP_FAR);
     const glm::mat4 lightSpaceMatrix = lightProjection * lightView;
     makeDepthMap.setUniform("lightSpaceMatrix", lightSpaceMatrix);
@@ -197,13 +197,30 @@ int main() {
     scene.draw(makeDepthMap);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+    // render scene with shadow mapping
+    // set uniforms
+    shader.setUniform("view", CAMERA->computeViewMatrix());
+    shader.setUniform("projection",
+                      CAMERA->computeProjectionMatrix(WIDTH, HEIGHT));
+    shader.setUniform("camPos", CAMERA->camPos);
+    shader.setUniform("lightSpaceMatrix", lightSpaceMatrix);
+    // TODO: set texture unit number appropriately
+    shader.setUniformTexture("depthMap", depthMap, 10);
+
+    // render
+    glViewport(0, 0, WIDTH, HEIGHT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    scene.draw(shader);
+
     // show depth map
+    /*
     glViewport(0, 0, WIDTH, HEIGHT);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     showDepthMap.setUniformTexture("depthMap", depthMap, 0);
     showDepthMap.setUniform("zNear", DEPTH_MAP_NEAR);
     showDepthMap.setUniform("zFar", DEPTH_MAP_FAR);
     quad.draw(showDepthMap);
+    */
 
     // render imgui
     ImGui::Render();

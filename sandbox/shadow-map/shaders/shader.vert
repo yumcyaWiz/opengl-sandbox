@@ -6,13 +6,17 @@ layout (location = 2) in vec2 vTexCoords;
 out vec3 position;
 out vec3 normal;
 out vec2 texCoords;
+out vec4 positionLightSpace;
 
 uniform mat4 view;
 uniform mat4 projection;
+
+uniform mat4 lightSpaceMatrix;
 
 void main() {
   gl_Position = projection * view * vec4(vPosition, 1.0);
   position = vPosition;
   normal = vNormal;
   texCoords = vTexCoords;
+  positionLightSpace = lightSpaceMatrix * vec4(vPosition, 1.0);
 }
