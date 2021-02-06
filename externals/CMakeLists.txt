@@ -25,7 +25,7 @@ target_include_directories(imgui_glfw_opengl3 SYSTEM PUBLIC imgui/backends)
 
 # assimp
 SET(ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE BOOL "" FORCE)
-SET(ASSIMP_BUILD_TEST OFF CACHE BOOL "" FORCE)
+SET(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 SET(ASSIMP_INSTALL OFF CACHE BOOL "" FORCE)
 add_subdirectory(assimp)
 
