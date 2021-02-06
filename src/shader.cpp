@@ -99,7 +99,7 @@ void Shader::compileShader() {
   GLint success = 0;
   glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
   if (success == GL_FALSE) {
-    std::cerr << "failed to compile vertex shader" << std::endl;
+    std::cerr << "[Shader] failed to compile vertex shader" << std::endl;
 
     GLint logSize = 0;
     glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &logSize);
@@ -123,7 +123,7 @@ void Shader::compileShader() {
   success = 0;
   glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
   if (success == GL_FALSE) {
-    std::cerr << "failed to compile vertex shader" << std::endl;
+    std::cerr << "[Shader] failed to compile fragment shader" << std::endl;
 
     GLint logSize = 0;
     glGetShaderiv(fragmentShader, GL_INFO_LOG_LENGTH, &logSize);
