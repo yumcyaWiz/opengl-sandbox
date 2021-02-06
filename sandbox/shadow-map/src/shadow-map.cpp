@@ -10,6 +10,7 @@
 //
 #include "ogls/camera.hpp"
 #include "ogls/model.hpp"
+#include "ogls/quad.hpp"
 #include "ogls/scene.hpp"
 #include "ogls/shader.hpp"
 
@@ -106,7 +107,9 @@ int main() {
 
   // setup scene
   Scene scene;
-  scene.addPointLight({glm::vec3(10000.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f});
+
+  // quad for showing depth map
+  Quad quad;
 
   // setup depth map FBO
   GLuint depthMapFBO;
@@ -132,11 +135,18 @@ int main() {
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
   // setup shader
+  Shader makeDepthMap{
+      std::string(CMAKE_CURRENT_SOURCE_DIR) + "/shaders/make-depthmap.vert",
+      std::string(CMAKE_CURRENT_SOURCE_DIR) + "/shaders/make-depthmap.frag"};
+
+  Shader showDepthMap{
+      std::string(CMAKE_CURRENT_SOURCE_DIR) + "/shaders/show-depthmap.vert",
+      std::string(CMAKE_CURRENT_SOURCE_DIR) + "/shaders/show-depthmap.frag"};
+
   Shader shader{std::string(CMAKE_CURRENT_SOURCE_DIR) + "/shaders/shader.vert",
                 std::string(CMAKE_CURRENT_SOURCE_DIR) + "/shaders/shader.frag"};
 
   // app loop
-  float t = 0.0f;
   while (!glfwWindowShouldClose(window)) {
     glfwPollEvents();
 
@@ -166,27 +176,25 @@ int main() {
 
     handleInput(window, io);
 
-    // update light position
-    t += io.DeltaTime;
-    scene.pointLights[0].position =
-        glm::vec3(100.0f * std::cos(t), 100.0f, 100.0f * std::sin(t));
-
     // set uniform variables
-    shader.setUniform("view", CAMERA->computeViewMatrix());
-    shader.setUniform("projection",
-                      CAMERA->computeProjectionMatrix(WIDTH, HEIGHT));
-    shader.setUniform("camPos", CAMERA->camPos);
+    const glm::mat4 view = CAMERA->computeViewMatrix();
+    const glm::mat4 projection = CAMERA->computeProjectionMatrix(WIDTH, HEIGHT);
+    makeDepthMap.setUniform("view", CAMERA->computeViewMatrix());
+    makeDepthMap.setUniform("projection",
+                            CAMERA->computeProjectionMatrix(WIDTH, HEIGHT));
 
     // render to depth map
     glViewport(0, 0, DEPTH_MAP_WIDTH, DEPTH_MAP_HEIGHT);
     glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
     glClear(GL_DEPTH_BUFFER_BIT);
+    scene.draw(makeDepthMap);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    // render
+    // show depth map
     glViewport(0, 0, WIDTH, HEIGHT);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    scene.draw(shader);
+    showDepthMap.setUniformTexture("depthMap", depthMap, 0);
+    quad.draw(showDepthMap);
 
     // render imgui
     ImGui::Render();
