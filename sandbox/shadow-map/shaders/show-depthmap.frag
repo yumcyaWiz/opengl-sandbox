@@ -5,9 +5,8 @@ in vec2 texCoords;
 out vec4 fragColor;
 
 uniform sampler2D depthMap;
-
-const float zNear = 0.1;
-const float zFar = 10000.0;
+uniform float zNear;
+uniform float zFar;
 
 float linearizeDepth(in float z) {
   float ndc = z * 2.0 - 1.0;

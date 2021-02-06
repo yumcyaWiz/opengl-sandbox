@@ -23,6 +23,8 @@ int WIDTH = 1600;
 int HEIGHT = 900;
 int DEPTH_MAP_WIDTH = 1024;
 int DEPTH_MAP_HEIGHT = 1024;
+float DEPTH_MAP_NEAR = 1.0f;
+float DEPTH_MAP_FAR = 2000.0f;
 
 void handleInput(GLFWwindow* window, const ImGuiIO& io) {
   // close application
@@ -161,7 +163,7 @@ int main() {
     // imgui
     ImGui::Begin("viewer");
 
-    static char modelPath[100] = {"assets/sponza/sponza.obj"};
+    static char modelPath[100] = {"assets/rungholt/rungholt.obj"};
     ImGui::InputText("Model", modelPath, 100);
     if (ImGui::Button("Load Model")) {
       scene.setModel({std::string(CMAKE_SOURCE_DIR) + "/" + modelPath});
@@ -180,14 +182,17 @@ int main() {
     handleInput(window, io);
 
     // set view, projection matrix for making depth map
-    const glm::vec3 lightPos =
-        glm::vec3(0) + 1000.0f * scene.directionalLight.direction;
     const glm::mat4 lightView =
-        glm::lookAt(lightPos, glm::vec3(0), glm::vec3(0.0f, 1.0f, 0.0f));
-    const glm::mat4 lightProjection =
-        glm::ortho(-100.0f, 100.0f, -100.0f, 100.0f, 1.0f, 10000.0f);
-    makeDepthMap.setUniform("view", lightView);
-    makeDepthMap.setUniform("projection", lightProjection);
+        glm::lookAt(500.0f * glm::normalize(glm::vec3(0.1f, 1.0f, 0)),
+                    glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    // FIXME: bug on ortho ?
+    glm::mat4 lightProjection = glm::ortho(-100.0f, 100.0f, -100.0f, 100.0f,
+                                           DEPTH_MAP_NEAR, DEPTH_MAP_FAR);
+    lightProjection = glm::perspective(glm::radians(90.0f),
+                                       static_cast<float>(WIDTH) / HEIGHT,
+                                       DEPTH_MAP_NEAR, DEPTH_MAP_FAR);
+    const glm::mat4 lightSpaceMatrix = lightProjection * lightView;
+    makeDepthMap.setUniform("lightSpaceMatrix", lightSpaceMatrix);
 
     // render to depth map
     glViewport(0, 0, DEPTH_MAP_WIDTH, DEPTH_MAP_HEIGHT);
@@ -200,6 +205,8 @@ int main() {
     glViewport(0, 0, WIDTH, HEIGHT);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     showDepthMap.setUniformTexture("depthMap", depthMap, 0);
+    showDepthMap.setUniform("zNear", DEPTH_MAP_NEAR);
+    showDepthMap.setUniform("zFar", DEPTH_MAP_FAR);
     quad.draw(showDepthMap);
 
     // render imgui
