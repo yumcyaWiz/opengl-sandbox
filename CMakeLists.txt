@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.12)
-project(realtime-graphics-sandbox LANGUAGES C CXX)
+project(opengl-sandbox LANGUAGES C CXX)
 
 # externals
 add_subdirectory(externals)
