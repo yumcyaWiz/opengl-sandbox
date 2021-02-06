@@ -28,8 +28,11 @@ float testShadow(in vec4 positionLightSpace) {
   // convert from NDC to [0, 1]
   projCoords = projCoords * 0.5 + 0.5;
 
-  float closestDepth = texture(depthMap, projCoords.xy).x;
   float currentDepth = projCoords.z;
+  if(currentDepth > 1.0) {
+    return 0.0;
+  }
+  float closestDepth = texture(depthMap, projCoords.xy).x;
 
   // shadow bias
   float bias = max(0.005 * (1.0 - dot(normal, directionalLight.direction)), 0.001);
