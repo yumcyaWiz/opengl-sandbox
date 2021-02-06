@@ -24,6 +24,10 @@ glm::mat4 Camera::computeProjectionMatrix(int width, int height) const {
                           0.1f, 10000.0f);
 }
 
+glm::mat4 Camera::computeViewProjectionMatrix(int width, int height) const {
+  return computeProjectionMatrix(width, height) * computeViewMatrix();
+}
+
 void Camera::reset() { Camera(); }
 
 void Camera::move(const CameraMovement& direction, float ds) {

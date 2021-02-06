@@ -21,8 +21,8 @@ using namespace ogls;
 std::unique_ptr<Camera> CAMERA;
 int WIDTH = 1600;
 int HEIGHT = 900;
-int DEPTH_MAP_WIDTH = 2048;
-int DEPTH_MAP_HEIGHT = 2048;
+int DEPTH_MAP_WIDTH = 1024;
+int DEPTH_MAP_HEIGHT = 1024;
 float DEPTH_MAP_NEAR = 100.0f;
 float DEPTH_MAP_FAR = 10000.0f;
 
@@ -201,11 +201,10 @@ int main() {
 
     // render scene with shadow mapping
     // set uniforms
-    shader.setUniform("view", CAMERA->computeViewMatrix());
-    shader.setUniform("projection",
-                      CAMERA->computeProjectionMatrix(WIDTH, HEIGHT));
-    shader.setUniform("camPos", CAMERA->camPos);
+    shader.setUniform("viewProjection",
+                      CAMERA->computeViewProjectionMatrix(WIDTH, HEIGHT));
     shader.setUniform("lightSpaceMatrix", lightSpaceMatrix);
+    shader.setUniform("camPos", CAMERA->camPos);
     // TODO: set texture unit number appropriately
     shader.setUniformTexture("depthMap", depthMap, 10);
 

@@ -8,13 +8,11 @@ out vec3 normal;
 out vec2 texCoords;
 out vec4 positionLightSpace;
 
-uniform mat4 view;
-uniform mat4 projection;
-
+uniform mat4 viewProjection;
 uniform mat4 lightSpaceMatrix;
 
 void main() {
-  gl_Position = projection * view * vec4(vPosition, 1.0);
+  gl_Position = viewProjection * vec4(vPosition, 1.0);
   position = vPosition;
   normal = vNormal;
   texCoords = vTexCoords;

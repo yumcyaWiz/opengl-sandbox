@@ -33,6 +33,7 @@ class Camera {
 
   glm::mat4 computeViewMatrix() const;
   glm::mat4 computeProjectionMatrix(int width, int height) const;
+  glm::mat4 computeViewProjectionMatrix(int width, int height) const;
 
   // reset camera parameters
   void reset();
