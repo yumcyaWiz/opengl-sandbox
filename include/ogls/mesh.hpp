@@ -25,7 +25,16 @@ struct Material {
   glm::vec3 ka;  // ambient color
   float shininess;
 
-  Material() : kd{0.0f}, ks{0.0f}, ka{0.0f}, shininess(0.0f) {}
+  std::optional<unsigned int> diffuseMap;   // index of diffuse map texture
+  std::optional<unsigned int> specularMap;  // index of specular map texture
+
+  Material()
+      : kd{0.0f},
+        ks{0.0f},
+        ka{0.0f},
+        shininess{0.0f},
+        diffuseMap{std::nullopt},
+        specularMap{std::nullopt} {}
 };
 
 class Mesh {
@@ -33,13 +42,9 @@ class Mesh {
   std::vector<Vertex> vertices;
   std::vector<unsigned int> indices;
   Material material;
-  std::optional<unsigned int> diffuseMap;   // index of diffuse map texture
-  std::optional<unsigned int> specularMap;  // index of specular map texture
 
   Mesh(const std::vector<Vertex>& vertices,
-       const std::vector<unsigned int>& indices, const Material& material,
-       const std::optional<unsigned int>& diffuseMap,
-       const std::optional<unsigned int>& specularMap);
+       const std::vector<unsigned int>& indices, const Material& material);
 
   // destroy mesh object
   void destroy();

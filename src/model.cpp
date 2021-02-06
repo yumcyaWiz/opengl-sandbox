@@ -82,8 +82,6 @@ Mesh Model::processMesh(const aiMesh* mesh, const aiScene* scene,
   std::vector<Vertex> vertices;
   std::vector<unsigned int> indices;
   Material material;
-  std::optional<unsigned int> diffuseMap;
-  std::optional<unsigned int> specularMap;
 
   // vertices
   for (std::size_t i = 0; i < mesh->mNumVertices; ++i) {
@@ -139,13 +137,14 @@ Mesh Model::processMesh(const aiMesh* mesh, const aiScene* scene,
     mat->Get(AI_MATKEY_SHININESS, material.shininess);
 
     // diffuse textures
-    diffuseMap = loadTexture(mat, TextureType::Diffuse, parentPathStr);
+    material.diffuseMap = loadTexture(mat, TextureType::Diffuse, parentPathStr);
 
     // specular textures
-    specularMap = loadTexture(mat, TextureType::Specular, parentPathStr);
+    material.specularMap =
+        loadTexture(mat, TextureType::Specular, parentPathStr);
   }
 
-  return Mesh(vertices, indices, material, diffuseMap, specularMap);
+  return Mesh(vertices, indices, material);
 }
 
 std::optional<std::size_t> Model::loadTexture(

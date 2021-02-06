@@ -3,14 +3,8 @@
 namespace ogls {
 
 Mesh::Mesh(const std::vector<Vertex>& vertices,
-           const std::vector<unsigned int>& indices, const Material& material,
-           const std::optional<unsigned int>& diffuseMap,
-           const std::optional<unsigned int>& specularMap)
-    : vertices{vertices},
-      indices{indices},
-      material{material},
-      diffuseMap{diffuseMap},
-      specularMap{specularMap} {
+           const std::vector<unsigned int>& indices, const Material& material)
+    : vertices{vertices}, indices{indices}, material{material} {
   // setup VBO, EBO, VAO
   glGenVertexArrays(1, &VAO);
   glGenBuffers(1, &VBO);
@@ -56,21 +50,22 @@ void Mesh::destroy() {
 void Mesh::draw(const Shader& shader,
                 const std::vector<Texture>& textures) const {
   // set texture uniform
-  if (diffuseMap) {
-    shader.setUniformTexture("diffuseMap", textures[diffuseMap.value()].id, 0);
+  if (material.diffuseMap) {
+    shader.setUniformTexture("diffuseMap",
+                             textures[material.diffuseMap.value()].id, 0);
   }
-  if (specularMap) {
-    shader.setUniformTexture("specularMap", textures[specularMap.value()].id,
-                             1);
+  if (material.specularMap) {
+    shader.setUniformTexture("specularMap",
+                             textures[material.specularMap.value()].id, 1);
   }
 
   // set material
-  if (diffuseMap) {
+  if (material.diffuseMap) {
     shader.setUniform("kd", glm::vec3(0));
   } else {
     shader.setUniform("kd", material.kd);
   }
-  if (specularMap) {
+  if (material.specularMap) {
     shader.setUniform("ks", glm::vec3(0));
   } else {
     shader.setUniform("ks", material.ks);
