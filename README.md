@@ -52,3 +52,4 @@ blinn-phong shading example with moving point light.
 * [assimp](https://github.com/assimp/assimp)
 * [imgui](https://github.com/ocornut/imgui)
 * [stb](https://github.com/nothings/stb)
+* [GLSL Shader Includes](https://github.com/tntmeijs/GLSL-Shader-Includes)
