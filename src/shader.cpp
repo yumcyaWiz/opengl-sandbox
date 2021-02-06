@@ -12,8 +12,8 @@ namespace ogls {
 
 Shader::Shader() {}
 
-Shader::Shader(const std::string& vertexShaderFilepath,
-               const std::string& fragmentShaderFilepath)
+Shader::Shader(const std::filesystem::path& vertexShaderFilepath,
+               const std::filesystem::path& fragmentShaderFilepath)
     : vertexShaderFilepath(vertexShaderFilepath),
       fragmentShaderFilepath(fragmentShaderFilepath) {
   std::cout << "[Shader] loading " << vertexShaderFilepath << std::endl;
@@ -90,7 +90,7 @@ void Shader::setUniformTexture(const std::string& uniformName, GLuint texture,
 void Shader::compileShader() {
   // compile vertex shader
   vertexShader = glCreateShader(GL_VERTEX_SHADER);
-  vertexShaderSource = Shadinclude::load(vertexShaderFilepath);
+  vertexShaderSource = Shadinclude::load(vertexShaderFilepath.string());
   const char* vertexShaderSourceC = vertexShaderSource.c_str();
   glShaderSource(vertexShader, 1, &vertexShaderSourceC, nullptr);
   glCompileShader(vertexShader);
@@ -114,7 +114,7 @@ void Shader::compileShader() {
 
   // compile fragment shader
   fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-  fragmentShaderSource = Shadinclude::load(fragmentShaderFilepath);
+  fragmentShaderSource = Shadinclude::load(fragmentShaderFilepath.string());
   const char* fragmentShaderSourceC = fragmentShaderSource.c_str();
   glShaderSource(fragmentShader, 1, &fragmentShaderSourceC, nullptr);
   glCompileShader(fragmentShader);

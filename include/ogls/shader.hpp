@@ -1,6 +1,7 @@
 #ifndef _OGLS_SHADER_H
 #define _OGLS_SHADER_H
 
+#include <filesystem>
 #include <string>
 #include <variant>
 
@@ -11,9 +12,9 @@ namespace ogls {
 
 class Shader {
  private:
-  const std::string vertexShaderFilepath;
+  const std::filesystem::path vertexShaderFilepath;
   std::string vertexShaderSource;
-  const std::string fragmentShaderFilepath;
+  const std::filesystem::path fragmentShaderFilepath;
   std::string fragmentShaderSource;
   GLuint vertexShader;
   GLuint fragmentShader;
@@ -26,8 +27,8 @@ class Shader {
   Shader();
 
   // load vertex shader and fragment shader from given filepath
-  Shader(const std::string& vertexShaderFilepath,
-         const std::string& fragmentShaderFilepath);
+  Shader(const std::filesystem::path& vertexShaderFilepath,
+         const std::filesystem::path& fragmentShaderFilepath);
 
   // destroy shader object
   void destroy();

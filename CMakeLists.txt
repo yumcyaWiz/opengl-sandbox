@@ -24,7 +24,8 @@ target_include_directories(ogls PUBLIC include)
 # compile options
 target_compile_options(ogls PRIVATE
   $<$<CXX_COMPILER_ID:MSVC>:/W4>
-  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -pedantic>
+  $<$<CXX_COMPILER_ID:GNU>:-Wall -Wextra -pedantic>
+  $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra -pedantic>
 )
 
 # link externals
