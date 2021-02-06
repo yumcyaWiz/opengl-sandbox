@@ -10,8 +10,8 @@ uniform vec3 ks;
 uniform vec3 ka;
 uniform float shininess;
 
-uniform sampler2D diffuseMaps[100];
-uniform sampler2D specularMaps[100];
+uniform sampler2D diffuseMap;
+uniform sampler2D specularMap;
 
 struct PointLight {
   vec3 ke;
@@ -30,6 +30,7 @@ uniform DirectionalLight directionalLight;
 
 uniform vec3 camPos;
 
+// Blinn-Phong reflection model
 vec3 blinnPhong(in vec3 viewDir, in vec3 normal, in vec3 lightDir, in vec3 kd, in vec3 ks, float shininess) {
   vec3 diffuse = max(dot(lightDir, normal), 0.0) * kd;
 
@@ -40,10 +41,11 @@ vec3 blinnPhong(in vec3 viewDir, in vec3 normal, in vec3 lightDir, in vec3 kd, i
 }
 
 void main() {
-  vec3 viewDir = normalize(camPos - position); // view direction
+  // view direction
+  vec3 viewDir = normalize(camPos - position);
 
-  vec3 diffuse = texture(diffuseMaps[0], texCoords).xyz + kd;
-  vec3 specular = texture(specularMaps[0], texCoords).xyz + ks;
+  vec3 diffuse = texture(diffuseMap, texCoords).xyz + kd;
+  vec3 specular = texture(specularMap, texCoords).xyz + ks;
 
   vec3 color = vec3(0);
 

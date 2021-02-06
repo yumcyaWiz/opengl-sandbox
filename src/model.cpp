@@ -65,24 +65,25 @@ void Model::destroy() {
 }
 
 void Model::processNode(const aiNode* node, const aiScene* scene,
-                        const std::string& parentPath) {
+                        const std::string& parentPathStr) {
   // process all the node's meshes
   for (std::size_t i = 0; i < node->mNumMeshes; ++i) {
     const aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-    meshes.push_back(processMesh(mesh, scene, parentPath));
+    meshes.push_back(processMesh(mesh, scene, parentPathStr));
   }
 
   for (std::size_t i = 0; i < node->mNumChildren; i++) {
-    processNode(node->mChildren[i], scene, parentPath);
+    processNode(node->mChildren[i], scene, parentPathStr);
   }
 }
 
 Mesh Model::processMesh(const aiMesh* mesh, const aiScene* scene,
-                        const std::string& parentPath) {
+                        const std::string& parentPathStr) {
   std::vector<Vertex> vertices;
   std::vector<unsigned int> indices;
   Material material;
-  std::vector<unsigned int> indicesOfTextures;
+  std::optional<unsigned int> diffuseMap;
+  std::optional<unsigned int> specularMap;
 
   // vertices
   for (std::size_t i = 0; i < mesh->mNumVertices; ++i) {
@@ -117,7 +118,7 @@ Mesh Model::processMesh(const aiMesh* mesh, const aiScene* scene,
 
   // materials
   if (scene->mMaterials[mesh->mMaterialIndex]) {
-    aiMaterial* mat = scene->mMaterials[mesh->mMaterialIndex];
+    const aiMaterial* mat = scene->mMaterials[mesh->mMaterialIndex];
 
     // kd
     aiColor3D color;
@@ -138,50 +139,47 @@ Mesh Model::processMesh(const aiMesh* mesh, const aiScene* scene,
     mat->Get(AI_MATKEY_SHININESS, material.shininess);
 
     // diffuse textures
-    const std::filesystem::path psParent(parentPath);
-    for (std::size_t i = 0; i < mat->GetTextureCount(aiTextureType_DIFFUSE);
-         ++i) {
-      aiString str;
-      mat->GetTexture(aiTextureType_DIFFUSE, i, &str);
-      const std::filesystem::path ps(str.C_Str());
-      const std::string texturePath = (psParent / ps).native();
-
-      const auto index = hasTexture(texturePath);
-      if (index) {
-        // add texture index
-        indicesOfTextures.push_back(index.value());
-      } else {
-        // add texture index
-        indicesOfTextures.push_back(textures.size());
-
-        // load texture
-        textures.emplace_back(texturePath, TextureType::Diffuse);
-      }
-    }
+    diffuseMap = loadTexture(mat, TextureType::Diffuse, parentPathStr);
 
     // specular textures
-    for (std::size_t i = 0; i < mat->GetTextureCount(aiTextureType_SPECULAR);
-         ++i) {
-      aiString str;
-      mat->GetTexture(aiTextureType_SPECULAR, i, &str);
-      const std::filesystem::path ps(str.C_Str());
-      const std::string texturePath = (psParent / ps).native();
-
-      const auto index = hasTexture(texturePath);
-      if (index) {
-        // add texture index
-        indicesOfTextures.push_back(index.value());
-      } else {
-        // add texture index
-        indicesOfTextures.push_back(textures.size());
-
-        // load texture
-        textures.emplace_back(texturePath, TextureType::Specular);
-      }
-    }
+    specularMap = loadTexture(mat, TextureType::Specular, parentPathStr);
   }
 
-  return Mesh(vertices, indices, material, indicesOfTextures);
+  return Mesh(vertices, indices, material, diffuseMap, specularMap);
+}
+
+std::optional<std::size_t> Model::loadTexture(
+    const aiMaterial* material, const TextureType& type,
+    const std::string& parentPathStr) {
+  aiTextureType aiTexType;
+  switch (type) {
+    case TextureType::Diffuse:
+      aiTexType = aiTextureType_DIFFUSE;
+      break;
+    case TextureType::Specular:
+      aiTexType = aiTextureType_SPECULAR;
+      break;
+  }
+
+  if (material->GetTextureCount(aiTexType) == 0) {
+    return std::nullopt;
+  }
+
+  // get texture filepath
+  aiString str;
+  material->GetTexture(aiTexType, 0, &str);
+  const std::filesystem::path parentPath(parentPathStr);
+  const std::filesystem::path texturePath(str.C_Str());
+  const std::string texturePathStr = (parentPath / texturePath).native();
+
+  // load texture if we don't have it
+  const auto index = hasTexture(texturePathStr);
+  if (!index) {
+    textures.emplace_back(texturePathStr, TextureType::Diffuse);
+    return textures.size() - 1;
+  } else {
+    return index.value();
+  }
 }
 
 std::optional<std::size_t> Model::hasTexture(

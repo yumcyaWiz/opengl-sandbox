@@ -4,11 +4,13 @@ namespace ogls {
 
 Mesh::Mesh(const std::vector<Vertex>& vertices,
            const std::vector<unsigned int>& indices, const Material& material,
-           const std::vector<unsigned int>& indicesOfTextures)
-    : vertices(vertices),
-      indices(indices),
-      material(material),
-      indicesOfTextures(indicesOfTextures) {
+           const std::optional<unsigned int>& diffuseMap,
+           const std::optional<unsigned int>& specularMap)
+    : vertices{vertices},
+      indices{indices},
+      material{material},
+      diffuseMap{diffuseMap},
+      specularMap{specularMap} {
   // setup VBO, EBO, VAO
   glGenVertexArrays(1, &VAO);
   glGenBuffers(1, &VBO);
@@ -49,50 +51,30 @@ void Mesh::destroy() {
   glDeleteVertexArrays(1, &VAO);
   vertices.clear();
   indices.clear();
-  indicesOfTextures.clear();
 }
 
 void Mesh::draw(const Shader& shader,
                 const std::vector<Texture>& textures) const {
   // set texture uniform
-  std::size_t n_diffuse = 0;
-  std::size_t n_specular = 0;
-  for (std::size_t i = 0; i < indicesOfTextures.size(); ++i) {
-    const Texture& texture = textures[indicesOfTextures[i]];
-    const int textureUnitNumber = i;
-
-    switch (texture.textureType) {
-      case TextureType::Diffuse: {
-        const std::string uniformName =
-            "diffuseMaps[" + std::to_string(n_diffuse) + "]";
-        shader.setUniformTexture(uniformName, texture.id, textureUnitNumber);
-        n_diffuse++;
-        break;
-      }
-      case TextureType::Specular: {
-        const std::string uniformName =
-            "specularMaps[" + std::to_string(n_specular) + "]";
-        shader.setUniformTexture(uniformName, texture.id, textureUnitNumber);
-        n_specular++;
-        break;
-      }
-    }
+  if (diffuseMap) {
+    shader.setUniformTexture("diffuseMap", textures[diffuseMap.value()].id, 0);
   }
-
-  // make kd zero if there are diffuseMaps
-  glm::vec3 kd = material.kd;
-  if (n_diffuse > 0) {
-    kd = glm::vec3(0.0f);
-  }
-  // make ks zero if there are specularMaps
-  glm::vec3 ks = material.ks;
-  if (n_specular > 0) {
-    ks = glm::vec3(0.0f);
+  if (specularMap) {
+    shader.setUniformTexture("specularMap", textures[specularMap.value()].id,
+                             1);
   }
 
   // set material
-  shader.setUniform("kd", kd);
-  shader.setUniform("ks", ks);
+  if (diffuseMap) {
+    shader.setUniform("kd", glm::vec3(0));
+  } else {
+    shader.setUniform("kd", material.kd);
+  }
+  if (specularMap) {
+    shader.setUniform("ks", glm::vec3(0));
+  } else {
+    shader.setUniform("ks", material.ks);
+  }
   shader.setUniform("ka", material.ka);
   shader.setUniform("shininess", material.shininess);
 
@@ -104,10 +86,8 @@ void Mesh::draw(const Shader& shader,
   glBindVertexArray(0);
 
   // reset texture uniform
-  for (std::size_t i = 0; i < indicesOfTextures.size(); ++i) {
-    shader.setUniformTexture("diffuseMaps[" + std::to_string(i) + "]", 0, 0);
-    shader.setUniformTexture("specularMaps[" + std::to_string(i) + "]", 0, 0);
-  }
+  shader.setUniformTexture("diffuseMap", 0, 0);
+  shader.setUniformTexture("specularMap", 0, 0);
 }
 
 }  // namespace ogls

@@ -1,5 +1,6 @@
 #ifndef _OGLS_MESH_H
 #define _OGLS_MESH_H
+#include <optional>
 #include <vector>
 
 #include "glad/glad.h"
@@ -32,11 +33,13 @@ class Mesh {
   std::vector<Vertex> vertices;
   std::vector<unsigned int> indices;
   Material material;
-  std::vector<unsigned int> indicesOfTextures;  // indices of textures
+  std::optional<unsigned int> diffuseMap;   // index of diffuse map texture
+  std::optional<unsigned int> specularMap;  // index of specular map texture
 
   Mesh(const std::vector<Vertex>& vertices,
        const std::vector<unsigned int>& indices, const Material& material,
-       const std::vector<unsigned int>& indicesOfTextures);
+       const std::optional<unsigned int>& diffuseMap,
+       const std::optional<unsigned int>& specularMap);
 
   // destroy mesh object
   void destroy();

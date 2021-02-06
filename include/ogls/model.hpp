@@ -40,6 +40,10 @@ class Model {
   Mesh processMesh(const aiMesh* mesh, const aiScene* scene,
                    const std::string& parentPath);
 
+  std::optional<std::size_t> loadTexture(const aiMaterial* material,
+                                         const TextureType& type,
+                                         const std::string& parentPath);
+
   std::optional<std::size_t> hasTexture(const std::string& filepath) const;
 };
 
