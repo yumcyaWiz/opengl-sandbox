@@ -1,3 +1,4 @@
+#include <filesystem>
 #include <iostream>
 
 #include "glad/glad.h"
@@ -87,7 +88,9 @@ int main() {
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 
   // setup shader
-  Shader shader{"shaders/shader.vert", "shaders/shader.frag"};
+  Shader shader{
+      std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) / "shaders/shader.vert",
+      std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) / "shaders/shader.frag"};
 
   // app loop
   while (!glfwWindowShouldClose(window)) {
@@ -107,6 +110,7 @@ int main() {
   }
 
   // exit
+  shader.destroy();
   glfwDestroyWindow(window);
   glfwTerminate();
 
