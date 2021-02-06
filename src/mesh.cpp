@@ -51,27 +51,27 @@ void Mesh::draw(const Shader& shader,
                 const std::vector<Texture>& textures) const {
   // set texture uniform
   if (material.diffuseMap) {
-    shader.setUniformTexture("diffuseMap",
+    shader.setUniformTexture("material.diffuseMap",
                              textures[material.diffuseMap.value()].id, 0);
   }
   if (material.specularMap) {
-    shader.setUniformTexture("specularMap",
+    shader.setUniformTexture("material.specularMap",
                              textures[material.specularMap.value()].id, 1);
   }
 
   // set material
   if (material.diffuseMap) {
-    shader.setUniform("kd", glm::vec3(0));
+    shader.setUniform("material.kd", glm::vec3(0));
   } else {
-    shader.setUniform("kd", material.kd);
+    shader.setUniform("material.kd", material.kd);
   }
   if (material.specularMap) {
-    shader.setUniform("ks", glm::vec3(0));
+    shader.setUniform("material.ks", glm::vec3(0));
   } else {
-    shader.setUniform("ks", material.ks);
+    shader.setUniform("material.ks", material.ks);
   }
-  shader.setUniform("ka", material.ka);
-  shader.setUniform("shininess", material.shininess);
+  shader.setUniform("material.ka", material.ka);
+  shader.setUniform("material.shininess", material.shininess);
 
   // draw mesh
   glBindVertexArray(VAO);
@@ -81,8 +81,8 @@ void Mesh::draw(const Shader& shader,
   glBindVertexArray(0);
 
   // reset texture uniform
-  shader.setUniformTexture("diffuseMap", 0, 0);
-  shader.setUniformTexture("specularMap", 0, 0);
+  shader.setUniformTexture("material.diffuseMap", 0, 0);
+  shader.setUniformTexture("material.specularMap", 0, 0);
 }
 
 }  // namespace ogls

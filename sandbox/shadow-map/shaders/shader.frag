@@ -10,7 +10,7 @@ out vec4 fragColor;
 uniform vec3 camPos;
 
 // Blinn-Phong reflection model
-vec3 blinnPhong(in vec3 viewDir, in vec3 normal, in vec3 lightDir, in vec3 kd, in vec3 ks, float shininess) {
+vec3 blinnPhong(in vec3 viewDir, in vec3 normal, in vec3 lightDir, in vec3 kd, in vec3 ks, in float shininess) {
   vec3 diffuse = max(dot(lightDir, normal), 0.0) * kd;
 
   vec3 h = normalize(lightDir + viewDir); // half-vector
@@ -23,19 +23,19 @@ void main() {
   // view direction
   vec3 viewDir = normalize(camPos - position);
 
-  vec3 diffuse = texture(diffuseMap, texCoords).xyz + kd;
-  vec3 specular = texture(specularMap, texCoords).xyz + ks;
+  vec3 kd = texture(material.diffuseMap, texCoords).xyz + material.kd;
+  vec3 ks = texture(material.specularMap, texCoords).xyz + material.ks;
 
   vec3 color = vec3(0);
 
   // directional light
-  color += blinnPhong(viewDir, normal, directionalLight.direction, diffuse, specular, shininess) * directionalLight.ke;
+  color += blinnPhong(viewDir, normal, directionalLight.direction, kd, ks, material.shininess) * directionalLight.ke;
 
   // point lights
   for(int i = 0; i < n_PointLights; ++i) {
     vec3 lightDir = normalize(pointLights[i].position - position);
     float dist = max(distance(pointLights[i].position, position) - pointLights[i].radius, 0.0);
-    color += blinnPhong(viewDir, normal, lightDir, diffuse, specular, shininess) * pointLights[i].ke / pow(dist, 2.0);
+    color += blinnPhong(viewDir, normal, lightDir, kd, ks, material.shininess) * pointLights[i].ke / pow(dist, 2.0);
   }
 
   // gamma correction

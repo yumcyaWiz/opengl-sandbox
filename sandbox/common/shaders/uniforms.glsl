@@ -1,10 +1,11 @@
-uniform vec3 kd;
-uniform vec3 ks;
-uniform vec3 ka;
-uniform float shininess;
-
-uniform sampler2D diffuseMap;
-uniform sampler2D specularMap;
+struct Material {
+  vec3 kd;
+  vec3 ks;
+  vec3 ka;
+  float shininess;
+  sampler2D diffuseMap;
+  sampler2D specularMap;
+};
 
 struct PointLight {
   vec3 ke;
@@ -16,6 +17,8 @@ struct DirectionalLight {
   vec3 ke;
   vec3 direction;
 };
+
+uniform Material material;
 
 uniform int n_PointLights;
 uniform PointLight pointLights[100];
