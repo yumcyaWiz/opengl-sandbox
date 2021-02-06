@@ -122,7 +122,9 @@ Mesh Model::processMesh(const aiMesh* mesh, const aiScene* scene,
     // kd
     aiColor3D color;
     mat->Get(AI_MATKEY_COLOR_DIFFUSE, color);
-    material.kd = glm::vec3(color.r, color.g, color.b);
+    // convert sRGB to linear
+    material.kd =
+        glm::pow(glm::vec3(color.r, color.g, color.b), glm::vec3(2.2f));
 
     // ks
     mat->Get(AI_MATKEY_COLOR_SPECULAR, color);
