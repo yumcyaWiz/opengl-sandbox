@@ -17,9 +17,9 @@ Model::operator bool() const { return meshes.size() > 0; }
 void Model::loadModel(const std::filesystem::path& filepath) {
   // load model with assimp
   Assimp::Importer importer;
-  const aiScene* scene =
-      importer.ReadFile(filepath, aiProcess_Triangulate | aiProcess_FlipUVs |
-                                      aiProcess_GenNormals);
+  const aiScene* scene = importer.ReadFile(
+      filepath.generic_string().c_str(),
+      aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenNormals);
 
   if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE ||
       !scene->mRootNode) {
