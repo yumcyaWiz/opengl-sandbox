@@ -19,9 +19,6 @@ class Shader {
   GLuint fragmentShader;
   GLuint program;
 
-  // convert file content to string
-  static std::string fileToString(const std::string& filepath);
-
   void compileShader();
   void linkShader();
 

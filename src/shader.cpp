@@ -5,6 +5,7 @@
 #include <sstream>
 #include <vector>
 
+#include "Shadinclude.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
 namespace ogls {
@@ -86,24 +87,10 @@ void Shader::setUniformTexture(const std::string& uniformName, GLuint texture,
   deactivate();
 }
 
-std::string Shader::fileToString(const std::string& filepath) {
-  std::ifstream file(filepath);
-  if (!file) {
-    std::cerr << "failed to open " << filepath << std::endl;
-    return "";
-  }
-
-  std::stringstream ss;
-  ss << file.rdbuf();
-  file.close();
-
-  return ss.str();
-}
-
 void Shader::compileShader() {
   // compile vertex shader
   vertexShader = glCreateShader(GL_VERTEX_SHADER);
-  vertexShaderSource = fileToString(vertexShaderFilepath);
+  vertexShaderSource = Shadinclude::load(vertexShaderFilepath);
   const char* vertexShaderSourceC = vertexShaderSource.c_str();
   glShaderSource(vertexShader, 1, &vertexShaderSourceC, nullptr);
   glCompileShader(vertexShader);
@@ -127,7 +114,7 @@ void Shader::compileShader() {
 
   // compile fragment shader
   fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-  fragmentShaderSource = fileToString(fragmentShaderFilepath);
+  fragmentShaderSource = Shadinclude::load(fragmentShaderFilepath);
   const char* fragmentShaderSourceC = fragmentShaderSource.c_str();
   glShaderSource(fragmentShader, 1, &fragmentShaderSourceC, nullptr);
   glCompileShader(fragmentShader);

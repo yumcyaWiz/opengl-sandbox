@@ -26,3 +26,7 @@ target_include_directories(imgui_glfw_opengl3 SYSTEM PUBLIC imgui/backends)
 # stb
 add_library(stb INTERFACE)
 target_include_directories(stb SYSTEM INTERFACE stb)
+
+# GLSL-Shader-Includes
+add_library(glsl-shader-includes INTERFACE)
+target_include_directories(glsl-shader-includes SYSTEM INTERFACE GLSL-Shader-Includes)
