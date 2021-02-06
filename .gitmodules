@@ -10,3 +10,6 @@
 [submodule "externals/stb"]
 	path = externals/stb
 	url = git@github.com:nothings/stb.git
+[submodule "externals/GLSL-Shader-Includes"]
+	path = externals/GLSL-Shader-Includes
+	url = git@github.com:tntmeijs/GLSL-Shader-Includes.git
