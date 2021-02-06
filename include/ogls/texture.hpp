@@ -1,6 +1,6 @@
 #ifndef _OGLS_TEXTURE_H
 #define _OGLS_TEXTURE_H
-#include <string>
+#include <filesystem>
 
 #include "glad/glad.h"
 
@@ -13,17 +13,18 @@ enum class TextureType {
 
 class Texture {
  public:
-  std::string filepath;
+  std::filesystem::path filepath;
   GLuint id;
   TextureType textureType;
 
   Texture();
-  Texture(const std::string& filepath, const TextureType& textureType);
+  Texture(const std::filesystem::path& filepath,
+          const TextureType& textureType);
 
   // destroy texture object
   void destroy();
 
-  void loadImage(const std::string& filepath) const;
+  void loadImage(const std::filesystem::path& filepath) const;
 };
 
 }  // namespace ogls

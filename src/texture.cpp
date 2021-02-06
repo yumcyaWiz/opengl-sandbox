@@ -7,7 +7,12 @@
 
 namespace ogls {
 
-Texture::Texture() {
+Texture::Texture() {}
+
+Texture::Texture(const std::filesystem::path& filepath,
+                 const TextureType& textureType)
+    : filepath{filepath}, textureType{textureType} {
+  // generate texture
   glGenTextures(1, &id);
   glBindTexture(GL_TEXTURE_2D, id);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -16,18 +21,14 @@ Texture::Texture() {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
                   GL_NEAREST_MIPMAP_LINEAR);
   glBindTexture(GL_TEXTURE_2D, 0);
-}
 
-Texture::Texture(const std::string& filepath, const TextureType& textureType)
-    : Texture() {
-  this->filepath = filepath;
-  this->textureType = textureType;
+  // load image on texture
   loadImage(filepath);
 }
 
 void Texture::destroy() { glDeleteTextures(1, &id); }
 
-void Texture::loadImage(const std::string& filepath) const {
+void Texture::loadImage(const std::filesystem::path& filepath) const {
   std::cout << "[Texture] loading " << filepath << std::endl;
 
   // load image with stb_image
