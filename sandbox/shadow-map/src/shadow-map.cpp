@@ -23,8 +23,8 @@ int WIDTH = 1600;
 int HEIGHT = 900;
 int DEPTH_MAP_WIDTH = 1024;
 int DEPTH_MAP_HEIGHT = 1024;
-float DEPTH_MAP_NEAR = 1.0f;
-float DEPTH_MAP_FAR = 2000.0f;
+float DEPTH_MAP_NEAR = 100.0f;
+float DEPTH_MAP_FAR = 1000.0f;
 
 void handleInput(GLFWwindow* window, const ImGuiIO& io) {
   // close application
@@ -185,12 +185,8 @@ int main() {
     const glm::mat4 lightView =
         glm::lookAt(500.0f * glm::normalize(glm::vec3(0.1f, 1.0f, 0)),
                     glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    // FIXME: bug on ortho ?
-    glm::mat4 lightProjection = glm::ortho(-100.0f, 100.0f, -100.0f, 100.0f,
+    glm::mat4 lightProjection = glm::ortho(-500.0f, 500.0f, -500.0f, 500.0f,
                                            DEPTH_MAP_NEAR, DEPTH_MAP_FAR);
-    lightProjection = glm::perspective(glm::radians(90.0f),
-                                       static_cast<float>(WIDTH) / HEIGHT,
-                                       DEPTH_MAP_NEAR, DEPTH_MAP_FAR);
     const glm::mat4 lightSpaceMatrix = lightProjection * lightView;
     makeDepthMap.setUniform("lightSpaceMatrix", lightSpaceMatrix);
 
