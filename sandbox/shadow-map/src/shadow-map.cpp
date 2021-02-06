@@ -152,6 +152,7 @@ int main() {
                 std::string(CMAKE_CURRENT_SOURCE_DIR) + "/shaders/shader.frag"};
 
   // app loop
+  float t = 0.0f;
   while (!glfwWindowShouldClose(window)) {
     glfwPollEvents();
 
@@ -181,12 +182,17 @@ int main() {
 
     handleInput(window, io);
 
+    // update light direction
+    t += 0.1f * io.DeltaTime;
+    scene.directionalLight.direction =
+        glm::normalize(glm::vec3(0.5f * glm::cos(t), 1.0f, 0.5f * std::sin(t)));
+
     // set view, projection matrix for making depth map
     const glm::mat4 lightView =
         glm::lookAt(2000.0f * scene.directionalLight.direction, glm::vec3(0.0f),
                     glm::vec3(0.0f, 1.0f, 0.0f));
-    glm::mat4 lightProjection = glm::ortho(-2000.0f, 2000.0f, -2000.0f, 2000.0f,
-                                           DEPTH_MAP_NEAR, DEPTH_MAP_FAR);
+    const glm::mat4 lightProjection = glm::ortho(
+        -2000.0f, 2000.0f, -2000.0f, 2000.0f, DEPTH_MAP_NEAR, DEPTH_MAP_FAR);
     const glm::mat4 lightSpaceMatrix = lightProjection * lightView;
     makeDepthMap.setUniform("lightSpaceMatrix", lightSpaceMatrix);
 
