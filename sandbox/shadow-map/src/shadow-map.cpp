@@ -4,6 +4,7 @@
 #include "glad/glad.h"
 //
 #include "GLFW/glfw3.h"
+#include "glm/gtc/matrix_transform.hpp"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
@@ -107,6 +108,8 @@ int main() {
 
   // setup scene
   Scene scene;
+  scene.setDirectionalLight(
+      {glm::vec3(1.0f), glm::normalize(glm::vec3(0.5f, 1.0f, 0.0f))});
 
   // quad for showing depth map
   Quad quad;
@@ -176,12 +179,15 @@ int main() {
 
     handleInput(window, io);
 
-    // set uniform variables
-    const glm::mat4 view = CAMERA->computeViewMatrix();
-    const glm::mat4 projection = CAMERA->computeProjectionMatrix(WIDTH, HEIGHT);
-    makeDepthMap.setUniform("view", CAMERA->computeViewMatrix());
-    makeDepthMap.setUniform("projection",
-                            CAMERA->computeProjectionMatrix(WIDTH, HEIGHT));
+    // set view, projection matrix for making depth map
+    const glm::vec3 lightPos =
+        glm::vec3(0) + 1000.0f * scene.directionalLight.direction;
+    const glm::mat4 lightView =
+        glm::lookAt(lightPos, glm::vec3(0), glm::vec3(0.0f, 1.0f, 0.0f));
+    const glm::mat4 lightProjection =
+        glm::ortho(-100.0f, 100.0f, -100.0f, 100.0f, 1.0f, 10000.0f);
+    makeDepthMap.setUniform("view", lightView);
+    makeDepthMap.setUniform("projection", lightProjection);
 
     // render to depth map
     glViewport(0, 0, DEPTH_MAP_WIDTH, DEPTH_MAP_HEIGHT);
