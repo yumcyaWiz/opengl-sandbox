@@ -35,13 +35,21 @@ float testShadow(in vec4 positionLightSpace) {
     return 0.0;
   }
 
-  // depth map sampling
-  float closestDepth = texture(depthMap, projCoords.xy).x;
-
   // shadow bias
   float bias = max(depthBias * (1.0 - dot(normal, directionalLight.direction)), 0.001);
 
-  return currentDepth > closestDepth + bias ? 1.0 : 0.0;
+  // PCF
+  vec2 texelSize = 1.0 / textureSize(depthMap, 0);
+  float shadow = 0.0;
+  for(int i = -1; i <= 1; ++i) {
+    for(int j = -1; j <= 1; ++j) {
+      float closestDepth = texture(depthMap, projCoords.xy + vec2(i, j) * texelSize).x;
+      shadow += currentDepth > closestDepth + bias ? 1.0 : 0.0;
+    }
+  }
+  shadow /= 9.0;
+
+  return shadow;
 }
 
 void main() {
