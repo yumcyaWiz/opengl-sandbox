@@ -208,14 +208,12 @@ int main() {
     scene.draw(shader);
 
     // show depth map
-    /*
-    glViewport(0, 0, WIDTH, HEIGHT);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    showDepthMap.setUniformTexture("depthMap", depthMap, 0);
+    glViewport(WIDTH - 256, HEIGHT - 256, 256, 256);
+    glClear(GL_DEPTH_BUFFER_BIT);
+    showDepthMap.setUniformTexture("depthMap", depthMap.texture, 0);
     showDepthMap.setUniform("zNear", DEPTH_MAP_NEAR);
     showDepthMap.setUniform("zFar", DEPTH_MAP_FAR);
     quad.draw(showDepthMap);
-    */
 
     // render imgui
     ImGui::Render();

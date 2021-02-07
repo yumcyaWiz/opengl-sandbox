@@ -14,6 +14,6 @@ float linearizeDepth(in float z) {
 }
 
 void main() {
-  float z = texture(depthMap, texCoords).x;
+  float z = texture(depthMap, texCoords.xy).x;
   fragColor = vec4(vec3(z), 1.0);
 }
