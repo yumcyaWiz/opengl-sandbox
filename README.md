@@ -12,7 +12,10 @@ experiment environment for realtime graphics methods in OpenGL.
 
 ## Features
 
+* Diffuse Map
+* Specular Map
 * Blinn-Phong Shading
+* Shadow Mapping
 
 ## Setup
 
