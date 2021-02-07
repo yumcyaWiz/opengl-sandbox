@@ -14,6 +14,8 @@
 #include "ogls/quad.hpp"
 #include "ogls/scene.hpp"
 #include "ogls/shader.hpp"
+//
+#include "depth-map.h"
 
 using namespace ogls;
 
@@ -21,8 +23,6 @@ using namespace ogls;
 std::unique_ptr<Camera> CAMERA;
 int WIDTH = 1600;
 int HEIGHT = 900;
-int DEPTH_MAP_WIDTH = 1024;
-int DEPTH_MAP_HEIGHT = 1024;
 float DEPTH_MAP_NEAR = 100.0f;
 float DEPTH_MAP_FAR = 10000.0f;
 
@@ -116,32 +116,6 @@ int main() {
   // quad for showing depth map
   Quad quad;
 
-  // setup depth map FBO
-  GLuint depthMapFBO;
-  glGenFramebuffers(1, &depthMapFBO);
-
-  // setup depth map texture
-  GLuint depthMap;
-  glGenTextures(1, &depthMap);
-  glBindTexture(GL_TEXTURE_2D, depthMap);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, DEPTH_MAP_WIDTH,
-               DEPTH_MAP_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-  constexpr float borderColor[] = {1.0f, 1.0f, 1.0f, 1.0f};
-  glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-
-  // attach depth map texture to FBO
-  glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
-                         depthMap, 0);
-  glDrawBuffer(GL_NONE);  // disable draw buffer
-  glReadBuffer(GL_NONE);  // disable read buffer
-  glBindFramebuffer(GL_FRAMEBUFFER, 0);
-  glBindTexture(GL_TEXTURE_2D, 0);
-
   // setup shader
   Shader makeDepthMap{
       std::string(CMAKE_CURRENT_SOURCE_DIR) + "/shaders/make-depthmap.vert",
@@ -153,6 +127,8 @@ int main() {
 
   Shader shader{std::string(CMAKE_CURRENT_SOURCE_DIR) + "/shaders/shader.vert",
                 std::string(CMAKE_CURRENT_SOURCE_DIR) + "/shaders/shader.frag"};
+
+  DepthMap depthMap(1024, 1024);
 
   // app loop
   float t = 0.0f;
@@ -173,6 +149,8 @@ int main() {
       scene.setModel({std::string(CMAKE_SOURCE_DIR) + "/" + modelPath});
     }
 
+    ImGui::Separator();
+
     ImGui::InputFloat("FOV", &CAMERA->fov);
     ImGui::InputFloat("Movement Speed", &CAMERA->movementSpeed);
     ImGui::InputFloat("Look Around Speed", &CAMERA->lookAroundSpeed);
@@ -180,6 +158,8 @@ int main() {
     if (ImGui::Button("Reset Camera")) {
       CAMERA->reset();
     }
+
+    ImGui::Separator();
 
     ImGui::End();
 
@@ -199,14 +179,8 @@ int main() {
     const glm::mat4 lightSpaceMatrix = lightProjection * lightView;
     makeDepthMap.setUniform("lightSpaceMatrix", lightSpaceMatrix);
 
-    // render to depth map
-    glViewport(0, 0, DEPTH_MAP_WIDTH, DEPTH_MAP_HEIGHT);
-    glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-    glClear(GL_DEPTH_BUFFER_BIT);
-    glCullFace(GL_FRONT);  // prevent peter panning
-    scene.draw(makeDepthMap);
-    glCullFace(GL_BACK);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    // make depth map
+    depthMap.draw(scene, makeDepthMap);
 
     // render scene with shadow mapping
     // set uniforms
@@ -215,7 +189,7 @@ int main() {
     shader.setUniform("lightSpaceMatrix", lightSpaceMatrix);
     shader.setUniform("camPos", CAMERA->camPos);
     // TODO: set texture unit number appropriately
-    shader.setUniformTexture("depthMap", depthMap, 10);
+    shader.setUniformTexture("depthMap", depthMap.texture, 10);
 
     // render
     glViewport(0, 0, WIDTH, HEIGHT);
@@ -240,8 +214,7 @@ int main() {
   }
 
   // exit
-  glDeleteTextures(1, &depthMap);
-  glDeleteFramebuffers(1, &depthMapFBO);
+  depthMap.destroy();
   shader.destroy();
   scene.destroy();
   ImGui_ImplOpenGL3_Shutdown();
