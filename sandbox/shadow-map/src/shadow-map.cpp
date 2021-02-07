@@ -24,6 +24,7 @@ std::unique_ptr<Camera> CAMERA;
 int WIDTH = 1600;
 int HEIGHT = 900;
 int DEPTH_MAP_RES = 1024;
+float SHADOW_BIAS = 0.005f;
 float DEPTH_MAP_NEAR = 100.0f;
 float DEPTH_MAP_FAR = 10000.0f;
 float DEPTH_MAP_SIZE = 2000.0f;
@@ -163,6 +164,7 @@ int main() {
     if (ImGui::InputInt("Depth Map Resolution", &DEPTH_MAP_RES)) {
       depthMap.setResolution(DEPTH_MAP_RES, DEPTH_MAP_RES);
     }
+    ImGui::InputFloat("Shadow Bias", &SHADOW_BIAS);
     ImGui::InputFloat("Depth Map Size", &DEPTH_MAP_SIZE);
     ImGui::InputFloat("Directional Light Distance", &LIGHT_DISTANCE);
     ImGui::InputFloat("Depth Map zNear", &DEPTH_MAP_NEAR);
@@ -198,6 +200,7 @@ int main() {
     shader.setUniform("camPos", CAMERA->camPos);
     // TODO: set texture unit number appropriately
     shader.setUniformTexture("depthMap", depthMap.texture, 10);
+    shader.setUniform("shadowBias", SHADOW_BIAS);
 
     // render
     glViewport(0, 0, WIDTH, HEIGHT);
