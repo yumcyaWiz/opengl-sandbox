@@ -43,6 +43,12 @@ blinn-phong shading example with moving point light.
 
 ![](./img/simple-shading.jpg)
 
+### shadow-mapping
+
+shadow mapping example with moving directional light.
+
+![](./img/shadow-mapping3.jpg)
+
 ## Externals
 
 * [glad](https://github.com/Dav1dde/glad)
