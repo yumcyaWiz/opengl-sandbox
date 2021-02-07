@@ -52,7 +52,7 @@ class DepthMap {
     glDeleteFramebuffers(1, &FBO);
   }
 
-  void resize(int width, int height) {
+  void setResolution(int width, int height) {
     this->width = width;
     this->height = height;
 

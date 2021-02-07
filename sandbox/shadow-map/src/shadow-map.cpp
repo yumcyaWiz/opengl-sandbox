@@ -23,8 +23,11 @@ using namespace ogls;
 std::unique_ptr<Camera> CAMERA;
 int WIDTH = 1600;
 int HEIGHT = 900;
+int DEPTH_MAP_RES = 1024;
 float DEPTH_MAP_NEAR = 100.0f;
 float DEPTH_MAP_FAR = 10000.0f;
+float DEPTH_MAP_SIZE = 2000.0f;
+float LIGHT_DISTANCE = 2000.0f;
 
 void handleInput(GLFWwindow* window, const ImGuiIO& io) {
   // close application
@@ -137,7 +140,7 @@ int main() {
     ImGui::NewFrame();
 
     // imgui
-    ImGui::Begin("viewer");
+    ImGui::Begin("UI");
 
     static char modelPath[100] = {"assets/sponza/sponza.obj"};
     ImGui::InputText("Model", modelPath, 100);
@@ -157,6 +160,13 @@ int main() {
 
     ImGui::Separator();
 
+    if (ImGui::InputInt("Depth Map Resolution", &DEPTH_MAP_RES)) {
+      depthMap.setResolution(DEPTH_MAP_RES, DEPTH_MAP_RES);
+    }
+    ImGui::InputFloat("Depth Map zNear", &DEPTH_MAP_NEAR);
+    ImGui::InputFloat("Depth Map zFar", &DEPTH_MAP_FAR);
+    ImGui::InputFloat("Directional Light Distance", &LIGHT_DISTANCE);
+
     ImGui::End();
 
     handleInput(window, io);
@@ -168,10 +178,11 @@ int main() {
 
     // set view, projection matrix for making depth map
     const glm::mat4 lightView =
-        glm::lookAt(2000.0f * scene.directionalLight.direction, glm::vec3(0.0f),
-                    glm::vec3(0.0f, 1.0f, 0.0f));
-    const glm::mat4 lightProjection = glm::ortho(
-        -2000.0f, 2000.0f, -2000.0f, 2000.0f, DEPTH_MAP_NEAR, DEPTH_MAP_FAR);
+        glm::lookAt(LIGHT_DISTANCE * scene.directionalLight.direction,
+                    glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    const glm::mat4 lightProjection =
+        glm::ortho(-DEPTH_MAP_SIZE, DEPTH_MAP_SIZE, -DEPTH_MAP_SIZE,
+                   DEPTH_MAP_SIZE, DEPTH_MAP_NEAR, DEPTH_MAP_FAR);
     const glm::mat4 lightSpaceMatrix = lightProjection * lightView;
     depthMap.setLightSpaceMatrix(lightSpaceMatrix);
 
