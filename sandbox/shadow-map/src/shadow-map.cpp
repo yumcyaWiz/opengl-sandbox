@@ -117,10 +117,6 @@ int main() {
   Quad quad;
 
   // setup shader
-  Shader makeDepthMap{
-      std::string(CMAKE_CURRENT_SOURCE_DIR) + "/shaders/make-depthmap.vert",
-      std::string(CMAKE_CURRENT_SOURCE_DIR) + "/shaders/make-depthmap.frag"};
-
   Shader showDepthMap{
       std::string(CMAKE_CURRENT_SOURCE_DIR) + "/shaders/show-depthmap.vert",
       std::string(CMAKE_CURRENT_SOURCE_DIR) + "/shaders/show-depthmap.frag"};
@@ -177,10 +173,10 @@ int main() {
     const glm::mat4 lightProjection = glm::ortho(
         -2000.0f, 2000.0f, -2000.0f, 2000.0f, DEPTH_MAP_NEAR, DEPTH_MAP_FAR);
     const glm::mat4 lightSpaceMatrix = lightProjection * lightView;
-    makeDepthMap.setUniform("lightSpaceMatrix", lightSpaceMatrix);
+    depthMap.setLightSpaceMatrix(lightSpaceMatrix);
 
     // make depth map
-    depthMap.draw(scene, makeDepthMap);
+    depthMap.draw(scene);
 
     // render scene with shadow mapping
     // set uniforms

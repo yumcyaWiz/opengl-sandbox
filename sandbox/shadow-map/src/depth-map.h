@@ -1,7 +1,10 @@
 #ifndef _DEPTH_MAP_H
 #define _DEPTH_MAP_H
+#include <string>
 
 #include "glad/glad.h"
+#include "glm/glm.hpp"
+//
 #include "ogls/scene.hpp"
 #include "ogls/shader.hpp"
 
@@ -13,6 +16,9 @@ class DepthMap {
   int height;
   GLuint FBO;
   GLuint texture;
+  Shader shader{
+      std::string(CMAKE_CURRENT_SOURCE_DIR) + "/shaders/make-depthmap.vert",
+      std::string(CMAKE_CURRENT_SOURCE_DIR) + "/shaders/make-depthmap.frag"};
 
   DepthMap(int width, int height) : width(width), height(height) {
     // setup depth map FBO
@@ -41,6 +47,7 @@ class DepthMap {
   }
 
   void destroy() {
+    shader.destroy();
     glDeleteTextures(1, &texture);
     glDeleteFramebuffers(1, &FBO);
   }
@@ -55,7 +62,11 @@ class DepthMap {
     glBindTexture(GL_TEXTURE_2D, 0);
   }
 
-  void draw(const Scene& scene, const Shader& shader) const {
+  void setLightSpaceMatrix(const glm::mat4& lightSpaceMatrix) {
+    shader.setUniform("lightSpaceMatrix", lightSpaceMatrix);
+  }
+
+  void draw(const Scene& scene) const {
     // render to depth map
     glViewport(0, 0, width, height);
     glBindFramebuffer(GL_FRAMEBUFFER, FBO);
