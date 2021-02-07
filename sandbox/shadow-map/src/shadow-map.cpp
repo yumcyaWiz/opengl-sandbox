@@ -163,9 +163,10 @@ int main() {
     if (ImGui::InputInt("Depth Map Resolution", &DEPTH_MAP_RES)) {
       depthMap.setResolution(DEPTH_MAP_RES, DEPTH_MAP_RES);
     }
+    ImGui::InputFloat("Depth Map Size", &DEPTH_MAP_SIZE);
+    ImGui::InputFloat("Directional Light Distance", &LIGHT_DISTANCE);
     ImGui::InputFloat("Depth Map zNear", &DEPTH_MAP_NEAR);
     ImGui::InputFloat("Depth Map zFar", &DEPTH_MAP_FAR);
-    ImGui::InputFloat("Directional Light Distance", &LIGHT_DISTANCE);
 
     ImGui::End();
 
