@@ -10,7 +10,7 @@ out vec4 fragColor;
 
 uniform vec3 camPos;
 uniform sampler2D depthMap;
-uniform float shadowBias;
+uniform float depthBias;
 
 // Blinn-Phong reflection model
 vec3 blinnPhong(in vec3 viewDir, in vec3 normal, in vec3 lightDir, in vec3 kd, in vec3 ks, in float shininess) {
@@ -39,7 +39,7 @@ float testShadow(in vec4 positionLightSpace) {
   float closestDepth = texture(depthMap, projCoords.xy).x;
 
   // shadow bias
-  float bias = max(shadowBias * (1.0 - dot(normal, directionalLight.direction)), 0.001);
+  float bias = max(depthBias * (1.0 - dot(normal, directionalLight.direction)), 0.001);
 
   return currentDepth > closestDepth + bias ? 1.0 : 0.0;
 }
