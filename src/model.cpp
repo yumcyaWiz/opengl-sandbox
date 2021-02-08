@@ -136,6 +136,10 @@ Mesh Model::processMesh(const aiMesh* mesh, const aiScene* scene,
     mat->Get(AI_MATKEY_COLOR_AMBIENT, color);
     material.ka = glm::vec3(color.r, color.g, color.b);
 
+    // ke
+    mat->Get(AI_MATKEY_COLOR_EMISSIVE, color);
+    material.ke = glm::vec3(color.r, color.g, color.b);
+
     // shininess
     mat->Get(AI_MATKEY_SHININESS, material.shininess);
 

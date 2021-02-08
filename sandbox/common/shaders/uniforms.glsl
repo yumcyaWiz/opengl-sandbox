@@ -2,6 +2,7 @@ struct Material {
   vec3 kd;
   vec3 ks;
   vec3 ka;
+  vec3 ke;
   float shininess;
   sampler2D diffuseMap;
   sampler2D specularMap;

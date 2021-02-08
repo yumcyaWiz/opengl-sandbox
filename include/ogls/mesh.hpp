@@ -23,6 +23,7 @@ struct Material {
   glm::vec3 kd;  // diffuse color
   glm::vec3 ks;  // specular color
   glm::vec3 ka;  // ambient color
+  glm::vec3 ke;  // emissive color
   float shininess;
 
   std::optional<unsigned int> diffuseMap;    // index of diffuse map texture
@@ -36,7 +37,7 @@ struct Material {
       displacementMap;                   // index of displacement map texture
   std::optional<unsigned int> lightMap;  // index of light map texture
 
-  Material() : kd{0.0f}, ks{0.0f}, ka{0.0f}, shininess{0.0f} {}
+  Material() : kd{0.0f}, ks{0.0f}, ka{0.0f}, ke{0.0f}, shininess{0.0f} {}
 };
 
 class Mesh {

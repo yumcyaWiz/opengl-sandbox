@@ -106,6 +106,12 @@ void Mesh::draw(const Shader& shader,
     shader.setUniform("material.ka", material.ka);
   }
 
+  if (material.emissiveMap) {
+    shader.setUniform("material.ke", glm::vec3(0));
+  } else {
+    shader.setUniform("material.ke", material.ke);
+  }
+
   shader.setUniform("material.shininess", material.shininess);
 
   // draw mesh
