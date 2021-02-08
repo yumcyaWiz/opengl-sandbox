@@ -36,19 +36,25 @@ make
 
 ### triangle
 
-hello world in OpenGL.
+Hello world in OpenGL.
 
 ![](./img/triangle.jpg)
 
+### model-viewer
+
+Visualize 3d models with various layers such as Position, Normal, TexCoords, Diffuse, ...
+
+![](./img/model-viewer.jpg)
+
 ### simple-shading
 
-blinn-phong shading example with moving point light.
+Blinn-phong shading example with moving point light.
 
 ![](./img/simple-shading.jpg)
 
 ### shadow-mapping
 
-shadow mapping example with moving directional light.
+Shadow mapping example with moving directional light.
 
 ![](./img/shadow-mapping3.jpg)
 
