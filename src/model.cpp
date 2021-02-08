@@ -88,6 +88,10 @@ Mesh Model::processMesh(const aiMesh* mesh, const aiScene* scene,
   std::vector<unsigned int> indices;
   Material material;
 
+  spdlog::info("[Mesh] Processing " + std::string(mesh->mName.C_Str()));
+  spdlog::info("[Mesh] number of vertices " +
+               std::to_string(mesh->mNumVertices));
+
   // vertices
   for (std::size_t i = 0; i < mesh->mNumVertices; ++i) {
     Vertex vertex;
@@ -111,6 +115,8 @@ Mesh Model::processMesh(const aiMesh* mesh, const aiScene* scene,
     vertices.push_back(vertex);
   }
 
+  spdlog::info("[Mesh] number of faces " + std::to_string(mesh->mNumFaces));
+
   // indices
   for (std::size_t i = 0; i < mesh->mNumFaces; ++i) {
     const aiFace& face = mesh->mFaces[i];
@@ -122,6 +128,37 @@ Mesh Model::processMesh(const aiMesh* mesh, const aiScene* scene,
   // materials
   if (scene->mMaterials[mesh->mMaterialIndex]) {
     const aiMaterial* mat = scene->mMaterials[mesh->mMaterialIndex];
+
+    if (mat->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
+      spdlog::info("[Mesh] Diffuse Map Detected");
+    }
+    if (mat->GetTextureCount(aiTextureType_SPECULAR) > 0) {
+      spdlog::info("[Mesh] Specular Map Detected");
+    }
+    if (mat->GetTextureCount(aiTextureType_AMBIENT) > 0) {
+      spdlog::info("[Mesh] Ambient Map Detected");
+    }
+    if (mat->GetTextureCount(aiTextureType_EMISSIVE) > 0) {
+      spdlog::info("[Mesh] Emissive Map Detected");
+    }
+    if (mat->GetTextureCount(aiTextureType_EMISSIVE) > 0) {
+      spdlog::info("[Mesh] Emissive Map Detected");
+    }
+    if (mat->GetTextureCount(aiTextureType_HEIGHT) > 0) {
+      spdlog::info("[Mesh] Height Map Detected");
+    }
+    if (mat->GetTextureCount(aiTextureType_NORMALS) > 0) {
+      spdlog::info("[Mesh] Normal Map Detected");
+    }
+    if (mat->GetTextureCount(aiTextureType_SHININESS) > 0) {
+      spdlog::info("[Mesh] Shininess Map Detected");
+    }
+    if (mat->GetTextureCount(aiTextureType_DISPLACEMENT) > 0) {
+      spdlog::info("[Mesh] Displacement Map Detected");
+    }
+    if (mat->GetTextureCount(aiTextureType_LIGHTMAP) > 0) {
+      spdlog::info("[Mesh] Light Map Detected");
+    }
 
     // kd
     aiColor3D color;
