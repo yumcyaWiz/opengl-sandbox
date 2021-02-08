@@ -7,6 +7,7 @@
 
 #include "Shadinclude.hpp"
 #include "glm/gtc/type_ptr.hpp"
+#include "spdlog/spdlog.h"
 
 namespace ogls {
 
@@ -16,8 +17,8 @@ Shader::Shader(const std::filesystem::path& vertexShaderFilepath,
                const std::filesystem::path& fragmentShaderFilepath)
     : vertexShaderFilepath(vertexShaderFilepath),
       fragmentShaderFilepath(fragmentShaderFilepath) {
-  std::cout << "[Shader] loading " << vertexShaderFilepath << std::endl;
-  std::cout << "[Shader] loading " << fragmentShaderFilepath << std::endl;
+  spdlog::info("[Shader] loading " + vertexShaderFilepath.string());
+  spdlog::info("[Shader] loading " + fragmentShaderFilepath.string());
   compileShader();
   linkShader();
 }
@@ -99,14 +100,14 @@ void Shader::compileShader() {
   GLint success = 0;
   glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
   if (success == GL_FALSE) {
-    std::cerr << "[Shader] failed to compile vertex shader" << std::endl;
+    spdlog::error("[Shader] failed to compile vertex shader");
 
     GLint logSize = 0;
     glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &logSize);
     std::vector<GLchar> errorLog(logSize);
     glGetShaderInfoLog(vertexShader, logSize, &logSize, errorLog.data());
     std::string errorLogStr(errorLog.begin(), errorLog.end());
-    std::cerr << errorLogStr << std::endl;
+    spdlog::error(errorLogStr);
 
     glDeleteShader(vertexShader);
     return;
@@ -123,14 +124,14 @@ void Shader::compileShader() {
   success = 0;
   glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
   if (success == GL_FALSE) {
-    std::cerr << "[Shader] failed to compile fragment shader" << std::endl;
+    spdlog::error("[Shader] failed to compile fragment shader");
 
     GLint logSize = 0;
     glGetShaderiv(fragmentShader, GL_INFO_LOG_LENGTH, &logSize);
     std::vector<GLchar> errorLog(logSize);
     glGetShaderInfoLog(fragmentShader, logSize, &logSize, errorLog.data());
     std::string errorLogStr(errorLog.begin(), errorLog.end());
-    std::cerr << errorLogStr << std::endl;
+    spdlog::error(errorLogStr);
 
     glDeleteShader(fragmentShader);
     return;
@@ -150,14 +151,14 @@ void Shader::linkShader() {
   int success = 0;
   glGetProgramiv(program, GL_LINK_STATUS, &success);
   if (success == GL_FALSE) {
-    std::cerr << "failed to link shaders" << std::endl;
+    spdlog::error("failed to link shaders");
 
     GLint logSize = 0;
     glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logSize);
     std::vector<GLchar> errorLog(logSize);
     glGetProgramInfoLog(program, logSize, &logSize, &errorLog[0]);
     std::string errorLogStr(errorLog.begin(), errorLog.end());
-    std::cerr << errorLogStr << std::endl;
+    spdlog::error(errorLogStr);
 
     glDeleteProgram(program);
     return;

@@ -5,6 +5,7 @@
 
 #include "assimp/Importer.hpp"
 #include "assimp/postprocess.h"
+#include "spdlog/spdlog.h"
 
 namespace ogls {
 
@@ -23,7 +24,7 @@ void Model::loadModel(const std::filesystem::path& filepath) {
 
   if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE ||
       !scene->mRootNode) {
-    std::cerr << "[Assimp] " << importer.GetErrorString() << std::endl;
+    spdlog::error(importer.GetErrorString());
     return;
   }
 
@@ -32,8 +33,8 @@ void Model::loadModel(const std::filesystem::path& filepath) {
   processNode(scene->mRootNode, scene, ps.parent_path());
 
   // show info
-  std::cout << "[Model] " << filepath << " loaded." << std::endl;
-  std::cout << "[Model] number of meshes: " << meshes.size() << std::endl;
+  spdlog::info("[Model] " + filepath.string() + " loaded.");
+  spdlog::info("[Model] number of meshes: " + std::to_string(meshes.size()));
 
   std::size_t nVertices = 0;
   std::size_t nFaces = 0;
@@ -41,9 +42,10 @@ void Model::loadModel(const std::filesystem::path& filepath) {
     nVertices += meshes[i].vertices.size();
     nFaces += meshes[i].indices.size() / 3;
   }
-  std::cout << "[Model] number of vertices: " << nVertices << std::endl;
-  std::cout << "[Model] number of faces: " << nFaces << std::endl;
-  std::cout << "[Model] number of textures: " << textures.size() << std::endl;
+  spdlog::info("[Model] number of vertices: " + std::to_string(nVertices));
+  spdlog::info("[Model] number of faces: " + std::to_string(nFaces));
+  spdlog::info("[Model] number of textures: " +
+               std::to_string(textures.size()));
 }
 
 void Model::draw(const Shader& shader) const {

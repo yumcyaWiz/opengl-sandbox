@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+#include "spdlog/spdlog.h"
 // NOTE: stb_image is included in assimp
 // #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -29,9 +30,33 @@ Texture::Texture(const std::filesystem::path& filepath,
 
 void Texture::destroy() { glDeleteTextures(1, &id); }
 
+std::string Texture::typeName() const {
+  switch (textureType) {
+    case TextureType::Diffuse:
+      return "Diffuse";
+    case TextureType::Specular:
+      return "Specular";
+    case TextureType::Ambient:
+      return "Ambient";
+    case TextureType::Emissive:
+      return "Emissive";
+    case TextureType::Height:
+      return "Height";
+    case TextureType::Normal:
+      return "Normal";
+    case TextureType::Shininess:
+      return "Shininess";
+    case TextureType::Displacement:
+      return "Displacement";
+    case TextureType::Light:
+      return "Light";
+  }
+  return "";
+}
+
 void Texture::loadImage(const std::filesystem::path& filepath) const {
-  std::cout << "[Texture] loading " << filepath << std::endl;
-  std::cout << "[Texture] texture type:  " << textureType << std::endl;
+  spdlog::info("[Texture] loading " + filepath.string());
+  spdlog::info("[Texture] texture type: " + typeName());
 
   // load image with stb_image
   int width, height, channels;
@@ -39,7 +64,7 @@ void Texture::loadImage(const std::filesystem::path& filepath) const {
                                    &height, &channels, 3);
 
   if (!image) {
-    std::cerr << "failed to open " << filepath << std::endl;
+    spdlog::error("failed to open " + filepath.string());
     return;
   }
 

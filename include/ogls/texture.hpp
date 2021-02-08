@@ -2,6 +2,7 @@
 #define _OGLS_TEXTURE_H
 #include <filesystem>
 #include <iostream>
+#include <string>
 
 #include "glad/glad.h"
 
@@ -19,40 +20,6 @@ enum class TextureType {
   Light,
 };
 
-inline std::ostream& operator<<(std::ostream& stream, const TextureType& type) {
-  switch (type) {
-    case TextureType::Diffuse:
-      stream << "Diffuse";
-      break;
-    case TextureType::Specular:
-      stream << "Specular";
-      break;
-    case TextureType::Ambient:
-      stream << "Ambient";
-      break;
-    case TextureType::Emissive:
-      stream << "Emissive";
-      break;
-    case TextureType::Height:
-      stream << "Height";
-      break;
-    case TextureType::Normal:
-      stream << "Normal";
-      break;
-    case TextureType::Shininess:
-      stream << "Normal";
-      break;
-    case TextureType::Displacement:
-      stream << "Displacement";
-      break;
-    case TextureType::Light:
-      stream << "Light";
-      break;
-  }
-
-  return stream;
-}
-
 class Texture {
  public:
   std::filesystem::path filepath;
@@ -65,6 +32,9 @@ class Texture {
 
   // destroy texture object
   void destroy();
+
+  // return texture type string
+  std::string typeName() const;
 
   void loadImage(const std::filesystem::path& filepath) const;
 };
