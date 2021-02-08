@@ -52,11 +52,11 @@ void Mesh::draw(const Shader& shader,
   // set texture uniform
   if (material.diffuseMap) {
     shader.setUniformTexture("material.diffuseMap",
-                             textures[material.diffuseMap.value()].id, 0);
+                             textures[material.diffuseMap.value()].id, 1);
   }
   if (material.specularMap) {
     shader.setUniformTexture("material.specularMap",
-                             textures[material.specularMap.value()].id, 1);
+                             textures[material.specularMap.value()].id, 2);
   }
 
   // set material
