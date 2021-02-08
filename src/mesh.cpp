@@ -64,7 +64,7 @@ void Mesh::draw(const Shader& shader,
   }
   if (material.emissiveMap) {
     shader.setUniformTexture("material.emissiveMap",
-                             textures[material.ambientMap.value()].id, 4);
+                             textures[material.emissiveMap.value()].id, 4);
   }
   if (material.heightMap) {
     shader.setUniformTexture("material.heightMap",
