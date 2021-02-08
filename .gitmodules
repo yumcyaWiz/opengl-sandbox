@@ -16,3 +16,6 @@
 [submodule "externals/assimp"]
 	path = externals/assimp
 	url = git@github.com:assimp/assimp.git
+[submodule "externals/spdlog"]
+	path = externals/spdlog
+	url = git@github.com:gabime/spdlog.git
