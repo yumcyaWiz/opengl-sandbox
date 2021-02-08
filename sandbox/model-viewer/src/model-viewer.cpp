@@ -15,10 +15,19 @@
 
 using namespace ogls;
 
+enum class LayerType {
+  Position,
+  Normal,
+  TexCoords,
+  Diffuse,
+  Specular,
+};
+
 // globals
 std::unique_ptr<Camera> camera;
 int width = 1600;
 int height = 900;
+LayerType layerType = LayerType::Normal;
 
 void handleInput(GLFWwindow* window, const ImGuiIO& io) {
   // close application
@@ -120,13 +129,15 @@ int main() {
     ImGui::NewFrame();
 
     // imgui
-    ImGui::Begin("viewer");
+    ImGui::Begin("UI");
 
     static char modelPath[100] = {"assets/sponza/sponza.obj"};
     ImGui::InputText("Model", modelPath, 100);
     if (ImGui::Button("Load Model")) {
       scene.setModel({std::string(CMAKE_SOURCE_DIR) + "/" + modelPath});
     }
+
+    ImGui::Separator();
 
     ImGui::InputFloat("FOV", &camera->fov);
     ImGui::InputFloat("Movement Speed", &camera->movementSpeed);
@@ -136,6 +147,11 @@ int main() {
       camera->reset();
     }
 
+    ImGui::Separator();
+
+    ImGui::Combo("Layer Type", reinterpret_cast<int*>(&layerType),
+                 "Position\0Normal\0TexCoords\0Diffuse\0Specular\0\0");
+
     ImGui::End();
 
     handleInput(window, io);
@@ -144,6 +160,7 @@ int main() {
     shader.setUniform("view", camera->computeViewMatrix());
     shader.setUniform("projection",
                       camera->computeProjectionMatrix(width, height));
+    shader.setUniform("layerType", static_cast<GLint>(layerType));
 
     // render
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
