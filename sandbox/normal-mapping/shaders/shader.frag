@@ -26,7 +26,7 @@ void main() {
   // compute normal
   vec3 n = normal;
   if(useNormalMap) {
-    n = TBN * texture(material.normalMap, texCoords).xyz;
+    n = normalize(TBN * (2.0 * texture(material.normalMap, texCoords).xyz - 1.0));
   }
 
   // view direction
