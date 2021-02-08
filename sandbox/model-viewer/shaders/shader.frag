@@ -27,6 +27,27 @@ void main() {
   else if(layerType == 4) {
     color = texture(material.specularMap, texCoords).xyz + material.ks;
   }
+  else if(layerType == 5) {
+    color = texture(material.ambientMap, texCoords).xyz + material.ka;
+  }
+  else if(layerType == 6) {
+    color = texture(material.emissivemap, texCoords).xyz;
+  }
+  else if(layerType == 7) {
+    color = texture(material.heightMap, texCoords).xyz;
+  }
+  else if(layerType == 8) {
+    color = texture(material.normalMap, texCoords).xyz;
+  }
+  else if(layerType == 9) {
+    color = texture(material.shininessMap, texCoords).xyz;
+  }
+  else if(layerType == 10) {
+    color = texture(material.displacementMap, texCoords).xyz;
+  }
+  else if(layerType == 11) {
+    color = texture(material.lightMap, texCoords).xyz;
+  }
 
   // gamma correction
   color = pow(color, vec3(1.0 / 2.2));
