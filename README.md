@@ -12,9 +12,8 @@ experiment environment for realtime graphics methods in OpenGL.
 
 ## Features
 
-* Diffuse Map
-* Specular Map
 * Blinn-Phong Shading
+* Normal Mapping
 * Shadow Mapping
 
 ## Setup
@@ -48,9 +47,15 @@ Visualize 3d models with various layers such as Position, Normal, TexCoords, Dif
 
 ### simple-shading
 
-Blinn-phong shading example with moving point light.
+Blinn-Phong shading example with moving point light.
 
 ![](./img/simple-shading.jpg)
+
+### normal-mapping
+
+Normal mapping example with Blinn-Phong shading.
+
+![](./img/normal-mapping-compare.jpg)
 
 ### shadow-mapping
 
@@ -67,3 +72,8 @@ Shadow mapping example with moving directional light.
 * [imgui](https://github.com/ocornut/imgui)
 * [stb](https://github.com/nothings/stb)
 * [GLSL Shader Includes](https://github.com/tntmeijs/GLSL-Shader-Includes)
+
+## References
+
+* [Learn OpenGL](https://learnopengl.com/)
+* [Project ASURA](http://www.project-asura.com/)
