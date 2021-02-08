@@ -28,7 +28,7 @@ glm::mat4 Camera::computeViewProjectionMatrix(int width, int height) const {
   return computeProjectionMatrix(width, height) * computeViewMatrix();
 }
 
-void Camera::reset() { Camera(); }
+void Camera::reset() { *this = Camera(); }
 
 void Camera::move(const CameraMovement& direction, float ds) {
   const float velocity = movementSpeed * ds;
