@@ -8,10 +8,14 @@ struct Material {
   sampler2D specularMap;
   sampler2D ambientMap;
   sampler2D emissiveMap;
+  bool hasHeightMap;
   sampler2D heightMap;
+  bool hasNormalMap;
   sampler2D normalMap;
   sampler2D shininessMap;
+  bool hasDisplacementMap;
   sampler2D displacementMap;
+  bool hasLightMap;
   sampler2D lightMap;
 };
 
