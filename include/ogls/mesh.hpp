@@ -38,7 +38,7 @@ struct Material {
       displacementMap;                   // index of displacement map texture
   std::optional<unsigned int> lightMap;  // index of light map texture
 
-  Material() : kd{0.0f}, ks{0.0f}, ka{0.0f}, ke{0.0f}, shininess{0.0f} {}
+  Material() : kd{0.0f}, ks{0.0f}, ka{0.0f}, ke{0.0f}, shininess{8.0f} {}
 };
 
 class Mesh {
