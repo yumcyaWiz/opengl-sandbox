@@ -1,10 +1,10 @@
 #include "ogls/model.hpp"
 
-#include <assimp/postprocess.h>
-
-#include <assimp/Importer.hpp>
 #include <filesystem>
 #include <iostream>
+
+#include "assimp/Importer.hpp"
+#include "assimp/postprocess.h"
 
 namespace ogls {
 
