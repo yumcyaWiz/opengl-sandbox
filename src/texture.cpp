@@ -31,6 +31,7 @@ void Texture::destroy() { glDeleteTextures(1, &id); }
 
 void Texture::loadImage(const std::filesystem::path& filepath) const {
   std::cout << "[Texture] loading " << filepath << std::endl;
+  std::cout << "[Texture] texture type:  " << textureType << std::endl;
 
   // load image with stb_image
   int width, height, channels;
