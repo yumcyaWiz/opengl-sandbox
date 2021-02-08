@@ -15,8 +15,9 @@ struct Vertex {
   glm::vec3 position;   // vertex position
   glm::vec3 normal;     // vertex normal
   glm::vec2 texcoords;  // texture coordinates
+  glm::vec3 tangent;    // tangent vector
 
-  Vertex() : position{0.0f}, normal{0.0f}, texcoords{0.0f} {}
+  Vertex() : position{0.0f}, normal{0.0f}, texcoords{0.0f}, tangent{0.0f} {}
 };
 
 struct Material {

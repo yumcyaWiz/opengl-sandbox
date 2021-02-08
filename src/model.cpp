@@ -18,9 +18,10 @@ Model::operator bool() const { return meshes.size() > 0; }
 void Model::loadModel(const std::filesystem::path& filepath) {
   // load model with assimp
   Assimp::Importer importer;
-  const aiScene* scene = importer.ReadFile(
-      filepath.generic_string().c_str(),
-      aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenNormals);
+  const aiScene* scene =
+      importer.ReadFile(filepath.generic_string().c_str(),
+                        aiProcess_Triangulate | aiProcess_FlipUVs |
+                            aiProcess_GenNormals | aiProcess_CalcTangentSpace);
 
   if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE ||
       !scene->mRootNode) {
@@ -95,9 +96,11 @@ Mesh Model::processMesh(const aiMesh* mesh, const aiScene* scene,
   // vertices
   for (std::size_t i = 0; i < mesh->mNumVertices; ++i) {
     Vertex vertex;
+    // position
     vertex.position = glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y,
                                 mesh->mVertices[i].z);
 
+    // normal
     if (mesh->mNormals) {
       vertex.normal = glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y,
                                 mesh->mNormals[i].z);
@@ -105,11 +108,18 @@ Mesh Model::processMesh(const aiMesh* mesh, const aiScene* scene,
       vertex.normal = glm::vec3(0.0f, 0.0f, 0.0f);
     }
 
+    // texcoords
     if (mesh->mTextureCoords[0]) {
       vertex.texcoords =
           glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
     } else {
       vertex.texcoords = glm::vec2(0.0f, 0.0f);
+    }
+
+    // tangent
+    if (mesh->mTangents) {
+      vertex.tangent = glm::vec3(mesh->mTangents[i].x, mesh->mTangents[i].y,
+                                 mesh->mTangents[i].z);
     }
 
     vertices.push_back(vertex);
