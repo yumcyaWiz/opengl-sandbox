@@ -139,11 +139,34 @@ Mesh Model::processMesh(const aiMesh* mesh, const aiScene* scene,
     // shininess
     mat->Get(AI_MATKEY_SHININESS, material.shininess);
 
-    // diffuse textures
+    // diffuse map
     material.diffuseMap = loadTexture(mat, TextureType::Diffuse, parentPath);
 
-    // specular textures
+    // specular map
     material.specularMap = loadTexture(mat, TextureType::Specular, parentPath);
+
+    // ambient map
+    material.ambientMap = loadTexture(mat, TextureType::Ambient, parentPath);
+
+    // emissive map
+    material.emissiveMap = loadTexture(mat, TextureType::Emissive, parentPath);
+
+    // height map
+    material.heightMap = loadTexture(mat, TextureType::Height, parentPath);
+
+    // normal map
+    material.normalMap = loadTexture(mat, TextureType::Normal, parentPath);
+
+    // shininess map
+    material.shininessMap =
+        loadTexture(mat, TextureType::Shininess, parentPath);
+
+    // displacement map
+    material.displacementMap =
+        loadTexture(mat, TextureType::Displacement, parentPath);
+
+    // light map
+    material.lightMap = loadTexture(mat, TextureType::Light, parentPath);
   }
 
   return Mesh(vertices, indices, material);
@@ -160,8 +183,30 @@ std::optional<std::size_t> Model::loadTexture(
     case TextureType::Specular:
       aiTexType = aiTextureType_SPECULAR;
       break;
+    case TextureType::Ambient:
+      aiTexType = aiTextureType_AMBIENT;
+      break;
+    case TextureType::Emissive:
+      aiTexType = aiTextureType_EMISSIVE;
+      break;
+    case TextureType::Height:
+      aiTexType = aiTextureType_HEIGHT;
+      break;
+    case TextureType::Normal:
+      aiTexType = aiTextureType_NORMALS;
+      break;
+    case TextureType::Shininess:
+      aiTexType = aiTextureType_SHININESS;
+      break;
+    case TextureType::Displacement:
+      aiTexType = aiTextureType_DISPLACEMENT;
+      break;
+    case TextureType::Light:
+      aiTexType = aiTextureType_LIGHTMAP;
+      break;
   }
 
+  // if there is no texture
   if (material->GetTextureCount(aiTexType) == 0) {
     return std::nullopt;
   }
@@ -174,7 +219,7 @@ std::optional<std::size_t> Model::loadTexture(
   // load texture if we don't have it
   const auto index = hasTexture(texturePath);
   if (!index) {
-    textures.emplace_back(texturePath, TextureType::Diffuse);
+    textures.emplace_back(texturePath, type);
     return textures.size() - 1;
   } else {
     return index.value();

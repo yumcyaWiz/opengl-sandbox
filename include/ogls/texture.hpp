@@ -9,6 +9,13 @@ namespace ogls {
 enum class TextureType {
   Diffuse,
   Specular,
+  Ambient,
+  Emissive,
+  Height,
+  Normal,
+  Shininess,
+  Displacement,
+  Light,
 };
 
 class Texture {
