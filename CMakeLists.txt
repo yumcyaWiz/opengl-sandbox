@@ -35,6 +35,7 @@ target_link_libraries(ogls PUBLIC glm)
 target_link_libraries(ogls PUBLIC assimp::assimp)
 target_link_libraries(ogls PUBLIC stb)
 target_link_libraries(ogls PUBLIC glsl-shader-includes)
+target_link_libraries(ogls PUBLIC spdlog::spdlog)
 
 # sandbox
 add_subdirectory(sandbox)
