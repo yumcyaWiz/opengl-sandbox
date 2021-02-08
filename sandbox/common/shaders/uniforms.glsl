@@ -5,6 +5,13 @@ struct Material {
   float shininess;
   sampler2D diffuseMap;
   sampler2D specularMap;
+  sampler2D ambientMap;
+  sampler2D emissivemap;
+  sampler2D heightMap;
+  sampler2D normalMap;
+  sampler2D shininessMap;
+  sampler2D displacementMap;
+  sampler2D lightMap;
 };
 
 struct PointLight {

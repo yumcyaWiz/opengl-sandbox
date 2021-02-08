@@ -21,6 +21,13 @@ enum class LayerType {
   TexCoords,
   Diffuse,
   Specular,
+  Ambient,
+  Emissive,
+  Height,
+  NormalMap,
+  Shininess,
+  Displacement,
+  Light,
 };
 
 // globals
@@ -150,7 +157,8 @@ int main() {
     ImGui::Separator();
 
     ImGui::Combo("Layer Type", reinterpret_cast<int*>(&layerType),
-                 "Position\0Normal\0TexCoords\0Diffuse\0Specular\0\0");
+                 "Position\0Normal\0TexCoords\0Diffuse\0Specular\0Ambient\0Emis"
+                 "sive\0Height\0NormalMap\0Shininess\0Displacement\0Light\0\0");
 
     ImGui::End();
 
