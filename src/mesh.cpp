@@ -78,17 +78,17 @@ void Mesh::draw(const Shader& shader,
   if (material.heightMap) {
     shader.setUniformTexture("material.heightMap",
                              textures[material.heightMap.value()].id, 5);
-    shader.setUniform("hasHeightMap", true);
+    shader.setUniform("material.hasHeightMap", true);
   } else {
-    shader.setUniform("hasHeightMap", false);
+    shader.setUniform("material.hasHeightMap", false);
   }
 
   if (material.normalMap) {
     shader.setUniformTexture("material.normalMap",
                              textures[material.normalMap.value()].id, 6);
-    shader.setUniform("hasNormalMap", true);
+    shader.setUniform("material.hasNormalMap", true);
   } else {
-    shader.setUniform("hasNormalMap", false);
+    shader.setUniform("material.hasNormalMap", false);
   }
 
   if (material.shininessMap) {
@@ -99,17 +99,17 @@ void Mesh::draw(const Shader& shader,
   if (material.displacementMap) {
     shader.setUniformTexture("material.displacementMap",
                              textures[material.displacementMap.value()].id, 8);
-    shader.setUniform("hasDisplacementMap", true);
+    shader.setUniform("material.hasDisplacementMap", true);
   } else {
-    shader.setUniform("hasDisplacementMap", false);
+    shader.setUniform("material.hasDisplacementMap", false);
   }
 
   if (material.lightMap) {
     shader.setUniformTexture("material.lightMap",
                              textures[material.lightMap.value()].id, 9);
-    shader.setUniform("hasLightMap", true);
+    shader.setUniform("material.hasLightMap", true);
   } else {
-    shader.setUniform("hasLightMap", false);
+    shader.setUniform("material.hasLightMap", false);
   }
 
   // set material
@@ -152,14 +152,14 @@ void Mesh::draw(const Shader& shader,
   shader.setUniformTexture("material.ambientMap", 0, 0);
   shader.setUniformTexture("material.emissiveMap", 0, 0);
   shader.setUniformTexture("material.heightMap", 0, 0);
-  shader.setUniform("hasHeightMap", false);
+  shader.setUniform("material.hasHeightMap", false);
   shader.setUniformTexture("material.normalMap", 0, 0);
-  shader.setUniform("hasNormalMap", false);
+  shader.setUniform("material.hasNormalMap", false);
   shader.setUniformTexture("material.shininessMap", 0, 0);
   shader.setUniformTexture("material.displacementMap", 0, 0);
-  shader.setUniform("hasDisplacementMap", false);
+  shader.setUniform("material.hasDisplacementMap", false);
   shader.setUniformTexture("material.lightMap", 0, 0);
-  shader.setUniform("hasLightMap", false);
+  shader.setUniform("material.hasLightMap", false);
 }
 
 }  // namespace ogls
