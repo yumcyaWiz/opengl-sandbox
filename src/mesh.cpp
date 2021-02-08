@@ -118,6 +118,13 @@ void Mesh::draw(const Shader& shader,
   // reset texture uniform
   shader.setUniformTexture("material.diffuseMap", 0, 0);
   shader.setUniformTexture("material.specularMap", 0, 0);
+  shader.setUniformTexture("material.ambientMap", 0, 0);
+  shader.setUniformTexture("material.emissiveMap", 0, 0);
+  shader.setUniformTexture("material.heightMap", 0, 0);
+  shader.setUniformTexture("material.normalMap", 0, 0);
+  shader.setUniformTexture("material.shininessMap", 0, 0);
+  shader.setUniformTexture("material.displacementMap", 0, 0);
+  shader.setUniformTexture("material.lightMap", 0, 0);
 }
 
 }  // namespace ogls
