@@ -6,7 +6,7 @@ struct Material {
   sampler2D diffuseMap;
   sampler2D specularMap;
   sampler2D ambientMap;
-  sampler2D emissivemap;
+  sampler2D emissiveMap;
   sampler2D heightMap;
   sampler2D normalMap;
   sampler2D shininessMap;

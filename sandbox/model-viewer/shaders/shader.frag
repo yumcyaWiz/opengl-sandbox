@@ -31,7 +31,7 @@ void main() {
     color = texture(material.ambientMap, texCoords).xyz + material.ka;
   }
   else if(layerType == 6) {
-    color = texture(material.emissivemap, texCoords).xyz;
+    color = texture(material.emissiveMap, texCoords).xyz;
   }
   else if(layerType == 7) {
     color = texture(material.heightMap, texCoords).xyz;
