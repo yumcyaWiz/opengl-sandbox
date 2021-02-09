@@ -45,6 +45,14 @@ Visualize 3d models with various layers such as Position, Normal, TexCoords, Dif
 
 ![](./img/model-viewer.jpg)
 
+### tangent-space
+
+Visualize basis of tangent space at each vertex.
+
+There is a bug in depth test now.
+
+![](./img/tangent-space-bug.jpg)
+
 ### simple-shading
 
 Blinn-Phong shading example with moving point light.
