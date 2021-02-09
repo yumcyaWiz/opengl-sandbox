@@ -23,15 +23,21 @@ void main() {
   }
   else if(layerType == 3) {
     color = texture(material.diffuseMap, texCoords).xyz + material.kd;
+    // gamma correction
+    color = pow(color, vec3(1.0 / 2.2));
   }
   else if(layerType == 4) {
     color = texture(material.specularMap, texCoords).xyz + material.ks;
   }
   else if(layerType == 5) {
     color = texture(material.ambientMap, texCoords).xyz + material.ka;
+    // gamma correction
+    color = pow(color, vec3(1.0 / 2.2));
   }
   else if(layerType == 6) {
     color = texture(material.emissiveMap, texCoords).xyz + material.ke;
+    // gamma correction
+    color = pow(color, vec3(1.0 / 2.2));
   }
   else if(layerType == 7) {
     color = texture(material.heightMap, texCoords).xyz;
@@ -48,9 +54,6 @@ void main() {
   else if(layerType == 11) {
     color = texture(material.lightMap, texCoords).xyz;
   }
-
-  // gamma correction
-  color = pow(color, vec3(1.0 / 2.2));
 
   fragColor = vec4(color, 1.0);
 }
