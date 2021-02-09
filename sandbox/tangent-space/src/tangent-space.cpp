@@ -69,7 +69,7 @@ int main() {
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);  // required for Mac
   glfwWindowHint(GLFW_SAMPLES, 4);                      // 4x MSAA
   GLFWwindow* window =
-      glfwCreateWindow(WIDTH, HEIGHT, "model-viewer", nullptr, nullptr);
+      glfwCreateWindow(WIDTH, HEIGHT, "tangent-space", nullptr, nullptr);
   if (!window) {
     std::cerr << "failed to create window" << std::endl;
     return EXIT_FAILURE;
