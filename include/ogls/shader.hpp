@@ -2,6 +2,7 @@
 #define _OGLS_SHADER_H
 
 #include <filesystem>
+#include <optional>
 #include <string>
 #include <variant>
 
@@ -12,23 +13,30 @@ namespace ogls {
 
 class Shader {
  private:
-  const std::filesystem::path vertexShaderFilepath;
+  std::filesystem::path vertexShaderFilepath;
   std::string vertexShaderSource;
-  const std::filesystem::path fragmentShaderFilepath;
+
+  std::optional<std::filesystem::path> geometryShaderFilepath;
+  std::optional<std::string> geometryShaderSource;
+
+  std::filesystem::path fragmentShaderFilepath;
   std::string fragmentShaderSource;
+
   GLuint vertexShader;
+  std::optional<GLuint> geometryShader;
   GLuint fragmentShader;
   GLuint program;
 
-  void compileShader();
-  void linkShader();
+  void checkShaderCompilation(GLuint shader);
 
  public:
   Shader();
 
-  // load vertex shader and fragment shader from given filepath
-  Shader(const std::filesystem::path& vertexShaderFilepath,
-         const std::filesystem::path& fragmentShaderFilepath);
+  void setVertexShader(const std::filesystem::path& vertexShaderFilepath);
+  void setGeometryShader(const std::filesystem::path& geometryShaderFilepath);
+  void setFragmentShader(const std::filesystem::path& fragmentShaderFilepath);
+
+  void linkShader();
 
   // destroy shader object
   void destroy();

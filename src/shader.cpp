@@ -11,22 +11,113 @@
 
 namespace ogls {
 
-Shader::Shader() {}
+Shader::Shader() : vertexShader{0}, fragmentShader{0}, program{0} {}
 
-Shader::Shader(const std::filesystem::path& vertexShaderFilepath,
-               const std::filesystem::path& fragmentShaderFilepath)
-    : vertexShaderFilepath(vertexShaderFilepath),
-      fragmentShaderFilepath(fragmentShaderFilepath) {
-  spdlog::info("[Shader] loading " + vertexShaderFilepath.string());
-  spdlog::info("[Shader] loading " + fragmentShaderFilepath.string());
-  compileShader();
-  linkShader();
+void Shader::checkShaderCompilation(GLuint shader) {
+  int success = 0;
+  glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+  if (success == GL_FALSE) {
+    spdlog::error("[Shader] failed to compile shader");
+
+    GLint logSize = 0;
+    glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &logSize);
+    std::vector<GLchar> errorLog(logSize);
+    glGetShaderInfoLog(shader, logSize, &logSize, errorLog.data());
+    std::string errorLogStr(errorLog.begin(), errorLog.end());
+    spdlog::error(errorLogStr);
+  }
+}
+
+void Shader::setVertexShader(
+    const std::filesystem::path& vertexShaderFilepath) {
+  this->vertexShaderFilepath = vertexShaderFilepath;
+
+  // delete previous shader
+  if (vertexShader) {
+    glDeleteShader(vertexShader);
+  }
+
+  spdlog::info("[Shader] loading vertex shader from " +
+               vertexShaderFilepath.string());
+
+  // compile vertex shader
+  vertexShader = glCreateShader(GL_VERTEX_SHADER);
+  vertexShaderSource = Shadinclude::load(vertexShaderFilepath.string());
+  if (vertexShaderSource.size() == 0) {
+    spdlog::error("failed to open " + vertexShaderFilepath.string());
+  }
+  const char* vertexShaderSourceC = vertexShaderSource.c_str();
+  glShaderSource(vertexShader, 1, &vertexShaderSourceC, nullptr);
+  glCompileShader(vertexShader);
+
+  checkShaderCompilation(vertexShader);
+}
+
+void Shader::setGeometryShader(
+    const std::filesystem::path& geometryShaderFilepath) {
+  this->geometryShaderFilepath = geometryShaderFilepath;
+
+  // delete previous shader
+  if (geometryShader) {
+    glDeleteShader(geometryShader.value());
+  }
+
+  spdlog::info("[Shader] loading geometry shader from " +
+               geometryShaderFilepath.string());
+
+  geometryShader = glCreateShader(GL_GEOMETRY_SHADER);
+  geometryShaderSource = Shadinclude::load(geometryShaderFilepath.string());
+  if (geometryShaderSource.value().size() == 0) {
+    spdlog::error("failed to open " + geometryShaderFilepath.string());
+  }
+  const char* geometryShaderSourceC = geometryShaderSource.value().c_str();
+  glShaderSource(geometryShader.value(), 1, &geometryShaderSourceC, nullptr);
+  glCompileShader(geometryShader.value());
+
+  checkShaderCompilation(geometryShader.value());
+}
+
+void Shader::setFragmentShader(
+    const std::filesystem::path& fragmentShaderFilepath) {
+  this->fragmentShaderFilepath = fragmentShaderFilepath;
+
+  // delete previous shader
+  if (fragmentShader) {
+    glDeleteShader(fragmentShader);
+  }
+
+  spdlog::info("[Shader] loading fragment shader from " +
+               fragmentShaderFilepath.string());
+
+  // compile fragment shader
+  fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+  fragmentShaderSource = Shadinclude::load(fragmentShaderFilepath.string());
+  if (fragmentShaderSource.size() == 0) {
+    spdlog::error("failed to open " + fragmentShaderFilepath.string());
+  }
+  const char* fragmentShaderSourceC = fragmentShaderSource.c_str();
+  glShaderSource(fragmentShader, 1, &fragmentShaderSourceC, nullptr);
+  glCompileShader(fragmentShader);
+
+  checkShaderCompilation(fragmentShader);
 }
 
 void Shader::destroy() {
-  glDeleteShader(vertexShader);
-  glDeleteShader(fragmentShader);
-  glDeleteProgram(program);
+  if (vertexShader) {
+    glDeleteShader(vertexShader);
+  }
+
+  if (geometryShader) {
+    glDeleteShader(geometryShader.value());
+  }
+
+  if (fragmentShader) {
+    glDeleteShader(fragmentShader);
+  }
+
+  if (program) {
+    glDeleteProgram(program);
+  }
 }
 
 void Shader::activate() const { glUseProgram(program); }
@@ -88,63 +179,21 @@ void Shader::setUniformTexture(const std::string& uniformName, GLuint texture,
   deactivate();
 }
 
-void Shader::compileShader() {
-  // compile vertex shader
-  vertexShader = glCreateShader(GL_VERTEX_SHADER);
-  vertexShaderSource = Shadinclude::load(vertexShaderFilepath.string());
-  const char* vertexShaderSourceC = vertexShaderSource.c_str();
-  glShaderSource(vertexShader, 1, &vertexShaderSourceC, nullptr);
-  glCompileShader(vertexShader);
-
-  // handle compilation error
-  GLint success = 0;
-  glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-  if (success == GL_FALSE) {
-    spdlog::error("[Shader] failed to compile vertex shader");
-
-    GLint logSize = 0;
-    glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &logSize);
-    std::vector<GLchar> errorLog(logSize);
-    glGetShaderInfoLog(vertexShader, logSize, &logSize, errorLog.data());
-    std::string errorLogStr(errorLog.begin(), errorLog.end());
-    spdlog::error(errorLogStr);
-
-    glDeleteShader(vertexShader);
-    return;
-  }
-
-  // compile fragment shader
-  fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-  fragmentShaderSource = Shadinclude::load(fragmentShaderFilepath.string());
-  const char* fragmentShaderSourceC = fragmentShaderSource.c_str();
-  glShaderSource(fragmentShader, 1, &fragmentShaderSourceC, nullptr);
-  glCompileShader(fragmentShader);
-
-  // handle compilation error
-  success = 0;
-  glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-  if (success == GL_FALSE) {
-    spdlog::error("[Shader] failed to compile fragment shader");
-
-    GLint logSize = 0;
-    glGetShaderiv(fragmentShader, GL_INFO_LOG_LENGTH, &logSize);
-    std::vector<GLchar> errorLog(logSize);
-    glGetShaderInfoLog(fragmentShader, logSize, &logSize, errorLog.data());
-    std::string errorLogStr(errorLog.begin(), errorLog.end());
-    spdlog::error(errorLogStr);
-
-    glDeleteShader(fragmentShader);
-    return;
-  }
-}
-
 void Shader::linkShader() {
   // link shader program
   program = glCreateProgram();
   glAttachShader(program, vertexShader);
+  if (geometryShader) {
+    glAttachShader(program, geometryShader.value());
+  }
   glAttachShader(program, fragmentShader);
+
   glLinkProgram(program);
+
   glDetachShader(program, vertexShader);
+  if (geometryShader) {
+    glDetachShader(program, geometryShader.value());
+  }
   glDetachShader(program, fragmentShader);
 
   // handle link error
@@ -161,7 +210,6 @@ void Shader::linkShader() {
     spdlog::error(errorLogStr);
 
     glDeleteProgram(program);
-    return;
   }
 }
 
