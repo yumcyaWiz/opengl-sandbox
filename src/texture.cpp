@@ -70,7 +70,9 @@ void Texture::loadImage(const std::filesystem::path& filepath) const {
 
   // send image to texture
   glBindTexture(GL_TEXTURE_2D, id);
-  if (textureType == TextureType::Diffuse) {
+  if (textureType == TextureType::Diffuse ||
+      textureType == TextureType::Ambient ||
+      textureType == TextureType::Emissive) {
     // read image as sRGB when texture type is diffuse map
     glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB, width, height, 0, GL_RGB,
                  GL_UNSIGNED_BYTE, image);
