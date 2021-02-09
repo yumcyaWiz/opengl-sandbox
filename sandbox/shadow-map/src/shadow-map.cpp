@@ -1,3 +1,4 @@
+#include <filesystem>
 #include <iostream>
 #include <memory>
 
@@ -121,12 +122,20 @@ int main() {
   Quad quad;
 
   // setup shader
-  Shader showDepthMap{
-      std::string(CMAKE_CURRENT_SOURCE_DIR) + "/shaders/show-depthmap.vert",
-      std::string(CMAKE_CURRENT_SOURCE_DIR) + "/shaders/show-depthmap.frag"};
+  Shader showDepthMap;
+  showDepthMap.setVertexShader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+                               "shaders/show-depthmap.vert");
+  showDepthMap.setFragmentShader(
+      std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+      "shaders/show-depthmap.frag");
+  showDepthMap.linkShader();
 
-  Shader shader{std::string(CMAKE_CURRENT_SOURCE_DIR) + "/shaders/shader.vert",
-                std::string(CMAKE_CURRENT_SOURCE_DIR) + "/shaders/shader.frag"};
+  Shader shader;
+  shader.setVertexShader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+                         "shaders/shader.vert");
+  shader.setFragmentShader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+                           "shaders/shader.frag");
+  shader.linkShader();
 
   DepthMap depthMap(1024, 1024);
 

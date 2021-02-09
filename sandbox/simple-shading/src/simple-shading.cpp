@@ -1,3 +1,4 @@
+#include <filesystem>
 #include <iostream>
 #include <memory>
 
@@ -108,8 +109,12 @@ int main() {
   scene.addPointLight({glm::vec3(10000.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f});
 
   // setup shader
-  Shader shader{std::string(CMAKE_CURRENT_SOURCE_DIR) + "/shaders/shader.vert",
-                std::string(CMAKE_CURRENT_SOURCE_DIR) + "/shaders/shader.frag"};
+  Shader shader;
+  shader.setVertexShader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+                         "shaders/shader.vert");
+  shader.setFragmentShader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+                           "shaders/shader.frag");
+  shader.linkShader();
 
   // app loop
   float t = 0.0f;

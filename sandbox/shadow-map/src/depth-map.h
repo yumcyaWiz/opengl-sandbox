@@ -1,5 +1,6 @@
 #ifndef _DEPTH_MAP_H
 #define _DEPTH_MAP_H
+#include <filesystem>
 #include <string>
 
 #include "glad/glad.h"
@@ -16,11 +17,15 @@ class DepthMap {
   int height;
   GLuint FBO;
   GLuint texture;
-  Shader shader{
-      std::string(CMAKE_CURRENT_SOURCE_DIR) + "/shaders/make-depthmap.vert",
-      std::string(CMAKE_CURRENT_SOURCE_DIR) + "/shaders/make-depthmap.frag"};
+  Shader shader;
 
   DepthMap(int width, int height) : width(width), height(height) {
+    shader.setVertexShader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+                           "shaders/make-depthmap.vert");
+    shader.setFragmentShader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+                             "shaders/make-depthmap.frag");
+    shader.linkShader();
+
     // setup depth map FBO
     glGenFramebuffers(1, &FBO);
 
