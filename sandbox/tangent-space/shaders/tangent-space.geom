@@ -3,9 +3,9 @@ layout (triangles) in;
 layout (line_strip, max_vertices = 18) out;
 
 in VS_OUT {
-  vec4 tangent;
-  vec4 binormal;
-  vec4 normal;
+  vec3 tangent;
+  vec3 binormal;
+  vec3 normal;
 } gs_in[];
 
 out GS_OUT {
@@ -16,12 +16,12 @@ uniform mat4 view;
 uniform mat4 projection;
 uniform float lineLength;
 
-void visualizeTangentSpace(in mat4 viewProjection, int index) {
+void visualizeTangentSpace(in mat4 viewProjection, in int index) {
   // tangent
   gs_out.color = vec3(1, 0, 0);
   gl_Position = viewProjection * gl_in[index].gl_Position;
   EmitVertex();
-  gl_Position = viewProjection * (gl_in[index].gl_Position + lineLength * gs_in[index].tangent);
+  gl_Position = viewProjection * (gl_in[index].gl_Position + vec4(lineLength * gs_in[index].tangent, 0.0));
   EmitVertex();
   EndPrimitive();
 
@@ -29,7 +29,7 @@ void visualizeTangentSpace(in mat4 viewProjection, int index) {
   gs_out.color = vec3(0, 1, 0);
   gl_Position = viewProjection * gl_in[index].gl_Position;
   EmitVertex();
-  gl_Position = viewProjection * (gl_in[index].gl_Position + lineLength * gs_in[index].binormal);
+  gl_Position = viewProjection * (gl_in[index].gl_Position + vec4(lineLength * gs_in[index].binormal, 0.0));
   EmitVertex();
   EndPrimitive();
 
@@ -37,7 +37,7 @@ void visualizeTangentSpace(in mat4 viewProjection, int index) {
   gs_out.color = vec3(0, 0, 1);
   gl_Position = viewProjection * gl_in[index].gl_Position;
   EmitVertex();
-  gl_Position = viewProjection * (gl_in[index].gl_Position + lineLength * gs_in[index].normal);
+  gl_Position = viewProjection * (gl_in[index].gl_Position + vec4(lineLength * gs_in[index].normal, 0.0));
   EmitVertex();
   EndPrimitive();
 }
