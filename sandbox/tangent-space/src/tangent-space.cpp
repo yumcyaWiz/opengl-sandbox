@@ -178,7 +178,6 @@ int main() {
     scene.draw(shader);
 
     // show tangent space
-    glClear(GL_DEPTH_BUFFER_BIT);
     scene.draw(showTangentSpace);
 
     // render imgui
