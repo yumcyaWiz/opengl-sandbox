@@ -49,9 +49,7 @@ Visualize 3d models with various layers such as Position, Normal, TexCoords, Dif
 
 Visualize basis of tangent space at each vertex.
 
-There is a bug in depth test now.
-
-![](./img/tangent-space-bug.jpg)
+![](./img/tangent-space.jpg)
 
 ### simple-shading
 
