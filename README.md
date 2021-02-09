@@ -47,7 +47,7 @@ Visualize 3d models with various layers such as Position, Normal, TexCoords, Dif
 
 ### tangent-space
 
-Visualize basis of tangent space at each vertex.
+Visualize basis of tangent space at each vertex using geometry shader.
 
 ![](./img/tangent-space.jpg)
 
