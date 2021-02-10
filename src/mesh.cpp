@@ -41,6 +41,15 @@ Mesh::Mesh(const std::vector<Vertex>& vertices,
   glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
                         reinterpret_cast<void*>(offsetof(Vertex, tangent)));
 
+  // dndu
+  glEnableVertexAttribArray(4);
+  glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                        reinterpret_cast<void*>(offsetof(Vertex, dndu)));
+
+  glEnableVertexAttribArray(5);
+  glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                        reinterpret_cast<void*>(offsetof(Vertex, dndv)));
+
   glBindVertexArray(0);
 }
 

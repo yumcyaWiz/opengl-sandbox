@@ -135,6 +135,33 @@ Mesh Model::processMesh(const aiMesh* mesh, const aiScene* scene,
     }
   }
 
+  // compute dn/dp, dn/dv
+  for (std::size_t i = 0; i < indices.size(); i += 3) {
+    const unsigned int idx1 = indices[i];
+    const unsigned int idx2 = indices[i + 1];
+    const unsigned int idx3 = indices[i + 2];
+
+    const glm::vec3 dn1 = vertices[idx2].normal - vertices[idx1].normal;
+    const glm::vec3 dn2 = vertices[idx3].normal - vertices[idx1].normal;
+    const float du1 = vertices[idx2].texcoords.x - vertices[idx1].texcoords.x;
+    const float du2 = vertices[idx3].texcoords.x - vertices[idx1].texcoords.x;
+    const float dv1 = vertices[idx2].texcoords.y - vertices[idx1].texcoords.x;
+    const float dv2 = vertices[idx3].texcoords.y - vertices[idx1].texcoords.x;
+
+    const float invDeterminant = 1.0f / (du1 * dv2 - dv1 * du2);
+
+    const glm::vec3 dndu = invDeterminant * (dv2 * dn1 - dv1 * dn2);
+    const glm::vec3 dndv = invDeterminant * (-du2 * dn1 + du1 * dn2);
+
+    // NOTE: smoothing will give more nice result
+    vertices[idx1].dndu = dndu;
+    vertices[idx2].dndu = dndu;
+    vertices[idx3].dndu = dndu;
+    vertices[idx1].dndv = dndv;
+    vertices[idx2].dndv = dndv;
+    vertices[idx3].dndv = dndv;
+  }
+
   // materials
   if (scene->mMaterials[mesh->mMaterialIndex]) {
     const aiMaterial* mat = scene->mMaterials[mesh->mMaterialIndex];

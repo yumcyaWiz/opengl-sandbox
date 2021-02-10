@@ -1,6 +1,7 @@
 add_subdirectory(triangle)
 add_subdirectory(model-viewer)
+add_subdirectory(tangent-space)
 add_subdirectory(normal-mapping)
+add_subdirectory(bump-mapping)
 add_subdirectory(simple-shading)
 add_subdirectory(shadow-map)
-add_subdirectory(tangent-space)
