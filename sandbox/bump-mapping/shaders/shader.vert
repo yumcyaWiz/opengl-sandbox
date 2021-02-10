@@ -14,6 +14,7 @@ out VS_OUT {
   vec3 binormal;
   vec3 dndu;
   vec3 dndv;
+  mat3 TBN;
 } vs_out;
 
 uniform mat4 view;
@@ -31,4 +32,5 @@ void main() {
 
   vs_out.dndu = vDndu;
   vs_out.dndv = vDndv;
+  vs_out.TBN = mat3(vs_out.tangent, vs_out.binormal, vs_out.normal);
 }

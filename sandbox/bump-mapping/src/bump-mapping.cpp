@@ -22,6 +22,7 @@ int WIDTH = 1600;
 int HEIGHT = 900;
 float LINE_LENGTH = 1;
 bool USE_HEIGHT_MAP = false;
+int HEIGHT_MAP_METHOD = 1;
 float HEIGHT_MAP_SCALE = 0.01f;
 
 void handleInput(GLFWwindow* window, const ImGuiIO& io) {
@@ -151,6 +152,8 @@ int main() {
       ImGui::Separator();
 
       ImGui::Checkbox("Use Height Map", &USE_HEIGHT_MAP);
+      ImGui::Combo("Height Map Method", &HEIGHT_MAP_METHOD,
+                   "Strict\0Usual\0\0");
       ImGui::InputFloat("Height Map Scale", &HEIGHT_MAP_SCALE);
     }
     ImGui::End();
@@ -169,6 +172,7 @@ int main() {
     shader.setUniform("projection", projection);
     shader.setUniform("camPos", CAMERA->camPos);
     shader.setUniform("useHeightMap", USE_HEIGHT_MAP);
+    shader.setUniform("heightMapMethod", HEIGHT_MAP_METHOD);
     shader.setUniform("heightMapScale", HEIGHT_MAP_SCALE);
 
     // render
