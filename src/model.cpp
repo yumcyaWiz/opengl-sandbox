@@ -145,8 +145,8 @@ Mesh Model::processMesh(const aiMesh* mesh, const aiScene* scene,
     const glm::vec3 dn2 = vertices[idx3].normal - vertices[idx1].normal;
     const float du1 = vertices[idx2].texcoords.x - vertices[idx1].texcoords.x;
     const float du2 = vertices[idx3].texcoords.x - vertices[idx1].texcoords.x;
-    const float dv1 = vertices[idx2].texcoords.y - vertices[idx1].texcoords.x;
-    const float dv2 = vertices[idx3].texcoords.y - vertices[idx1].texcoords.x;
+    const float dv1 = vertices[idx2].texcoords.y - vertices[idx1].texcoords.y;
+    const float dv2 = vertices[idx3].texcoords.y - vertices[idx1].texcoords.y;
 
     const float invDeterminant = 1.0f / (du1 * dv2 - dv1 * du2);
 
