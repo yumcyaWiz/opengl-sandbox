@@ -63,6 +63,12 @@ Normal mapping example with Blinn-Phong shading.
 
 ![](./img/normal-mapping-compare.jpg)
 
+### bump-mapping
+
+Bump mapping example using height map with Blinn-Phong shading.
+
+![](./img/bump-mapping-compare.jpg)
+
 ### shadow-mapping
 
 Shadow mapping example with moving directional light.
