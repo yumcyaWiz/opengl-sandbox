@@ -21,6 +21,8 @@ std::unique_ptr<Camera> CAMERA;
 int WIDTH = 1600;
 int HEIGHT = 900;
 float LINE_LENGTH = 1;
+bool USE_HEIGHT_MAP = false;
+float HEIGHT_MAP_SCALE = 0.01f;
 
 void handleInput(GLFWwindow* window, const ImGuiIO& io) {
   // close application
@@ -118,6 +120,7 @@ int main() {
   shader.linkShader();
 
   // app loop
+  float t = 0.0f;
   while (!glfwWindowShouldClose(window)) {
     glfwPollEvents();
 
@@ -146,14 +149,18 @@ int main() {
       }
 
       ImGui::Separator();
+
+      ImGui::Checkbox("Use Height Map", &USE_HEIGHT_MAP);
+      ImGui::InputFloat("Height Map Scale", &HEIGHT_MAP_SCALE);
     }
     ImGui::End();
 
     handleInput(window, io);
 
     // set light position
+    t += io.DeltaTime;
     scene.pointLights[0].position =
-        CAMERA->camPos + 100.0f * CAMERA->camForward;
+        CAMERA->camPos + 200.0f * CAMERA->camForward;
 
     // set uniform variables
     const glm::mat4 view = CAMERA->computeViewMatrix();
@@ -161,6 +168,8 @@ int main() {
     shader.setUniform("view", view);
     shader.setUniform("projection", projection);
     shader.setUniform("camPos", CAMERA->camPos);
+    shader.setUniform("useHeightMap", USE_HEIGHT_MAP);
+    shader.setUniform("heightMapScale", HEIGHT_MAP_SCALE);
 
     // render
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
