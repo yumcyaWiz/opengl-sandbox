@@ -179,6 +179,21 @@ void Shader::setUniformTexture(const std::string& uniformName, GLuint texture,
   deactivate();
 }
 
+void Shader::setUniformCubemap(const std::string& uniformName, GLuint cubemap,
+                               GLuint textureUnitNumber) const {
+  activate();
+
+  // bind cubemap to specified texture unit
+  glActiveTexture(GL_TEXTURE0 + textureUnitNumber);
+  glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap);
+
+  // set texture unit number on uniform variable
+  const GLint location = glGetUniformLocation(program, uniformName.c_str());
+  glUniform1i(location, textureUnitNumber);
+
+  deactivate();
+}
+
 void Shader::linkShader() {
   // link shader program
   program = glCreateProgram();

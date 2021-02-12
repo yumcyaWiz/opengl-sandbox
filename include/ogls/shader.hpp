@@ -55,6 +55,10 @@ class Shader {
   void setUniformTexture(const std::string& uniformName, GLuint texture,
                          GLuint textureUnitNumber) const;
 
+  // set cubemap on shader's samplerCube uniform variable
+  void setUniformCubemap(const std::string& uniformName, GLuint cubemap,
+                         GLuint textureUnitNumber) const;
+
   // set uniform buffer object on shader
   void setUBO(const std::string& blockName, GLuint bindingNumber) const;
 };
