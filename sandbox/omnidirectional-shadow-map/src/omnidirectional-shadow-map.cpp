@@ -111,7 +111,7 @@ int main() {
   // setup scene
   Scene scene;
   scene.addPointLight(
-      PointLight(glm::vec3(10000.0f), glm::vec3(0, 100.0f, 0), 0.0f));
+      PointLight(glm::vec3(20000.0f), glm::vec3(0, 100.0f, 0), 0.0f));
 
   // setup shader
   Shader shader;
@@ -165,8 +165,9 @@ int main() {
 
     // move point light
     t += io.DeltaTime;
-    scene.pointLights[0].position =
-        glm::vec3(100.0f * std::cos(t), 100.0f, 100.0f * std::sin(t));
+    scene.pointLights[0].position = glm::vec3(
+        100.0f * std::cos(t), 300.0f * (std::sin(0.1f * t) + 1.0f) + 100.0f,
+        100.0f * std::sin(t));
 
     // make depth map
     shadowMap.setLightPosition(scene.pointLights[0].position);
