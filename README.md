@@ -75,6 +75,12 @@ Shadow mapping example with moving directional light.
 
 ![](./img/shadow-mapping3.jpg)
 
+### omnidirectional-shadow-mapping
+
+Omnidirectional shadow mapping example with moving point light.
+
+![](./img/omnidirectional-shadow-mapping.jpg)
+
 ## Externals
 
 * [glad](https://github.com/Dav1dde/glad)
