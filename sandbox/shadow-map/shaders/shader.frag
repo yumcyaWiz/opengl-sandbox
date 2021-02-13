@@ -67,12 +67,10 @@ void main() {
   // directional light
   color += (1.0 - shadow) * blinnPhong(viewDir, normal, directionalLight.direction, kd, ks, material.shininess) * directionalLight.ke;
 
-  // point lights
-  for(int i = 0; i < n_PointLights; ++i) {
-    vec3 lightDir = normalize(pointLights[i].position - position);
-    float dist = max(distance(pointLights[i].position, position) - pointLights[i].radius, 0.0);
-    color += (1.0 - shadow) * blinnPhong(viewDir, normal, lightDir, kd, ks, material.shininess) * pointLights[i].ke / pow(dist, 2.0);
-  }
+  // point light
+  vec3 lightDir = normalize(pointLight.position - position);
+  float dist = max(distance(pointLight.position, position) - pointLight.radius, 0.0);
+  color += (1.0 - shadow) * blinnPhong(viewDir, normal, lightDir, kd, ks, material.shininess) * pointLight.ke / pow(dist, 2.0);
 
   // ambient
   color += 0.01 * shadow * kd;

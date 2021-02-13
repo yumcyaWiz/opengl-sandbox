@@ -4,10 +4,12 @@ layout (location = 1) in vec3 vNormal;
 layout (location = 2) in vec2 vTexCoords;
 layout (location = 3) in vec3 vTangent;
 
-out vec3 position;
-out vec3 normal;
-out vec2 texCoords;
-out mat3 TBN;
+out VS_OUT {
+  vec3 position;
+  vec3 normal;
+  vec2 texCoords;
+  mat3 TBN;
+} vs_out;
 
 uniform mat4 view;
 uniform mat4 projection;
@@ -23,8 +25,8 @@ void main() {
   vec3 B = cross(N, T);
 
   // output to fragment shader
-  position = vPosition;
-  normal = vNormal;
-  texCoords = vTexCoords;
-  TBN = mat3(T, B, N);
+  vs_out.position = vPosition;
+  vs_out.normal = vNormal;
+  vs_out.texCoords = vTexCoords;
+  vs_out.TBN = mat3(T, B, N);
 }
