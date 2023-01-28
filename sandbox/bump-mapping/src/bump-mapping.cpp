@@ -48,7 +48,7 @@ void handleInput(GLFWwindow *window, const ImGuiIO &io)
 
   // camera look around
   if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
-    CAMERA->lookAround(io.MouseDelta.x, io.MouseDelta.y);
+    CAMERA->look_around(io.MouseDelta.x, io.MouseDelta.y);
   }
 }
 
@@ -113,16 +113,16 @@ int main()
 
   // setup scene
   Scene scene;
-  scene.addPointLight(PointLight(glm::vec3(10000), glm::vec3(0, 100, 0), 0));
-  scene.setPointLightIndex(0);
+  scene.add_point_light(PointLight(glm::vec3(10000), glm::vec3(0, 100, 0), 0));
+  scene.set_point_light_index(0);
 
   // setup shader
   Shader shader;
-  shader.setVertexShader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
-                         "shaders/shader.vert");
-  shader.setFragmentShader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
-                           "shaders/shader.frag");
-  shader.linkShader();
+  shader.load_vertex_shader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+                            "shaders/shader.vert");
+  shader.load_fragment_shader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+                              "shaders/shader.frag");
+  shader.link_shader();
 
   // app loop
   float t = 0.0f;
@@ -140,14 +140,14 @@ int main()
       static char modelPath[100] = {"assets/sponza/sponza.obj"};
       ImGui::InputText("Model", modelPath, 100);
       if (ImGui::Button("Load Model")) {
-        scene.setModel({std::string(CMAKE_SOURCE_DIR) + "/" + modelPath});
+        scene.set_model({std::string(CMAKE_SOURCE_DIR) + "/" + modelPath});
       }
 
       ImGui::Separator();
 
       ImGui::InputFloat("FOV", &CAMERA->fov);
-      ImGui::InputFloat("Movement Speed", &CAMERA->movementSpeed);
-      ImGui::InputFloat("Look Around Speed", &CAMERA->lookAroundSpeed);
+      ImGui::InputFloat("Movement Speed", &CAMERA->movement_speed);
+      ImGui::InputFloat("Look Around Speed", &CAMERA->look_around_speed);
 
       if (ImGui::Button("Reset Camera")) { CAMERA->reset(); }
 
@@ -165,17 +165,18 @@ int main()
     // set light position
     t += io.DeltaTime;
     scene.pointLights[0].position =
-        CAMERA->camPos + 200.0f * CAMERA->camForward;
+        CAMERA->cam_pos + 200.0f * CAMERA->cam_forward;
 
     // set uniform variables
-    const glm::mat4 view = CAMERA->computeViewMatrix();
-    const glm::mat4 projection = CAMERA->computeProjectionMatrix(WIDTH, HEIGHT);
-    shader.setUniform("view", view);
-    shader.setUniform("projection", projection);
-    shader.setUniform("camPos", CAMERA->camPos);
-    shader.setUniform("useHeightMap", USE_HEIGHT_MAP);
-    shader.setUniform("heightMapMethod", HEIGHT_MAP_METHOD);
-    shader.setUniform("heightMapScale", HEIGHT_MAP_SCALE);
+    const glm::mat4 view = CAMERA->compute_view_matrix();
+    const glm::mat4 projection =
+        CAMERA->compute_projection_matrix(WIDTH, HEIGHT);
+    shader.set_uniform("view", view);
+    shader.set_uniform("projection", projection);
+    shader.set_uniform("camPos", CAMERA->cam_pos);
+    shader.set_uniform("useHeightMap", USE_HEIGHT_MAP);
+    shader.set_uniform("heightMapMethod", HEIGHT_MAP_METHOD);
+    shader.set_uniform("heightMapScale", HEIGHT_MAP_SCALE);
 
     // render
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

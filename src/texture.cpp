@@ -14,7 +14,7 @@ Texture::Texture() {}
 
 Texture::Texture(const std::filesystem::path& filepath,
                  const TextureType& textureType)
-    : filepath{filepath}, textureType{textureType}
+    : filepath{filepath}, texture_type{textureType}
 {
   // generate texture
   glGenTextures(1, &id);
@@ -34,7 +34,7 @@ void Texture::destroy() { glDeleteTextures(1, &id); }
 
 std::string Texture::typeName() const
 {
-  switch (textureType) {
+  switch (texture_type) {
     case TextureType::Diffuse:
       return "Diffuse";
     case TextureType::Specular:
@@ -74,9 +74,9 @@ void Texture::loadImage(const std::filesystem::path& filepath) const
 
   // send image to texture
   glBindTexture(GL_TEXTURE_2D, id);
-  if (textureType == TextureType::Diffuse ||
-      textureType == TextureType::Ambient ||
-      textureType == TextureType::Emissive) {
+  if (texture_type == TextureType::Diffuse ||
+      texture_type == TextureType::Ambient ||
+      texture_type == TextureType::Emissive) {
     // read image as sRGB when texture type is diffuse map
     glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB, width, height, 0, GL_RGB,
                  GL_UNSIGNED_BYTE, image);

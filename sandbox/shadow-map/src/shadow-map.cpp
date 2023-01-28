@@ -54,7 +54,7 @@ void handleInput(GLFWwindow *window, const ImGuiIO &io)
 
   // camera look around
   if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
-    CAMERA->lookAround(io.MouseDelta.x, io.MouseDelta.y);
+    CAMERA->look_around(io.MouseDelta.x, io.MouseDelta.y);
   }
 }
 
@@ -118,7 +118,7 @@ int main()
 
   // setup scene
   Scene scene;
-  scene.setDirectionalLight(
+  scene.set_directional_light(
       {glm::vec3(1.0f), glm::normalize(glm::vec3(0.5f, 1.0f, 0.5f))});
 
   // quad for showing depth map
@@ -126,19 +126,20 @@ int main()
 
   // setup shader
   Shader showDepthMap;
-  showDepthMap.setVertexShader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
-                               "shaders/show-depthmap.vert");
-  showDepthMap.setFragmentShader(
+  showDepthMap.load_vertex_shader(
+      std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+      "shaders/show-depthmap.vert");
+  showDepthMap.load_fragment_shader(
       std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
       "shaders/show-depthmap.frag");
-  showDepthMap.linkShader();
+  showDepthMap.link_shader();
 
   Shader shader;
-  shader.setVertexShader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
-                         "shaders/shader.vert");
-  shader.setFragmentShader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
-                           "shaders/shader.frag");
-  shader.linkShader();
+  shader.load_vertex_shader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+                            "shaders/shader.vert");
+  shader.load_fragment_shader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+                              "shaders/shader.frag");
+  shader.link_shader();
 
   DepthMap depthMap(1024, 1024);
 
@@ -158,14 +159,14 @@ int main()
     static char modelPath[100] = {"assets/sponza/sponza.obj"};
     ImGui::InputText("Model", modelPath, 100);
     if (ImGui::Button("Load Model")) {
-      scene.setModel({std::string(CMAKE_SOURCE_DIR) + "/" + modelPath});
+      scene.set_model({std::string(CMAKE_SOURCE_DIR) + "/" + modelPath});
     }
 
     ImGui::Separator();
 
     ImGui::InputFloat("FOV", &CAMERA->fov);
-    ImGui::InputFloat("Movement Speed", &CAMERA->movementSpeed);
-    ImGui::InputFloat("Look Around Speed", &CAMERA->lookAroundSpeed);
+    ImGui::InputFloat("Movement Speed", &CAMERA->movement_speed);
+    ImGui::InputFloat("Look Around Speed", &CAMERA->look_around_speed);
 
     if (ImGui::Button("Reset Camera")) { CAMERA->reset(); }
 
@@ -204,13 +205,13 @@ int main()
 
     // render scene with shadow mapping
     // set uniforms
-    shader.setUniform("viewProjection",
-                      CAMERA->computeViewProjectionMatrix(WIDTH, HEIGHT));
-    shader.setUniform("lightSpaceMatrix", lightSpaceMatrix);
-    shader.setUniform("camPos", CAMERA->camPos);
+    shader.set_uniform("viewProjection",
+                       CAMERA->compute_view_projection_matrix(WIDTH, HEIGHT));
+    shader.set_uniform("lightSpaceMatrix", lightSpaceMatrix);
+    shader.set_uniform("camPos", CAMERA->cam_pos);
     // TODO: set texture unit number appropriately
-    shader.setUniformTexture("depthMap", depthMap.texture, 10);
-    shader.setUniform("depthBias", DEPTH_BIAS);
+    shader.set_uniform_texture("depthMap", depthMap.texture, 10);
+    shader.set_uniform("depthBias", DEPTH_BIAS);
 
     // render
     glViewport(0, 0, WIDTH, HEIGHT);
@@ -220,9 +221,9 @@ int main()
     // show depth map
     glViewport(WIDTH - 256, HEIGHT - 256, 256, 256);
     glClear(GL_DEPTH_BUFFER_BIT);
-    showDepthMap.setUniformTexture("depthMap", depthMap.texture, 0);
-    showDepthMap.setUniform("zNear", DEPTH_MAP_NEAR);
-    showDepthMap.setUniform("zFar", DEPTH_MAP_FAR);
+    showDepthMap.set_uniform_texture("depthMap", depthMap.texture, 0);
+    showDepthMap.set_uniform("zNear", DEPTH_MAP_NEAR);
+    showDepthMap.set_uniform("zFar", DEPTH_MAP_FAR);
     quad.draw(showDepthMap);
 
     // render imgui

@@ -49,7 +49,7 @@ void handleInput(GLFWwindow *window, const ImGuiIO &io)
 
   // camera look around
   if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
-    CAMERA->lookAround(io.MouseDelta.x, io.MouseDelta.y);
+    CAMERA->look_around(io.MouseDelta.x, io.MouseDelta.y);
   }
 }
 
@@ -113,17 +113,17 @@ int main()
 
   // setup scene
   Scene scene;
-  scene.addPointLight(
+  scene.add_point_light(
       PointLight(glm::vec3(20000.0f), glm::vec3(0, 100.0f, 0), 0.0f));
-  scene.setPointLightIndex(0);
+  scene.set_point_light_index(0);
 
   // setup shader
   Shader shader;
-  shader.setVertexShader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
-                         "shaders/shader.vert");
-  shader.setFragmentShader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
-                           "shaders/shader.frag");
-  shader.linkShader();
+  shader.load_vertex_shader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+                            "shaders/shader.vert");
+  shader.load_fragment_shader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+                              "shaders/shader.frag");
+  shader.link_shader();
 
   OmnidirectionalShadowMap shadowMap(SHADOW_MAP_RES, SHADOW_MAP_RES);
 
@@ -143,14 +143,14 @@ int main()
     static char modelPath[100] = {"assets/sponza/sponza.obj"};
     ImGui::InputText("Model", modelPath, 100);
     if (ImGui::Button("Load Model")) {
-      scene.setModel({std::string(CMAKE_SOURCE_DIR) + "/" + modelPath});
+      scene.set_model({std::string(CMAKE_SOURCE_DIR) + "/" + modelPath});
     }
 
     ImGui::Separator();
 
     ImGui::InputFloat("FOV", &CAMERA->fov);
-    ImGui::InputFloat("Movement Speed", &CAMERA->movementSpeed);
-    ImGui::InputFloat("Look Around Speed", &CAMERA->lookAroundSpeed);
+    ImGui::InputFloat("Movement Speed", &CAMERA->movement_speed);
+    ImGui::InputFloat("Look Around Speed", &CAMERA->look_around_speed);
 
     if (ImGui::Button("Reset Camera")) { CAMERA->reset(); }
 
@@ -177,13 +177,13 @@ int main()
 
     // render scene with shadow mapping
     // set uniforms
-    shader.setUniform("viewProjection",
-                      CAMERA->computeViewProjectionMatrix(WIDTH, HEIGHT));
-    shader.setUniform("camPos", CAMERA->camPos);
-    shader.setUniform("shadowBias", SHADOW_BIAS);
+    shader.set_uniform("viewProjection",
+                       CAMERA->compute_view_projection_matrix(WIDTH, HEIGHT));
+    shader.set_uniform("camPos", CAMERA->cam_pos);
+    shader.set_uniform("shadowBias", SHADOW_BIAS);
     // TODO: set texture unit number appropriately
-    shader.setUniformCubemap("shadowMap", shadowMap.cubemap, 10);
-    shader.setUniform("zFar", shadowMap.zFar);
+    shader.set_uniform_cubemap("shadowMap", shadowMap.cubemap, 10);
+    shader.set_uniform("zFar", shadowMap.zFar);
 
     // render
     glViewport(0, 0, WIDTH, HEIGHT);

@@ -1,5 +1,4 @@
-#ifndef _OMNIDIRECTIONAL_SHADOW_MAP_H
-#define _OMNIDIRECTIONAL_SHADOW_MAP_H
+#pragma once
 #include <filesystem>
 #include <string>
 
@@ -11,7 +10,8 @@
 
 using namespace ogls;
 
-class OmnidirectionalShadowMap {
+class OmnidirectionalShadowMap
+{
  public:
   int width;
   int height;
@@ -24,15 +24,18 @@ class OmnidirectionalShadowMap {
   Shader shader;
 
   OmnidirectionalShadowMap(int width, int height)
-      : width(width), height(height), zNear(0.1f), zFar(10000.0f) {
+      : width(width), height(height), zNear(0.1f), zFar(10000.0f)
+  {
     // setup shader
-    shader.setVertexShader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
-                           "shaders/shadow-map.vert");
-    shader.setGeometryShader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
-                             "shaders/shadow-map.geom");
-    shader.setFragmentShader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
-                             "shaders/shadow-map.frag");
-    shader.linkShader();
+    shader.load_vertex_shader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+                              "shaders/shadow-map.vert");
+    shader.load_geometry_shader(
+        std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+        "shaders/shadow-map.geom");
+    shader.load_fragment_shader(
+        std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+        "shaders/shadow-map.frag");
+    shader.link_shader();
 
     // setup shadow map FBO
     glGenFramebuffers(1, &FBO);
@@ -59,13 +62,15 @@ class OmnidirectionalShadowMap {
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
   }
 
-  void destroy() {
+  void destroy()
+  {
     shader.destroy();
     glDeleteTextures(1, &cubemap);
     glDeleteFramebuffers(1, &FBO);
   }
 
-  void setResolution(int width, int height) {
+  void setResolution(int width, int height)
+  {
     this->width = width;
     this->height = height;
 
@@ -77,11 +82,13 @@ class OmnidirectionalShadowMap {
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
   }
 
-  void setLightPosition(const glm::vec3& lightPosition) {
+  void setLightPosition(const glm::vec3& lightPosition)
+  {
     this->lightPosition = lightPosition;
   }
 
-  void draw(const Scene& scene) const {
+  void draw(const Scene& scene) const
+  {
     // render to shadow map
     glViewport(0, 0, width, height);
     glBindFramebuffer(GL_FRAMEBUFFER, FBO);
@@ -91,39 +98,39 @@ class OmnidirectionalShadowMap {
     // set uniforms
     const glm::mat4 projection = glm::perspective(
         glm::radians(90.0f), static_cast<float>(width) / height, zNear, zFar);
-    shader.setUniform(
+    shader.set_uniform(
         "lightSpaceMatrix[0]",
         projection * glm::lookAt(lightPosition,
                                  lightPosition + glm::vec3(1, 0, 0),
                                  glm::vec3(0, -1, 0)));
-    shader.setUniform(
+    shader.set_uniform(
         "lightSpaceMatrix[1]",
         projection * glm::lookAt(lightPosition,
                                  lightPosition + glm::vec3(-1, 0, 0),
                                  glm::vec3(0, -1, 0)));
-    shader.setUniform(
+    shader.set_uniform(
         "lightSpaceMatrix[2]",
         projection * glm::lookAt(lightPosition,
                                  lightPosition + glm::vec3(0, 1, 0),
                                  glm::vec3(0, 0, 1)));
-    shader.setUniform(
+    shader.set_uniform(
         "lightSpaceMatrix[3]",
         projection * glm::lookAt(lightPosition,
                                  lightPosition + glm::vec3(0, -1, 0),
                                  glm::vec3(0, 0, -1)));
-    shader.setUniform(
+    shader.set_uniform(
         "lightSpaceMatrix[4]",
         projection * glm::lookAt(lightPosition,
                                  lightPosition + glm::vec3(0, 0, 1),
                                  glm::vec3(0, -1, 0)));
-    shader.setUniform(
+    shader.set_uniform(
         "lightSpaceMatrix[5]",
         projection * glm::lookAt(lightPosition,
                                  lightPosition + glm::vec3(0, 0, -1),
                                  glm::vec3(0, -1, 0)));
 
-    shader.setUniform("lightPosition", lightPosition);
-    shader.setUniform("zFar", zFar);
+    shader.set_uniform("lightPosition", lightPosition);
+    shader.set_uniform("zFar", zFar);
 
     // render
     scene.draw(shader);
@@ -132,5 +139,3 @@ class OmnidirectionalShadowMap {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
   }
 };
-
-#endif

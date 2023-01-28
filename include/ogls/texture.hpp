@@ -25,7 +25,7 @@ class Texture
  public:
   std::filesystem::path filepath;
   GLuint id;
-  TextureType textureType;
+  TextureType texture_type;
 
   Texture();
   Texture(const std::filesystem::path& filepath,

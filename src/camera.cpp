@@ -6,80 +6,80 @@ namespace ogls
 {
 
 Camera::Camera()
-    : camPos{0.0f},
-      camForward{0.0, 0.0, -1.0f},
-      camRight{1.0f, 0.0f, 0.0f},
-      camUp{0.0f, 1.0f, 0.0f},
+    : cam_pos{0.0f},
+      cam_forward{0.0, 0.0, -1.0f},
+      cam_right{1.0f, 0.0f, 0.0f},
+      cam_up{0.0f, 1.0f, 0.0f},
       fov(45.0f),
-      movementSpeed(1.0f),
-      lookAroundSpeed(0.5f),
+      movement_speed(1.0f),
+      look_around_speed(0.5f),
       phi(270.0f),
       theta(90.0f)
 {
 }
 
-glm::mat4 Camera::computeViewMatrix() const
+glm::mat4 Camera::compute_view_matrix() const
 {
-  return glm::lookAt(camPos, camPos + camForward, camUp);
+  return glm::lookAt(cam_pos, cam_pos + cam_forward, cam_up);
 }
 
-glm::mat4 Camera::computeProjectionMatrix(int width, int height) const
+glm::mat4 Camera::compute_projection_matrix(int width, int height) const
 {
   return glm::perspective(glm::radians(fov), static_cast<float>(width) / height,
                           0.1f, 10000.0f);
 }
 
-glm::mat4 Camera::computeViewProjectionMatrix(int width, int height) const
+glm::mat4 Camera::compute_view_projection_matrix(int width, int height) const
 {
-  return computeProjectionMatrix(width, height) * computeViewMatrix();
+  return compute_projection_matrix(width, height) * compute_view_matrix();
 }
 
 void Camera::reset() { *this = Camera(); }
 
 void Camera::move(const CameraMovement& direction, float ds)
 {
-  const float velocity = movementSpeed * ds;
+  const float velocity = movement_speed * ds;
   switch (direction) {
     case CameraMovement::FORWARD:
-      camPos += velocity * camForward;
+      cam_pos += velocity * cam_forward;
       break;
     case CameraMovement::BACKWARD:
-      camPos -= velocity * camForward;
+      cam_pos -= velocity * cam_forward;
       break;
     case CameraMovement::RIGHT:
-      camPos += velocity * camRight;
+      cam_pos += velocity * cam_right;
       break;
     case CameraMovement::LEFT:
-      camPos -= velocity * camRight;
+      cam_pos -= velocity * cam_right;
       break;
     case CameraMovement::UP:
-      camPos += velocity * camUp;
+      cam_pos += velocity * cam_up;
       break;
     case CameraMovement::DOWN:
-      camPos -= velocity * camUp;
+      cam_pos -= velocity * cam_up;
       break;
   }
 }
 
-void Camera::lookAround(float dPhi, float dTheta)
+void Camera::look_around(float dPhi, float dTheta)
 {
   // update phi, theta
-  phi += lookAroundSpeed * dPhi;
+  phi += look_around_speed * dPhi;
   if (phi < 0.0f) phi = 360.0f;
   if (phi > 360.0f) phi = 0.0f;
 
-  theta += lookAroundSpeed * dTheta;
+  theta += look_around_speed * dTheta;
   if (theta < 0.0f) theta = 180.0f;
   if (theta > 180.0f) theta = 0.0f;
 
   // set camera directions
   const float phiRad = glm::radians(phi);
   const float thetaRad = glm::radians(theta);
-  camForward =
+  cam_forward =
       glm::vec3(std::cos(phiRad) * std::sin(thetaRad), std::cos(thetaRad),
                 std::sin(phiRad) * std::sin(thetaRad));
-  camRight = glm::normalize(glm::cross(camForward, glm::vec3(0, 1.0f, 0)));
-  camUp = glm::normalize(glm::cross(camRight, camForward));
+  cam_right = glm::normalize(glm::cross(cam_forward, glm::vec3(0, 1.0f, 0)));
+  cam_up = glm::normalize(glm::cross(cam_right, cam_forward));
 }
 
 }  // namespace ogls

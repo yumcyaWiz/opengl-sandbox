@@ -30,7 +30,8 @@ void Shader::checkShaderCompilation(GLuint shader)
   }
 }
 
-void Shader::setVertexShader(const std::filesystem::path& vertexShaderFilepath)
+void Shader::load_vertex_shader(
+    const std::filesystem::path& vertexShaderFilepath)
 {
   this->vertexShaderFilepath = vertexShaderFilepath;
 
@@ -53,7 +54,7 @@ void Shader::setVertexShader(const std::filesystem::path& vertexShaderFilepath)
   checkShaderCompilation(vertexShader);
 }
 
-void Shader::setGeometryShader(
+void Shader::load_geometry_shader(
     const std::filesystem::path& geometryShaderFilepath)
 {
   this->geometryShaderFilepath = geometryShaderFilepath;
@@ -76,7 +77,7 @@ void Shader::setGeometryShader(
   checkShaderCompilation(geometryShader.value());
 }
 
-void Shader::setFragmentShader(
+void Shader::load_fragment_shader(
     const std::filesystem::path& fragmentShaderFilepath)
 {
   this->fragmentShaderFilepath = fragmentShaderFilepath;
@@ -115,7 +116,7 @@ void Shader::activate() const { glUseProgram(program); }
 
 void Shader::deactivate() const { glUseProgram(0); }
 
-void Shader::setUniform(
+void Shader::set_uniform(
     const std::string& uniformName,
     const std::variant<bool, GLint, GLuint, GLfloat, glm::vec2, glm::vec3,
                        glm::mat4>& value) const
@@ -152,7 +153,7 @@ void Shader::setUniform(
   deactivate();
 }
 
-void Shader::setUBO(const std::string& blockName, GLuint bindingNumber) const
+void Shader::set_UBO(const std::string& blockName, GLuint bindingNumber) const
 {
   const GLuint blockIndex = glGetUniformBlockIndex(program, blockName.c_str());
 
@@ -160,8 +161,8 @@ void Shader::setUBO(const std::string& blockName, GLuint bindingNumber) const
   glUniformBlockBinding(program, blockIndex, bindingNumber);
 }
 
-void Shader::setUniformTexture(const std::string& uniformName, GLuint texture,
-                               GLuint textureUnitNumber) const
+void Shader::set_uniform_texture(const std::string& uniformName, GLuint texture,
+                                 GLuint textureUnitNumber) const
 {
   activate();
 
@@ -176,8 +177,8 @@ void Shader::setUniformTexture(const std::string& uniformName, GLuint texture,
   deactivate();
 }
 
-void Shader::setUniformCubemap(const std::string& uniformName, GLuint cubemap,
-                               GLuint textureUnitNumber) const
+void Shader::set_uniform_cubemap(const std::string& uniformName, GLuint cubemap,
+                                 GLuint textureUnitNumber) const
 {
   activate();
 
@@ -192,7 +193,7 @@ void Shader::setUniformCubemap(const std::string& uniformName, GLuint cubemap,
   deactivate();
 }
 
-void Shader::linkShader()
+void Shader::link_shader()
 {
   // link shader program
   program = glCreateProgram();

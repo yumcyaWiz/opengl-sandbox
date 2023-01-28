@@ -22,7 +22,7 @@ class Model
   operator bool() const;
 
   // load model with assimp
-  void loadModel(const std::filesystem::path& filepath);
+  void load_model(const std::filesystem::path& filepath);
 
   // draw model by given shader
   void draw(const Shader& shader) const;
@@ -35,12 +35,12 @@ class Model
   std::vector<Texture> textures;
 
   // parse assimp node object
-  void processNode(const aiNode* node, const aiScene* scene,
-                   const std::filesystem::path& parentPath);
+  void process_node(const aiNode* node, const aiScene* scene,
+                    const std::filesystem::path& parentPath);
 
   // parse assimp mesh object
-  Mesh processMesh(const aiMesh* mesh, const aiScene* scene,
-                   const std::filesystem::path& parentPath);
+  Mesh process_mesh(const aiMesh* mesh, const aiScene* scene,
+                    const std::filesystem::path& parentPath);
 
   std::optional<std::size_t> loadTexture(
       const aiMaterial* material, const TextureType& type,

@@ -30,13 +30,13 @@ class Scene
   // destroy scene object
   void destroy();
 
-  void setModel(const Model& model);
+  void set_model(const Model& model);
 
-  void addPointLight(const PointLight& light);
+  void add_point_light(const PointLight& light);
 
-  void setPointLightIndex(std::size_t index);
+  void set_point_light_index(std::size_t index);
 
-  void setDirectionalLight(const DirectionalLight& light);
+  void set_directional_light(const DirectionalLight& light);
 };
 
 }  // namespace ogls

@@ -1,5 +1,4 @@
-#ifndef _DEPTH_MAP_H
-#define _DEPTH_MAP_H
+#pragma once
 #include <filesystem>
 #include <string>
 
@@ -11,7 +10,8 @@
 
 using namespace ogls;
 
-class DepthMap {
+class DepthMap
+{
  public:
   int width;
   int height;
@@ -19,12 +19,14 @@ class DepthMap {
   GLuint texture;
   Shader shader;
 
-  DepthMap(int width, int height) : width(width), height(height) {
-    shader.setVertexShader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
-                           "shaders/make-depthmap.vert");
-    shader.setFragmentShader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
-                             "shaders/make-depthmap.frag");
-    shader.linkShader();
+  DepthMap(int width, int height) : width(width), height(height)
+  {
+    shader.load_vertex_shader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+                              "shaders/make-depthmap.vert");
+    shader.load_fragment_shader(
+        std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+        "shaders/make-depthmap.frag");
+    shader.link_shader();
 
     // setup depth map FBO
     glGenFramebuffers(1, &FBO);
@@ -51,13 +53,15 @@ class DepthMap {
     glBindTexture(GL_TEXTURE_2D, 0);
   }
 
-  void destroy() {
+  void destroy()
+  {
     shader.destroy();
     glDeleteTextures(1, &texture);
     glDeleteFramebuffers(1, &FBO);
   }
 
-  void setResolution(int width, int height) {
+  void setResolution(int width, int height)
+  {
     this->width = width;
     this->height = height;
 
@@ -67,11 +71,13 @@ class DepthMap {
     glBindTexture(GL_TEXTURE_2D, 0);
   }
 
-  void setLightSpaceMatrix(const glm::mat4& lightSpaceMatrix) {
-    shader.setUniform("lightSpaceMatrix", lightSpaceMatrix);
+  void setLightSpaceMatrix(const glm::mat4& lightSpaceMatrix)
+  {
+    shader.set_uniform("lightSpaceMatrix", lightSpaceMatrix);
   }
 
-  void draw(const Scene& scene) const {
+  void draw(const Scene& scene) const
+  {
     // render to depth map
     glViewport(0, 0, width, height);
     glBindFramebuffer(GL_FRAMEBUFFER, FBO);
@@ -82,5 +88,3 @@ class DepthMap {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
   }
 };
-
-#endif

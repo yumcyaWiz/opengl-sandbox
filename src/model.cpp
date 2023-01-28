@@ -12,11 +12,11 @@ namespace ogls
 
 Model::Model() {}
 
-Model::Model(const std::filesystem::path& filepath) { loadModel(filepath); }
+Model::Model(const std::filesystem::path& filepath) { load_model(filepath); }
 
 Model::operator bool() const { return meshes.size() > 0; }
 
-void Model::loadModel(const std::filesystem::path& filepath)
+void Model::load_model(const std::filesystem::path& filepath)
 {
   // load model with assimp
   Assimp::Importer importer;
@@ -33,7 +33,7 @@ void Model::loadModel(const std::filesystem::path& filepath)
 
   // process scene graph
   const std::filesystem::path ps(filepath);
-  processNode(scene->mRootNode, scene, ps.parent_path());
+  process_node(scene->mRootNode, scene, ps.parent_path());
 
   // show info
   spdlog::info("[Model] " + filepath.string() + " loaded.");
@@ -70,22 +70,22 @@ void Model::destroy()
   textures.clear();
 }
 
-void Model::processNode(const aiNode* node, const aiScene* scene,
-                        const std::filesystem::path& parentPath)
+void Model::process_node(const aiNode* node, const aiScene* scene,
+                         const std::filesystem::path& parentPath)
 {
   // process all the node's meshes
   for (std::size_t i = 0; i < node->mNumMeshes; ++i) {
     const aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-    meshes.push_back(processMesh(mesh, scene, parentPath));
+    meshes.push_back(process_mesh(mesh, scene, parentPath));
   }
 
   for (std::size_t i = 0; i < node->mNumChildren; i++) {
-    processNode(node->mChildren[i], scene, parentPath);
+    process_node(node->mChildren[i], scene, parentPath);
   }
 }
 
-Mesh Model::processMesh(const aiMesh* mesh, const aiScene* scene,
-                        const std::filesystem::path& parentPath)
+Mesh Model::process_mesh(const aiMesh* mesh, const aiScene* scene,
+                         const std::filesystem::path& parentPath)
 {
   std::vector<Vertex> vertices;
   std::vector<unsigned int> indices;
@@ -222,33 +222,33 @@ Mesh Model::processMesh(const aiMesh* mesh, const aiScene* scene,
     mat->Get(AI_MATKEY_SHININESS, material.shininess);
 
     // diffuse map
-    material.diffuseMap = loadTexture(mat, TextureType::Diffuse, parentPath);
+    material.diffuse_map = loadTexture(mat, TextureType::Diffuse, parentPath);
 
     // specular map
-    material.specularMap = loadTexture(mat, TextureType::Specular, parentPath);
+    material.specular_map = loadTexture(mat, TextureType::Specular, parentPath);
 
     // ambient map
-    material.ambientMap = loadTexture(mat, TextureType::Ambient, parentPath);
+    material.ambient_map = loadTexture(mat, TextureType::Ambient, parentPath);
 
     // emissive map
-    material.emissiveMap = loadTexture(mat, TextureType::Emissive, parentPath);
+    material.emissive_map = loadTexture(mat, TextureType::Emissive, parentPath);
 
     // height map
-    material.heightMap = loadTexture(mat, TextureType::Height, parentPath);
+    material.height_map = loadTexture(mat, TextureType::Height, parentPath);
 
     // normal map
-    material.normalMap = loadTexture(mat, TextureType::Normal, parentPath);
+    material.normal_map = loadTexture(mat, TextureType::Normal, parentPath);
 
     // shininess map
-    material.shininessMap =
+    material.shininess_map =
         loadTexture(mat, TextureType::Shininess, parentPath);
 
     // displacement map
-    material.displacementMap =
+    material.displacement_map =
         loadTexture(mat, TextureType::Displacement, parentPath);
 
     // light map
-    material.lightMap = loadTexture(mat, TextureType::Light, parentPath);
+    material.light_map = loadTexture(mat, TextureType::Light, parentPath);
   }
 
   return Mesh(vertices, indices, material);

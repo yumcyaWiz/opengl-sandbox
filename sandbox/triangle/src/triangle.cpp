@@ -92,11 +92,11 @@ int main()
 
   // setup shader
   Shader shader;
-  shader.setVertexShader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
-                         "shaders/shader.vert");
-  shader.setFragmentShader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
-                           "shaders/shader.frag");
-  shader.linkShader();
+  shader.load_vertex_shader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+                            "shaders/shader.vert");
+  shader.load_fragment_shader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+                              "shaders/shader.frag");
+  shader.link_shader();
 
   // app loop
   while (!glfwWindowShouldClose(window)) {

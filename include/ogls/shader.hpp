@@ -32,11 +32,13 @@ class Shader
  public:
   Shader();
 
-  void setVertexShader(const std::filesystem::path& vertexShaderFilepath);
-  void setGeometryShader(const std::filesystem::path& geometryShaderFilepath);
-  void setFragmentShader(const std::filesystem::path& fragmentShaderFilepath);
+  void load_vertex_shader(const std::filesystem::path& vertexShaderFilepath);
+  void load_geometry_shader(
+      const std::filesystem::path& geometryShaderFilepath);
+  void load_fragment_shader(
+      const std::filesystem::path& fragmentShaderFilepath);
 
-  void linkShader();
+  void link_shader();
 
   // destroy shader object
   void destroy();
@@ -47,20 +49,20 @@ class Shader
   void deactivate() const;
 
   // set value on shader's uniform variable
-  void setUniform(const std::string& uniformName,
-                  const std::variant<bool, GLint, GLuint, GLfloat, glm::vec2,
-                                     glm::vec3, glm::mat4>& value) const;
+  void set_uniform(const std::string& uniformName,
+                   const std::variant<bool, GLint, GLuint, GLfloat, glm::vec2,
+                                      glm::vec3, glm::mat4>& value) const;
 
   // set texture on shader's sampler2D uniform variable
-  void setUniformTexture(const std::string& uniformName, GLuint texture,
-                         GLuint textureUnitNumber) const;
+  void set_uniform_texture(const std::string& uniformName, GLuint texture,
+                           GLuint textureUnitNumber) const;
 
   // set cubemap on shader's samplerCube uniform variable
-  void setUniformCubemap(const std::string& uniformName, GLuint cubemap,
-                         GLuint textureUnitNumber) const;
+  void set_uniform_cubemap(const std::string& uniformName, GLuint cubemap,
+                           GLuint textureUnitNumber) const;
 
   // set uniform buffer object on shader
-  void setUBO(const std::string& blockName, GLuint bindingNumber) const;
+  void set_UBO(const std::string& blockName, GLuint bindingNumber) const;
 };
 
 }  // namespace ogls

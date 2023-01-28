@@ -63,7 +63,7 @@ void handleInput(GLFWwindow *window, const ImGuiIO &io)
 
   // camera look around
   if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
-    camera->lookAround(io.MouseDelta.x, io.MouseDelta.y);
+    camera->look_around(io.MouseDelta.x, io.MouseDelta.y);
   }
 }
 
@@ -131,11 +131,11 @@ int main()
 
   // setup shader
   Shader shader;
-  shader.setVertexShader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
-                         "shaders/shader.vert");
-  shader.setFragmentShader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
-                           "shaders/shader.frag");
-  shader.linkShader();
+  shader.load_vertex_shader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+                            "shaders/shader.vert");
+  shader.load_fragment_shader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+                              "shaders/shader.frag");
+  shader.link_shader();
 
   // app loop
   while (!glfwWindowShouldClose(window)) {
@@ -152,14 +152,14 @@ int main()
     static char modelPath[100] = {"assets/sponza/sponza.obj"};
     ImGui::InputText("Model", modelPath, 100);
     if (ImGui::Button("Load Model")) {
-      scene.setModel({std::string(CMAKE_SOURCE_DIR) + "/" + modelPath});
+      scene.set_model({std::string(CMAKE_SOURCE_DIR) + "/" + modelPath});
     }
 
     ImGui::Separator();
 
     ImGui::InputFloat("FOV", &camera->fov);
-    ImGui::InputFloat("Movement Speed", &camera->movementSpeed);
-    ImGui::InputFloat("Look Around Speed", &camera->lookAroundSpeed);
+    ImGui::InputFloat("Movement Speed", &camera->movement_speed);
+    ImGui::InputFloat("Look Around Speed", &camera->look_around_speed);
 
     if (ImGui::Button("Reset Camera")) { camera->reset(); }
 
@@ -175,10 +175,10 @@ int main()
     handleInput(window, io);
 
     // set uniform variables
-    shader.setUniform("view", camera->computeViewMatrix());
-    shader.setUniform("projection",
-                      camera->computeProjectionMatrix(width, height));
-    shader.setUniform("layerType", static_cast<GLint>(layerType));
+    shader.set_uniform("view", camera->compute_view_matrix());
+    shader.set_uniform("projection",
+                       camera->compute_projection_matrix(width, height));
+    shader.set_uniform("layerType", static_cast<GLint>(layerType));
 
     // render
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

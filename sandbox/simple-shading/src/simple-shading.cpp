@@ -44,7 +44,7 @@ void handleInput(GLFWwindow *window, const ImGuiIO &io)
 
   // camera look around
   if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
-    camera->lookAround(io.MouseDelta.x, io.MouseDelta.y);
+    camera->look_around(io.MouseDelta.x, io.MouseDelta.y);
   }
 }
 
@@ -109,16 +109,17 @@ int main()
 
   // setup scene
   Scene scene;
-  scene.addPointLight({glm::vec3(10000.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f});
-  scene.setPointLightIndex(0);
+  scene.add_point_light(
+      {glm::vec3(10000.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f});
+  scene.set_point_light_index(0);
 
   // setup shader
   Shader shader;
-  shader.setVertexShader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
-                         "shaders/shader.vert");
-  shader.setFragmentShader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
-                           "shaders/shader.frag");
-  shader.linkShader();
+  shader.load_vertex_shader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+                            "shaders/shader.vert");
+  shader.load_fragment_shader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+                              "shaders/shader.frag");
+  shader.link_shader();
 
   // app loop
   float t = 0.0f;
@@ -136,12 +137,12 @@ int main()
     static char modelPath[100] = {"assets/sponza/sponza.obj"};
     ImGui::InputText("Model", modelPath, 100);
     if (ImGui::Button("Load Model")) {
-      scene.setModel({std::string(CMAKE_SOURCE_DIR) + "/" + modelPath});
+      scene.set_model({std::string(CMAKE_SOURCE_DIR) + "/" + modelPath});
     }
 
     ImGui::InputFloat("FOV", &camera->fov);
-    ImGui::InputFloat("Movement Speed", &camera->movementSpeed);
-    ImGui::InputFloat("Look Around Speed", &camera->lookAroundSpeed);
+    ImGui::InputFloat("Movement Speed", &camera->movement_speed);
+    ImGui::InputFloat("Look Around Speed", &camera->look_around_speed);
 
     if (ImGui::Button("Reset Camera")) { camera->reset(); }
 
@@ -155,10 +156,10 @@ int main()
         glm::vec3(100.0f * std::cos(t), 100.0f, 100.0f * std::sin(t));
 
     // set uniform variables
-    shader.setUniform("view", camera->computeViewMatrix());
-    shader.setUniform("projection",
-                      camera->computeProjectionMatrix(width, height));
-    shader.setUniform("camPos", camera->camPos);
+    shader.set_uniform("view", camera->compute_view_matrix());
+    shader.set_uniform("projection",
+                       camera->compute_projection_matrix(width, height));
+    shader.set_uniform("camPos", camera->cam_pos);
 
     // render
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
