@@ -10,9 +10,11 @@
 #include "model.hpp"
 #include "shader.hpp"
 
-namespace ogls {
+namespace ogls
+{
 
-class Scene {
+class Scene
+{
  public:
   Model model;
 

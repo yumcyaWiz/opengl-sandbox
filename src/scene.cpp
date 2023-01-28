@@ -1,10 +1,12 @@
 #include "ogls/scene.hpp"
 
-namespace ogls {
+namespace ogls
+{
 
 Scene::Scene() {}
 
-void Scene::draw(const Shader& shader) const {
+void Scene::draw(const Shader& shader) const
+{
   // set point lights
   shader.setUniform("n_PointLights", static_cast<GLint>(pointLights.size()));
   for (std::size_t i = 0; i < pointLights.size(); ++i) {
@@ -23,7 +25,8 @@ void Scene::draw(const Shader& shader) const {
   model.draw(shader);
 }
 
-void Scene::destroy() {
+void Scene::destroy()
+{
   // destroy model
   model.destroy();
 
@@ -31,20 +34,21 @@ void Scene::destroy() {
   pointLights.clear();
 }
 
-void Scene::setModel(const Model& model) {
+void Scene::setModel(const Model& model)
+{
   // destroy previous model
-  if (this->model) {
-    this->model.destroy();
-  }
+  if (this->model) { this->model.destroy(); }
 
   this->model = model;
 }
 
-void Scene::addPointLight(const PointLight& light) {
+void Scene::addPointLight(const PointLight& light)
+{
   pointLights.push_back(light);
 }
 
-void Scene::setDirectionalLight(const DirectionalLight& light) {
+void Scene::setDirectionalLight(const DirectionalLight& light)
+{
   directionalLight = light;
 }
 

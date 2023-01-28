@@ -5,7 +5,8 @@
 #include "glad/glad.h"
 #include "glm/glm.hpp"
 
-namespace ogls {
+namespace ogls
+{
 
 enum class CameraMovement {
   FORWARD,
@@ -16,7 +17,8 @@ enum class CameraMovement {
   DOWN,
 };
 
-class Camera {
+class Camera
+{
  public:
   glm::vec3 camPos;      // camera position
   glm::vec3 camForward;  // camera forward direction

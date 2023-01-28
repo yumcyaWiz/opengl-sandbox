@@ -9,9 +9,11 @@
 #include "ogls/mesh.hpp"
 #include "ogls/shader.hpp"
 
-namespace ogls {
+namespace ogls
+{
 
-class Model {
+class Model
+{
  public:
   Model();
   Model(const std::filesystem::path& filepath);

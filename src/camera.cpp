@@ -2,7 +2,8 @@
 
 #include "glm/gtc/matrix_transform.hpp"
 
-namespace ogls {
+namespace ogls
+{
 
 Camera::Camera()
     : camPos{0.0f},
@@ -13,24 +14,30 @@ Camera::Camera()
       movementSpeed(1.0f),
       lookAroundSpeed(0.5f),
       phi(270.0f),
-      theta(90.0f) {}
+      theta(90.0f)
+{
+}
 
-glm::mat4 Camera::computeViewMatrix() const {
+glm::mat4 Camera::computeViewMatrix() const
+{
   return glm::lookAt(camPos, camPos + camForward, camUp);
 }
 
-glm::mat4 Camera::computeProjectionMatrix(int width, int height) const {
+glm::mat4 Camera::computeProjectionMatrix(int width, int height) const
+{
   return glm::perspective(glm::radians(fov), static_cast<float>(width) / height,
                           0.1f, 10000.0f);
 }
 
-glm::mat4 Camera::computeViewProjectionMatrix(int width, int height) const {
+glm::mat4 Camera::computeViewProjectionMatrix(int width, int height) const
+{
   return computeProjectionMatrix(width, height) * computeViewMatrix();
 }
 
 void Camera::reset() { *this = Camera(); }
 
-void Camera::move(const CameraMovement& direction, float ds) {
+void Camera::move(const CameraMovement& direction, float ds)
+{
   const float velocity = movementSpeed * ds;
   switch (direction) {
     case CameraMovement::FORWARD:
@@ -54,7 +61,8 @@ void Camera::move(const CameraMovement& direction, float ds) {
   }
 }
 
-void Camera::lookAround(float dPhi, float dTheta) {
+void Camera::lookAround(float dPhi, float dTheta)
+{
   // update phi, theta
   phi += lookAroundSpeed * dPhi;
   if (phi < 0.0f) phi = 360.0f;

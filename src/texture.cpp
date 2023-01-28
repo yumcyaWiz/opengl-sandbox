@@ -7,13 +7,15 @@
 // #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-namespace ogls {
+namespace ogls
+{
 
 Texture::Texture() {}
 
 Texture::Texture(const std::filesystem::path& filepath,
                  const TextureType& textureType)
-    : filepath{filepath}, textureType{textureType} {
+    : filepath{filepath}, textureType{textureType}
+{
   // generate texture
   glGenTextures(1, &id);
   glBindTexture(GL_TEXTURE_2D, id);
@@ -30,7 +32,8 @@ Texture::Texture(const std::filesystem::path& filepath,
 
 void Texture::destroy() { glDeleteTextures(1, &id); }
 
-std::string Texture::typeName() const {
+std::string Texture::typeName() const
+{
   switch (textureType) {
     case TextureType::Diffuse:
       return "Diffuse";
@@ -54,7 +57,8 @@ std::string Texture::typeName() const {
   return "";
 }
 
-void Texture::loadImage(const std::filesystem::path& filepath) const {
+void Texture::loadImage(const std::filesystem::path& filepath) const
+{
   spdlog::info("[Texture] loading " + filepath.string());
   spdlog::info("[Texture] texture type: " + typeName());
 

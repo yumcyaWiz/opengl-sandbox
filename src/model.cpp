@@ -7,7 +7,8 @@
 #include "assimp/postprocess.h"
 #include "spdlog/spdlog.h"
 
-namespace ogls {
+namespace ogls
+{
 
 Model::Model() {}
 
@@ -15,7 +16,8 @@ Model::Model(const std::filesystem::path& filepath) { loadModel(filepath); }
 
 Model::operator bool() const { return meshes.size() > 0; }
 
-void Model::loadModel(const std::filesystem::path& filepath) {
+void Model::loadModel(const std::filesystem::path& filepath)
+{
   // load model with assimp
   Assimp::Importer importer;
   const aiScene* scene =
@@ -49,29 +51,28 @@ void Model::loadModel(const std::filesystem::path& filepath) {
                std::to_string(textures.size()));
 }
 
-void Model::draw(const Shader& shader) const {
+void Model::draw(const Shader& shader) const
+{
   // draw all meshes
   for (std::size_t i = 0; i < meshes.size(); i++) {
     meshes[i].draw(shader, textures);
   }
 }
 
-void Model::destroy() {
+void Model::destroy()
+{
   // destroy all meshes
-  for (auto& mesh : meshes) {
-    mesh.destroy();
-  }
+  for (auto& mesh : meshes) { mesh.destroy(); }
   meshes.clear();
 
   // destroy all textures
-  for (auto& texture : textures) {
-    texture.destroy();
-  }
+  for (auto& texture : textures) { texture.destroy(); }
   textures.clear();
 }
 
 void Model::processNode(const aiNode* node, const aiScene* scene,
-                        const std::filesystem::path& parentPath) {
+                        const std::filesystem::path& parentPath)
+{
   // process all the node's meshes
   for (std::size_t i = 0; i < node->mNumMeshes; ++i) {
     const aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
@@ -84,7 +85,8 @@ void Model::processNode(const aiNode* node, const aiScene* scene,
 }
 
 Mesh Model::processMesh(const aiMesh* mesh, const aiScene* scene,
-                        const std::filesystem::path& parentPath) {
+                        const std::filesystem::path& parentPath)
+{
   std::vector<Vertex> vertices;
   std::vector<unsigned int> indices;
   Material material;
@@ -254,7 +256,8 @@ Mesh Model::processMesh(const aiMesh* mesh, const aiScene* scene,
 
 std::optional<std::size_t> Model::loadTexture(
     const aiMaterial* material, const TextureType& type,
-    const std::filesystem::path& parentPath) {
+    const std::filesystem::path& parentPath)
+{
   aiTextureType aiTexType;
   switch (type) {
     case TextureType::Diffuse:
@@ -287,9 +290,7 @@ std::optional<std::size_t> Model::loadTexture(
   }
 
   // if there is no texture
-  if (material->GetTextureCount(aiTexType) == 0) {
-    return std::nullopt;
-  }
+  if (material->GetTextureCount(aiTexType) == 0) { return std::nullopt; }
 
   // get texture filepath
   aiString str;
@@ -307,12 +308,11 @@ std::optional<std::size_t> Model::loadTexture(
 }
 
 std::optional<std::size_t> Model::hasTexture(
-    const std::filesystem::path& filepath) const {
+    const std::filesystem::path& filepath) const
+{
   for (std::size_t i = 0; i < textures.size(); ++i) {
     const Texture& texture = textures[i];
-    if (texture.filepath == filepath) {
-      return i;
-    }
+    if (texture.filepath == filepath) { return i; }
   }
   return std::nullopt;
 }

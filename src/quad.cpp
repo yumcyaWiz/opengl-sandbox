@@ -1,8 +1,10 @@
 #include "ogls/quad.hpp"
 
-namespace ogls {
+namespace ogls
+{
 
-Quad::Quad() {
+Quad::Quad()
+{
   // setup VAO
   glGenVertexArrays(1, &VAO);
   glBindVertexArray(VAO);
@@ -39,13 +41,15 @@ Quad::Quad() {
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void Quad::destroy() {
+void Quad::destroy()
+{
   glDeleteBuffers(1, &VBO);
   glDeleteBuffers(1, &EBO);
   glDeleteVertexArrays(1, &VAO);
 }
 
-void Quad::draw(const Shader& shader) const {
+void Quad::draw(const Shader& shader) const
+{
   shader.activate();
   glBindVertexArray(VAO);
   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

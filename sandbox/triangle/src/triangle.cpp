@@ -13,20 +13,23 @@ using namespace ogls;
 int width = 512;
 int height = 512;
 
-void handleInput(GLFWwindow* window) {
+void handleInput(GLFWwindow *window)
+{
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
     glfwSetWindowShouldClose(window, GLFW_TRUE);
   }
 }
 
-void framebufferSizeCallback([[maybe_unused]] GLFWwindow* window, int _width,
-                             int _height) {
+void framebuffer_size_callback([[maybe_unused]] GLFWwindow *window, int _width,
+                               int _height)
+{
   width = _width;
   height = _height;
   glViewport(0, 0, width, height);
 }
 
-int main() {
+int main()
+{
   // initialize glfw
   if (!glfwInit()) {
     std::cerr << "failed to initialize GLFW" << std::endl;
@@ -38,7 +41,7 @@ int main() {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);  // required for Mac
-  GLFWwindow* window =
+  GLFWwindow *window =
       glfwCreateWindow(width, height, "triangle", nullptr, nullptr);
   if (!window) {
     std::cerr << "failed to create window" << std::endl;
@@ -46,7 +49,7 @@ int main() {
   }
   glfwMakeContextCurrent(window);
 
-  glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
+  glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
   // initialize glad
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -77,12 +80,12 @@ int main() {
   // position
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
-                        reinterpret_cast<void*>(0));
+                        reinterpret_cast<void *>(0));
 
   // color
   glEnableVertexAttribArray(1);
   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
-                        reinterpret_cast<void*>(3 * sizeof(float)));
+                        reinterpret_cast<void *>(3 * sizeof(float)));
 
   glBindVertexArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, 0);

@@ -6,7 +6,8 @@
 
 #include "glad/glad.h"
 
-namespace ogls {
+namespace ogls
+{
 
 enum class TextureType {
   Diffuse,
@@ -20,7 +21,8 @@ enum class TextureType {
   Light,
 };
 
-class Texture {
+class Texture
+{
  public:
   std::filesystem::path filepath;
   GLuint id;

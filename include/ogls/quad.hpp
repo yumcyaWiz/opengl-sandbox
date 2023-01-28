@@ -4,9 +4,11 @@
 #include "glad/glad.h"
 #include "shader.hpp"
 
-namespace ogls {
+namespace ogls
+{
 
-class Quad {
+class Quad
+{
  private:
   GLuint VAO;
   GLuint VBO;

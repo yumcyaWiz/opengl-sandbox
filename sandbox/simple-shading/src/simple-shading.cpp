@@ -21,7 +21,8 @@ std::unique_ptr<Camera> camera;
 int width = 1600;
 int height = 900;
 
-void handleInput(GLFWwindow* window, const ImGuiIO& io) {
+void handleInput(GLFWwindow *window, const ImGuiIO &io)
+{
   // close application
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
     glfwSetWindowShouldClose(window, GLFW_TRUE);
@@ -47,14 +48,16 @@ void handleInput(GLFWwindow* window, const ImGuiIO& io) {
   }
 }
 
-void framebufferSizeCallback([[maybe_unused]] GLFWwindow* window, int _width,
-                             int _height) {
+void framebuffer_size_callback([[maybe_unused]] GLFWwindow *window, int _width,
+                               int _height)
+{
   width = _width;
   height = _height;
   glViewport(0, 0, width, height);
 }
 
-int main() {
+int main()
+{
   // initialize glfw
   if (!glfwInit()) {
     std::cerr << "failed to initialize GLFW" << std::endl;
@@ -67,7 +70,7 @@ int main() {
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);  // required for Mac
   glfwWindowHint(GLFW_SAMPLES, 4);                      // 4x MSAA
-  GLFWwindow* window =
+  GLFWwindow *window =
       glfwCreateWindow(width, height, "simple-shading", nullptr, nullptr);
   if (!window) {
     std::cerr << "failed to create window" << std::endl;
@@ -75,7 +78,7 @@ int main() {
   }
   glfwMakeContextCurrent(window);
 
-  glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
+  glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
   // initialize glad
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -86,7 +89,7 @@ int main() {
   // initialize imgui
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
-  ImGuiIO& io = ImGui::GetIO();
+  ImGuiIO &io = ImGui::GetIO();
   (void)io;
 
   // set imgui style
@@ -139,9 +142,7 @@ int main() {
     ImGui::InputFloat("Movement Speed", &camera->movementSpeed);
     ImGui::InputFloat("Look Around Speed", &camera->lookAroundSpeed);
 
-    if (ImGui::Button("Reset Camera")) {
-      camera->reset();
-    }
+    if (ImGui::Button("Reset Camera")) { camera->reset(); }
 
     ImGui::End();
 

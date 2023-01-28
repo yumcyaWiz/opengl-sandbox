@@ -1,10 +1,12 @@
 #include "ogls/mesh.hpp"
 
-namespace ogls {
+namespace ogls
+{
 
 Mesh::Mesh(const std::vector<Vertex>& vertices,
            const std::vector<unsigned int>& indices, const Material& material)
-    : vertices{vertices}, indices{indices}, material{material} {
+    : vertices{vertices}, indices{indices}, material{material}
+{
   // setup VBO, EBO, VAO
   glGenVertexArrays(1, &VAO);
   glGenBuffers(1, &VBO);
@@ -53,7 +55,8 @@ Mesh::Mesh(const std::vector<Vertex>& vertices,
   glBindVertexArray(0);
 }
 
-void Mesh::destroy() {
+void Mesh::destroy()
+{
   glDeleteBuffers(1, &VBO);
   glDeleteBuffers(1, &EBO);
   glDeleteVertexArrays(1, &VAO);
@@ -62,7 +65,8 @@ void Mesh::destroy() {
 }
 
 void Mesh::draw(const Shader& shader,
-                const std::vector<Texture>& textures) const {
+                const std::vector<Texture>& textures) const
+{
   // set texture uniform
   if (material.diffuseMap) {
     shader.setUniformTexture("material.diffuseMap",

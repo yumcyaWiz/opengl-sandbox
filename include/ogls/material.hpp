@@ -4,7 +4,8 @@
 
 #include "glm/glm.hpp"
 
-namespace ogls {
+namespace ogls
+{
 
 struct Material {
   glm::vec3 kd;  // diffuse color

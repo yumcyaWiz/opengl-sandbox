@@ -9,11 +9,13 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "spdlog/spdlog.h"
 
-namespace ogls {
+namespace ogls
+{
 
 Shader::Shader() : vertexShader{0}, fragmentShader{0}, program{0} {}
 
-void Shader::checkShaderCompilation(GLuint shader) {
+void Shader::checkShaderCompilation(GLuint shader)
+{
   int success = 0;
   glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
   if (success == GL_FALSE) {
@@ -28,14 +30,12 @@ void Shader::checkShaderCompilation(GLuint shader) {
   }
 }
 
-void Shader::setVertexShader(
-    const std::filesystem::path& vertexShaderFilepath) {
+void Shader::setVertexShader(const std::filesystem::path& vertexShaderFilepath)
+{
   this->vertexShaderFilepath = vertexShaderFilepath;
 
   // delete previous shader
-  if (vertexShader) {
-    glDeleteShader(vertexShader);
-  }
+  if (vertexShader) { glDeleteShader(vertexShader); }
 
   spdlog::info("[Shader] loading vertex shader from " +
                vertexShaderFilepath.string());
@@ -54,13 +54,12 @@ void Shader::setVertexShader(
 }
 
 void Shader::setGeometryShader(
-    const std::filesystem::path& geometryShaderFilepath) {
+    const std::filesystem::path& geometryShaderFilepath)
+{
   this->geometryShaderFilepath = geometryShaderFilepath;
 
   // delete previous shader
-  if (geometryShader) {
-    glDeleteShader(geometryShader.value());
-  }
+  if (geometryShader) { glDeleteShader(geometryShader.value()); }
 
   spdlog::info("[Shader] loading geometry shader from " +
                geometryShaderFilepath.string());
@@ -78,13 +77,12 @@ void Shader::setGeometryShader(
 }
 
 void Shader::setFragmentShader(
-    const std::filesystem::path& fragmentShaderFilepath) {
+    const std::filesystem::path& fragmentShaderFilepath)
+{
   this->fragmentShaderFilepath = fragmentShaderFilepath;
 
   // delete previous shader
-  if (fragmentShader) {
-    glDeleteShader(fragmentShader);
-  }
+  if (fragmentShader) { glDeleteShader(fragmentShader); }
 
   spdlog::info("[Shader] loading fragment shader from " +
                fragmentShaderFilepath.string());
@@ -102,22 +100,15 @@ void Shader::setFragmentShader(
   checkShaderCompilation(fragmentShader);
 }
 
-void Shader::destroy() {
-  if (vertexShader) {
-    glDeleteShader(vertexShader);
-  }
+void Shader::destroy()
+{
+  if (vertexShader) { glDeleteShader(vertexShader); }
 
-  if (geometryShader) {
-    glDeleteShader(geometryShader.value());
-  }
+  if (geometryShader) { glDeleteShader(geometryShader.value()); }
 
-  if (fragmentShader) {
-    glDeleteShader(fragmentShader);
-  }
+  if (fragmentShader) { glDeleteShader(fragmentShader); }
 
-  if (program) {
-    glDeleteProgram(program);
-  }
+  if (program) { glDeleteProgram(program); }
 }
 
 void Shader::activate() const { glUseProgram(program); }
@@ -127,7 +118,8 @@ void Shader::deactivate() const { glUseProgram(0); }
 void Shader::setUniform(
     const std::string& uniformName,
     const std::variant<bool, GLint, GLuint, GLfloat, glm::vec2, glm::vec3,
-                       glm::mat4>& value) const {
+                       glm::mat4>& value) const
+{
   activate();
 
   // get location of uniform variable
@@ -142,13 +134,16 @@ void Shader::setUniform(
     void operator()(GLint value) { glUniform1i(location, value); }
     void operator()(GLuint value) { glUniform1ui(location, value); }
     void operator()(GLfloat value) { glUniform1f(location, value); }
-    void operator()(const glm::vec2& value) {
+    void operator()(const glm::vec2& value)
+    {
       glUniform2fv(location, 1, glm::value_ptr(value));
     }
-    void operator()(const glm::vec3& value) {
+    void operator()(const glm::vec3& value)
+    {
       glUniform3fv(location, 1, glm::value_ptr(value));
     }
-    void operator()(const glm::mat4& value) {
+    void operator()(const glm::mat4& value)
+    {
       glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
     }
   };
@@ -157,7 +152,8 @@ void Shader::setUniform(
   deactivate();
 }
 
-void Shader::setUBO(const std::string& blockName, GLuint bindingNumber) const {
+void Shader::setUBO(const std::string& blockName, GLuint bindingNumber) const
+{
   const GLuint blockIndex = glGetUniformBlockIndex(program, blockName.c_str());
 
   // set binding number of specified block
@@ -165,7 +161,8 @@ void Shader::setUBO(const std::string& blockName, GLuint bindingNumber) const {
 }
 
 void Shader::setUniformTexture(const std::string& uniformName, GLuint texture,
-                               GLuint textureUnitNumber) const {
+                               GLuint textureUnitNumber) const
+{
   activate();
 
   // bind texture to specified texture unit
@@ -180,7 +177,8 @@ void Shader::setUniformTexture(const std::string& uniformName, GLuint texture,
 }
 
 void Shader::setUniformCubemap(const std::string& uniformName, GLuint cubemap,
-                               GLuint textureUnitNumber) const {
+                               GLuint textureUnitNumber) const
+{
   activate();
 
   // bind cubemap to specified texture unit
@@ -194,21 +192,18 @@ void Shader::setUniformCubemap(const std::string& uniformName, GLuint cubemap,
   deactivate();
 }
 
-void Shader::linkShader() {
+void Shader::linkShader()
+{
   // link shader program
   program = glCreateProgram();
   glAttachShader(program, vertexShader);
-  if (geometryShader) {
-    glAttachShader(program, geometryShader.value());
-  }
+  if (geometryShader) { glAttachShader(program, geometryShader.value()); }
   glAttachShader(program, fragmentShader);
 
   glLinkProgram(program);
 
   glDetachShader(program, vertexShader);
-  if (geometryShader) {
-    glDetachShader(program, geometryShader.value());
-  }
+  if (geometryShader) { glDetachShader(program, geometryShader.value()); }
   glDetachShader(program, fragmentShader);
 
   // handle link error

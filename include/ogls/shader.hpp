@@ -9,9 +9,11 @@
 #include "glad/glad.h"
 #include "glm/glm.hpp"
 
-namespace ogls {
+namespace ogls
+{
 
-class Shader {
+class Shader
+{
  private:
   std::filesystem::path vertexShaderFilepath;
   std::string vertexShaderSource;

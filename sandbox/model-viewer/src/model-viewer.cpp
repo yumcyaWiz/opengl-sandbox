@@ -40,7 +40,8 @@ int width = 1600;
 int height = 900;
 LayerType layerType = LayerType::Normal;
 
-void handleInput(GLFWwindow* window, const ImGuiIO& io) {
+void handleInput(GLFWwindow *window, const ImGuiIO &io)
+{
   // close application
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
     glfwSetWindowShouldClose(window, GLFW_TRUE);
@@ -66,14 +67,16 @@ void handleInput(GLFWwindow* window, const ImGuiIO& io) {
   }
 }
 
-void framebufferSizeCallback([[maybe_unused]] GLFWwindow* window, int _width,
-                             int _height) {
+void framebuffer_size_callback([[maybe_unused]] GLFWwindow *window, int _width,
+                               int _height)
+{
   width = _width;
   height = _height;
   glViewport(0, 0, width, height);
 }
 
-int main() {
+int main()
+{
   // initialize glfw
   if (!glfwInit()) {
     std::cerr << "failed to initialize GLFW" << std::endl;
@@ -86,7 +89,7 @@ int main() {
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);  // required for Mac
   glfwWindowHint(GLFW_SAMPLES, 4);                      // 4x MSAA
-  GLFWwindow* window =
+  GLFWwindow *window =
       glfwCreateWindow(width, height, "model-viewer", nullptr, nullptr);
   if (!window) {
     std::cerr << "failed to create window" << std::endl;
@@ -94,7 +97,7 @@ int main() {
   }
   glfwMakeContextCurrent(window);
 
-  glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
+  glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
   // initialize glad
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -105,7 +108,7 @@ int main() {
   // initialize imgui
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
-  ImGuiIO& io = ImGui::GetIO();
+  ImGuiIO &io = ImGui::GetIO();
   (void)io;
 
   // set imgui style
@@ -158,13 +161,11 @@ int main() {
     ImGui::InputFloat("Movement Speed", &camera->movementSpeed);
     ImGui::InputFloat("Look Around Speed", &camera->lookAroundSpeed);
 
-    if (ImGui::Button("Reset Camera")) {
-      camera->reset();
-    }
+    if (ImGui::Button("Reset Camera")) { camera->reset(); }
 
     ImGui::Separator();
 
-    ImGui::Combo("Layer Type", reinterpret_cast<int*>(&layerType),
+    ImGui::Combo("Layer Type", reinterpret_cast<int *>(&layerType),
                  "Position\0Normal\0TexCoords\0Tangent\0dndu\0dndv\0Diffuse\0Sp"
                  "ecular\0Ambient\0Emis"
                  "sive\0Height\0NormalMap\0Shininess\0Displacement\0Light\0\0");

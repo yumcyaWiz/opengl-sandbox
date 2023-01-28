@@ -9,7 +9,8 @@
 #include "shader.hpp"
 #include "texture.hpp"
 
-namespace ogls {
+namespace ogls
+{
 
 struct Vertex {
   glm::vec3 position;   // vertex position
@@ -22,7 +23,8 @@ struct Vertex {
   Vertex() : position{0.0f}, normal{0.0f}, texcoords{0.0f}, tangent{0.0f} {}
 };
 
-class Mesh {
+class Mesh
+{
  public:
   std::vector<Vertex> vertices;
   std::vector<unsigned int> indices;
