@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.12)
 project(opengl-sandbox LANGUAGES C CXX)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # externals
 add_subdirectory(externals)
 
@@ -8,12 +10,12 @@ add_subdirectory(externals)
 find_package(OpenGL REQUIRED)
 
 # ogls
-add_library(ogls 
-  src/shader.cpp 
-  src/camera.cpp 
-  src/texture.cpp 
-  src/mesh.cpp 
-  src/model.cpp 
+add_library(ogls
+  src/shader.cpp
+  src/camera.cpp
+  src/texture.cpp
+  src/mesh.cpp
+  src/model.cpp
   src/scene.cpp
   src/quad.cpp
 )
