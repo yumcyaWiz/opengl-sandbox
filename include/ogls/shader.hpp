@@ -1,6 +1,4 @@
-#ifndef _OGLS_SHADER_H
-#define _OGLS_SHADER_H
-
+#pragma once
 #include <filesystem>
 #include <optional>
 #include <string>
@@ -66,5 +64,3 @@ class Shader
 };
 
 }  // namespace ogls
-
-#endif

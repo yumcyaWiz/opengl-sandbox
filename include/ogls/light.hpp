@@ -1,5 +1,4 @@
-#ifndef _OGLS_LIGHT_H
-#define _OGLS_LIGHT_H
+#pragma once
 
 #include "glm/glm.hpp"
 
@@ -41,5 +40,3 @@ class DirectionalLight : public Light
 };
 
 }  // namespace ogls
-
-#endif

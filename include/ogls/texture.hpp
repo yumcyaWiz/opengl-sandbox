@@ -1,5 +1,4 @@
-#ifndef _OGLS_TEXTURE_H
-#define _OGLS_TEXTURE_H
+#pragma once
 #include <filesystem>
 #include <iostream>
 #include <string>
@@ -42,5 +41,3 @@ class Texture
 };
 
 }  // namespace ogls
-
-#endif

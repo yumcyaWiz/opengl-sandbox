@@ -1,5 +1,5 @@
-#ifndef _OGLS_MODEL_H
-#define _OGLS_MODEL_H
+#pragma once
+
 #include <assimp/scene.h>
 
 #include <optional>
@@ -51,5 +51,3 @@ class Model
 };
 
 }  // namespace ogls
-
-#endif

@@ -1,5 +1,5 @@
-#ifndef _OGLS_CAMERA_H
-#define _OGLS_CAMERA_H
+#pragma once
+
 #include <cmath>
 
 #include "glad/glad.h"
@@ -48,5 +48,3 @@ class Camera
 };
 
 }  // namespace ogls
-
-#endif

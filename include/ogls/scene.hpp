@@ -1,5 +1,4 @@
-#ifndef _OGLS_SCENE_H
-#define _OGLS_SCENE_H
+#pragma once
 #include <optional>
 #include <string>
 #include <vector>
@@ -41,5 +40,3 @@ class Scene
 };
 
 }  // namespace ogls
-
-#endif

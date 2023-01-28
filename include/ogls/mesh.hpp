@@ -1,5 +1,5 @@
-#ifndef _OGLS_MESH_H
-#define _OGLS_MESH_H
+#pragma once
+
 #include <vector>
 
 #include "glad/glad.h"
@@ -46,5 +46,3 @@ class Mesh
 };
 
 }  // namespace ogls
-
-#endif

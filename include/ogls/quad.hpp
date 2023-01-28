@@ -1,5 +1,4 @@
-#ifndef _OGLS_QUAD_H
-#define _OGLS_QUAD_H
+#pragma once
 
 #include "glad/glad.h"
 #include "shader.hpp"
@@ -23,5 +22,3 @@ class Quad
 };
 
 }  // namespace ogls
-
-#endif

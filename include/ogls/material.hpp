@@ -1,5 +1,5 @@
-#ifndef _OGLS_MATERIAL_H
-#define _OGLS_MATERIAL_H
+#pragma once
+
 #include <optional>
 
 #include "glm/glm.hpp"
@@ -29,5 +29,3 @@ struct Material {
 };
 
 }  // namespace ogls
-
-#endif
