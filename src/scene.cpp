@@ -47,6 +47,8 @@ void Scene::addPointLight(const PointLight& light)
   pointLights.push_back(light);
 }
 
+void Scene::setPointLightIndex(std::size_t index) { pointLightIndex = index; }
+
 void Scene::setDirectionalLight(const DirectionalLight& light)
 {
   directionalLight = light;

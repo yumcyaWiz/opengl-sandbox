@@ -32,6 +32,5 @@ struct DirectionalLight {
 
 uniform Material material;
 
-uniform int n_PointLights;
-uniform PointLight pointLights[100];
+uniform PointLight pointLight;
 uniform DirectionalLight directionalLight;

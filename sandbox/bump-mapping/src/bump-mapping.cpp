@@ -114,6 +114,7 @@ int main()
   // setup scene
   Scene scene;
   scene.addPointLight(PointLight(glm::vec3(10000), glm::vec3(0, 100, 0), 0));
+  scene.setPointLightIndex(0);
 
   // setup shader
   Shader shader;

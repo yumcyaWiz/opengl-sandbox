@@ -25,7 +25,7 @@ vec3 blinnPhong(in vec3 viewDir, in vec3 normal, in vec3 lightDir, in vec3 kd, i
 }
 
 float shadowMapping(in vec3 position) {
-  vec3 lightToPos = position - pointLights[0].position;
+  vec3 lightToPos = position - pointLight.position;
   float currentDepth = length(lightToPos);
   float closestDepth = zFar * texture(shadowMap, lightToPos).x;
   return currentDepth > closestDepth + shadowBias ? 1.0 : 0.0;
@@ -44,9 +44,9 @@ void main() {
   float shadow = shadowMapping(fs_in.position);
 
   // sahding
-  vec3 lightDir = normalize(pointLights[0].position - fs_in.position);
-  float dist = max(distance(pointLights[0].position, fs_in.position) - pointLights[0].radius, 0.0);
-  color += (1.0 - shadow) * blinnPhong(viewDir, fs_in.normal, lightDir, kd, ks, material.shininess) * pointLights[0].ke / pow(dist, 2.0);
+  vec3 lightDir = normalize(pointLight.position - fs_in.position);
+  float dist = max(distance(pointLight.position, fs_in.position) - pointLight.radius, 0.0);
+  color += (1.0 - shadow) * blinnPhong(viewDir, fs_in.normal, lightDir, kd, ks, material.shininess) * pointLight.ke / pow(dist, 2.0);
 
   // ambient
   color += 0.01 * shadow * kd;

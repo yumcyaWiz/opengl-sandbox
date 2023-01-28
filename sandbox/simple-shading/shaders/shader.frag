@@ -32,11 +32,9 @@ void main() {
   color += blinnPhong(viewDir, normal, directionalLight.direction, kd, ks, material.shininess) * directionalLight.ke;
 
   // point lights
-  for(int i = 0; i < n_PointLights; ++i) {
-    vec3 lightDir = normalize(pointLights[i].position - position);
-    float dist = max(distance(pointLights[i].position, position) - pointLights[i].radius, 0.0);
-    color += blinnPhong(viewDir, normal, lightDir, kd, ks, material.shininess) * pointLights[i].ke / pow(dist, 2.0);
-  }
+  vec3 lightDir = normalize(pointLight.position - position);
+  float dist = max(distance(pointLight.position, position) - pointLight.radius, 0.0);
+  color += blinnPhong(viewDir, normal, lightDir, kd, ks, material.shininess) * pointLight.ke / pow(dist, 2.0);
 
   // gamma correction
   color = pow(color, vec3(1.0 / 2.2));
