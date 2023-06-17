@@ -9,7 +9,7 @@ experiment environment for realtime graphics methods in OpenGL.
 * C++17
 * Clang(Currently, GCC compiler doesn't work)
 * CMake 3.12 or Higher
-* OpenGL 3.3
+* OpenGL 4.6
 
 ## Features
 
