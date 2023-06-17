@@ -89,17 +89,6 @@ void Model::draw(const Pipeline& pipeline, const Shader& shader) const
   }
 }
 
-void Model::release()
-{
-  // destroy all meshes
-  for (auto& mesh : meshes) { mesh.release(); }
-  meshes.clear();
-
-  // destroy all textures
-  for (auto& texture : textures) { texture.release(); }
-  textures.clear();
-}
-
 void Model::processAssimpNode(const aiNode* node, const aiScene* scene,
                               const std::filesystem::path& parentPath)
 {

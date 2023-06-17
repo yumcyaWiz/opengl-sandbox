@@ -13,6 +13,8 @@ class Buffer
   GLuint buffer;
   uint32_t size;
 
+  void release();
+
  public:
   Buffer();
   Buffer(const Buffer& buffer) = delete;
@@ -21,8 +23,6 @@ class Buffer
 
   Buffer& operator=(const Buffer& buffer) = delete;
   Buffer& operator=(Buffer&& other);
-
-  void release();
 
   GLuint getName() const;
 

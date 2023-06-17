@@ -41,6 +41,9 @@ Mesh::Mesh(Mesh&& other)
 
 Mesh& Mesh::operator=(Mesh&& other)
 {
+  // TODO: need this
+  // if (*this == other) return *this;
+
   vertices = std::move(other.vertices);
   indices = std::move(other.indices);
   material = std::move(other.material);
@@ -48,12 +51,6 @@ Mesh& Mesh::operator=(Mesh&& other)
   ebo = std::move(other.ebo);
   vao = std::move(other.vao);
   return *this;
-}
-
-void Mesh::release()
-{
-  vertices.clear();
-  indices.clear();
 }
 
 void Mesh::draw(const Pipeline& pipeline, const Shader& shader,

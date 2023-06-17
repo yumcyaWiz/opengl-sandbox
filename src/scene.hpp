@@ -15,6 +15,9 @@ namespace ogls
 
 class Scene
 {
+ private:
+  void release();
+
  public:
   const Model* model = nullptr;
 
@@ -25,8 +28,6 @@ class Scene
   Scene();
 
   void draw(const Pipeline& pipeline, const Shader& shader) const;
-
-  void release();
 
   void setModel(const Model* model);
 

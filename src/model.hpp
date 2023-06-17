@@ -29,8 +29,6 @@ class Model
 
   void draw(const Pipeline& pipeline, const Shader& shader) const;
 
-  void release();
-
  private:
   std::vector<Mesh> meshes;
   std::vector<Texture> textures;

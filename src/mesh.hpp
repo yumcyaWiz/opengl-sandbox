@@ -42,8 +42,6 @@ class Mesh
   Mesh& operator=(const Mesh& other) = delete;
   Mesh& operator=(Mesh&& other);
 
-  void release();
-
   // draw mesh by given shader
   void draw(const Pipeline& pipeline, const Shader& shader,
             const std::vector<Texture>& textures) const;

@@ -30,6 +30,8 @@ class Texture
   GLenum format;
   GLenum type;
 
+  void release();
+
  public:
   Texture();
   Texture(const glm::uvec2& resolution, GLint internalFormat, GLenum format,
@@ -77,8 +79,6 @@ class Texture
 
   // bind texture to the specified image unit
   void bindToImageUnit(GLuint image_unit_number, GLenum access) const;
-
-  void release();
 };
 
 }  // namespace ogls

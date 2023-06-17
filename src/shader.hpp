@@ -47,6 +47,8 @@ class Pipeline
  private:
   GLuint pipeline;
 
+  void release();
+
  public:
   Pipeline();
   Pipeline(const Pipeline& other) = delete;
@@ -55,8 +57,6 @@ class Pipeline
 
   Pipeline& operator=(const Pipeline& other) = delete;
   Pipeline& operator=(Pipeline&& other);
-
-  void release();
 
   void attachVertexShader(const Shader& shader) const;
   void attachGeometryShader(const Shader& shader) const;
