@@ -7,6 +7,7 @@
 //
 #include "ogls.hpp"
 #include "shader.hpp"
+#include "vertex-array-object.hpp"
 
 using namespace ogls;
 
@@ -64,10 +65,7 @@ int main()
   glBindVertexArray(VAO);
 
   // setup VBO
-  GLuint VBO;
-  glGenBuffers(1, &VBO);
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
+  Buffer buffer;
   float vertices[] = {
       -0.5f, -0.5f, 0.0f,  // position1
       1.0f,  0.0f,  0.0f,  // color1
@@ -76,20 +74,13 @@ int main()
       0.0f,  0.5f,  0.0f,  // position3
       0.0f,  0.0f,  1.0f   // color3
   };
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+  buffer.setData(vertices, 18, GL_STATIC_DRAW);
 
-  // position
-  glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
-                        reinterpret_cast<void *>(0));
-
-  // color
-  glEnableVertexAttribArray(1);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
-                        reinterpret_cast<void *>(3 * sizeof(float)));
-
-  glBindVertexArray(0);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  // setup VAO
+  VertexArrayObject vao;
+  vao.bindVertexBuffer(buffer, 0, 0, 6 * sizeof(float));
+  vao.activateVertexAttribution(0, 0, 3, GL_FLOAT, 0);
+  vao.activateVertexAttribution(0, 1, 3, GL_FLOAT, 3 * sizeof(float));
 
   // setup shader
   const Shader vertex_shader = Shader::create_vertex_shader(
@@ -109,11 +100,11 @@ int main()
 
     // render
     glClear(GL_COLOR_BUFFER_BIT);
-    glBindVertexArray(VAO);
     pipeline.activate();
+    vao.activate();
     glDrawArrays(GL_TRIANGLES, 0, 3);
+    vao.deactivate();
     pipeline.deactivate();
-    glBindVertexArray(0);
 
     glfwSwapBuffers(window);
   }

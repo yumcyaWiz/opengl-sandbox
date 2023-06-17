@@ -29,6 +29,13 @@ class Buffer
   uint32_t getLength() const;
 
   template <typename T>
+  void setData(T* data, uint32_t n, GLenum usage)
+  {
+    glNamedBufferData(this->buffer, sizeof(T) * n, data, usage);
+    this->size = n;
+  }
+
+  template <typename T>
   void setData(const std::vector<T>& data, GLenum usage)
   {
     glNamedBufferData(this->buffer, sizeof(T) * data.size(), data.data(),
