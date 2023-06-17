@@ -170,8 +170,8 @@ int main()
 
     // set light position
     t += io.DeltaTime;
-    scene.pointLights[0].position =
-        CAMERA->cam_pos + 200.0f * CAMERA->cam_forward;
+    scene.pointLights[0] = PointLight(
+        glm::vec3(1.0f), CAMERA->cam_pos + 200.0f * CAMERA->cam_forward, 0.0f);
 
     // set uniform variables
     const glm::mat4 view = CAMERA->computeViewMatrix();

@@ -11,6 +11,7 @@
 #include "imgui_impl_opengl3.h"
 //
 #include "camera.hpp"
+#include "light.hpp"
 #include "model.hpp"
 #include "quad.hpp"
 #include "scene.hpp"
@@ -195,13 +196,14 @@ int main()
 
     // update light direction
     t += 0.1f * io.DeltaTime;
-    scene.directionalLight.direction =
+    const glm::vec3 light_direction =
         glm::normalize(glm::vec3(0.5f * glm::cos(t), 1.0f, 0.5f * std::sin(t)));
+    scene.directionalLight = DirectionalLight(glm::vec3(1.0f), light_direction);
 
     // set view, projection matrix for making depth map
     const glm::mat4 lightView =
-        glm::lookAt(LIGHT_DISTANCE * scene.directionalLight.direction,
-                    glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        glm::lookAt(LIGHT_DISTANCE * light_direction, glm::vec3(0.0f),
+                    glm::vec3(0.0f, 1.0f, 0.0f));
     const glm::mat4 lightProjection =
         glm::ortho(-DEPTH_MAP_SIZE, DEPTH_MAP_SIZE, -DEPTH_MAP_SIZE,
                    DEPTH_MAP_SIZE, DEPTH_MAP_NEAR, DEPTH_MAP_FAR);

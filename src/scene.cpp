@@ -12,14 +12,15 @@ void Scene::draw(const Pipeline& pipeline, const Shader& shader) const
   for (std::size_t i = 0; i < pointLights.size(); ++i) {
     const PointLight& pointLight = pointLights[i];
     const std::string uniformName = "pointLights[" + std::to_string(i) + "]";
-    shader.setUniform(uniformName + ".ke", pointLight.ke);
-    shader.setUniform(uniformName + ".position", pointLight.position);
-    shader.setUniform(uniformName + ".radius", pointLight.radius);
+    shader.setUniform(uniformName + ".ke", pointLight.getKe());
+    shader.setUniform(uniformName + ".position", pointLight.getPosition());
+    shader.setUniform(uniformName + ".radius", pointLight.getRadius());
   }
 
   // set directional light
-  shader.setUniform("directionalLight.ke", directionalLight.ke);
-  shader.setUniform("directionalLight.direction", directionalLight.direction);
+  shader.setUniform("directionalLight.ke", directionalLight.getKe());
+  shader.setUniform("directionalLight.direction",
+                    directionalLight.getDirection());
 
   // draw models
   if (model) { model->draw(pipeline, shader); }

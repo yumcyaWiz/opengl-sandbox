@@ -157,8 +157,9 @@ int main()
 
     // update light position
     t += io.DeltaTime;
-    scene.pointLights[0].position =
-        glm::vec3(100.0f * std::cos(t), 100.0f, 100.0f * std::sin(t));
+    scene.pointLights[0] = PointLight(
+        glm::vec3(1.0f),
+        glm::vec3(100.0f * std::cos(t), 100.0f, 100.0f * std::sin(t)), 0.0f);
 
     // set uniform variables
     vertex_shader.setUniform("view", camera->computeViewMatrix());
