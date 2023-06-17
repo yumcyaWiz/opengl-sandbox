@@ -28,6 +28,18 @@ const std::map<TextureType, aiTextureType> Model::assimp_texture_mapping = {
     {TextureType::Displacement, aiTextureType_DISPLACEMENT},
     {TextureType::Light, aiTextureType_LIGHTMAP}};
 
+GLuint Model::getTextureInternalFormat(const TextureType& type)
+{
+  switch (type) {
+    case TextureType::Diffuse:
+    case TextureType::Ambient:
+    case TextureType::Emissive:
+      return GL_SRGB;
+    default:
+      return GL_RGB;
+  }
+}
+
 Model::Model() {}
 
 Model::Model(const std::filesystem::path& filepath) { loadModel(filepath); }
@@ -286,17 +298,20 @@ std::optional<std::size_t> Model::loadTexture(
   material->GetTexture(aiTexType, 0, &str);
   const std::filesystem::path texturePath = (parentPath / str.C_Str());
 
-  // load texture if we don't have it
+  // load texture if it's not loaded
   const auto index = getTextureIndex(texturePath);
   if (!index) {
     int x, y, c;
     unsigned char* image = stbi_load(texturePath.c_str(), &x, &y, &c, 3);
+
     const glm::uvec2 resolution = {x, y};
     textures.emplace_back(glm::uvec2(x, y), GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
     loaded_textures.emplace_back(texturePath);
+
     const uint32_t index = textures.size() - 1;
     Texture& texture = textures[index];
-    texture.setImage(image, resolution, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
+    texture.setImage(image, resolution, getTextureInternalFormat(type), GL_RGB,
+                     GL_UNSIGNED_BYTE);
 
     stbi_image_free(image);
 

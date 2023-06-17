@@ -52,6 +52,8 @@ class Model
   std::optional<std::size_t> getTextureIndex(
       const std::filesystem::path& filepath) const;
 
+  static GLuint getTextureInternalFormat(const TextureType& type);
+
   static const std::map<TextureType, aiTextureType> assimp_texture_mapping;
 };
 
