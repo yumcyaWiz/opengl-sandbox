@@ -5,9 +5,11 @@
 #include "glad/glad.h"
 #include "glm/glm.hpp"
 //
+#include "buffer.hpp"
 #include "material.hpp"
 #include "shader.hpp"
 #include "texture.hpp"
+#include "vertex-array-object.hpp"
 
 namespace ogls
 {
@@ -40,9 +42,9 @@ class Mesh
             const std::vector<Texture>& textures) const;
 
  private:
-  GLuint VAO;
-  GLuint VBO;
-  GLuint EBO;
+  VertexArrayObject vao;
+  Buffer vbo;
+  Buffer ebo;
 };
 
 }  // namespace ogls

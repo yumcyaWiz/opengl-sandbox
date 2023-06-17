@@ -7,59 +7,28 @@ Mesh::Mesh(const std::vector<Vertex>& vertices,
            const std::vector<unsigned int>& indices, const Material& material)
     : vertices{vertices}, indices{indices}, material{material}
 {
-  // setup VBO, EBO, VAO
-  glGenVertexArrays(1, &VAO);
-  glGenBuffers(1, &VBO);
-  glGenBuffers(1, &EBO);
+  vbo.setData(vertices, GL_STATIC_DRAW);
+  ebo.setData(indices, GL_STATIC_DRAW);
 
-  glBindVertexArray(VAO);
-
-  // VBO
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex),
-               vertices.data(), GL_STATIC_DRAW);
-
-  // EBO
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int),
-               indices.data(), GL_STATIC_DRAW);
+  vao.bindVertexBuffer(vbo, 0, 0, sizeof(Vertex));
+  vao.bindElementBuffer(ebo);
 
   // position
-  glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                        reinterpret_cast<void*>(0));
+  vao.activateVertexAttribution(0, 0, 3, GL_FLOAT, 0);
   // normal
-  glEnableVertexAttribArray(1);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                        reinterpret_cast<void*>(offsetof(Vertex, normal)));
-
+  vao.activateVertexAttribution(0, 1, 3, GL_FLOAT, offsetof(Vertex, normal));
   // texcoords
-  glEnableVertexAttribArray(2);
-  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                        reinterpret_cast<void*>(offsetof(Vertex, texcoords)));
-
+  vao.activateVertexAttribution(0, 2, 2, GL_FLOAT, offsetof(Vertex, texcoords));
   // tangent
-  glEnableVertexAttribArray(3);
-  glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                        reinterpret_cast<void*>(offsetof(Vertex, tangent)));
-
+  vao.activateVertexAttribution(0, 3, 3, GL_FLOAT, offsetof(Vertex, tangent));
   // dndu
-  glEnableVertexAttribArray(4);
-  glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                        reinterpret_cast<void*>(offsetof(Vertex, dndu)));
-
-  glEnableVertexAttribArray(5);
-  glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                        reinterpret_cast<void*>(offsetof(Vertex, dndv)));
-
-  glBindVertexArray(0);
+  vao.activateVertexAttribution(0, 4, 3, GL_FLOAT, offsetof(Vertex, dndu));
+  // dndv
+  vao.activateVertexAttribution(0, 5, 3, GL_FLOAT, offsetof(Vertex, dndv));
 }
 
 void Mesh::release()
 {
-  glDeleteBuffers(1, &VBO);
-  glDeleteBuffers(1, &EBO);
-  glDeleteVertexArrays(1, &VAO);
   vertices.clear();
   indices.clear();
 }
@@ -170,11 +139,11 @@ void Mesh::draw(const Pipeline& pipeline, const Shader& shader,
   shader.setUniform("material.shininess", material.shininess);
 
   // draw mesh
-  glBindVertexArray(VAO);
   pipeline.activate();
+  vao.activate();
   glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+  vao.deactivate();
   pipeline.deactivate();
-  glBindVertexArray(0);
 
   // reset texture uniforms
   shader.setUniform("material.diffuseMap", 0);
