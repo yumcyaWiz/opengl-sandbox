@@ -24,7 +24,7 @@ class Pipeline
    public:
     Shader();
     Shader(GLenum type, const std::filesystem::path& filepath);
-    virtual ~Shader();
+    ~Shader();
     Shader(const Shader& other) = delete;
     Shader(Shader&& other);
 
