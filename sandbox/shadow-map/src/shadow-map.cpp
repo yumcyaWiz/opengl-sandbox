@@ -10,12 +10,7 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 //
-#include "camera.hpp"
-#include "light.hpp"
-#include "model.hpp"
-#include "quad.hpp"
-#include "scene.hpp"
-#include "shader.hpp"
+#include "ogls.hpp"
 //
 #include "depth-map.h"
 

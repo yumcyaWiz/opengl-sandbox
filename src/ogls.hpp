@@ -2,7 +2,6 @@
 
 #include "buffer.hpp"
 #include "camera.hpp"
-#include "light.hpp"
 #include "material.hpp"
 #include "mesh.hpp"
 #include "model.hpp"

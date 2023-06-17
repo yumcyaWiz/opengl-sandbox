@@ -6,8 +6,6 @@
 #include "GLFW/glfw3.h"
 //
 #include "ogls.hpp"
-#include "shader.hpp"
-#include "vertex-array-object.hpp"
 
 using namespace ogls;
 

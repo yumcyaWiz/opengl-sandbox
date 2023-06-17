@@ -5,8 +5,7 @@
 #include "glad/glad.h"
 #include "glm/glm.hpp"
 //
-#include "scene.hpp"
-#include "shader.hpp"
+#include "ogls.hpp"
 
 using namespace ogls;
 

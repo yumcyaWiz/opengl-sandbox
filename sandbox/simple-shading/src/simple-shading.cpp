@@ -9,10 +9,7 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 //
-#include "camera.hpp"
-#include "model.hpp"
-#include "scene.hpp"
-#include "shader.hpp"
+#include "ogls.hpp"
 
 using namespace ogls;
 
