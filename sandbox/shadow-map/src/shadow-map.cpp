@@ -198,7 +198,8 @@ int main()
     t += 0.1f * io.DeltaTime;
     const glm::vec3 light_direction =
         glm::normalize(glm::vec3(0.5f * glm::cos(t), 1.0f, 0.5f * std::sin(t)));
-    scene.directionalLight = DirectionalLight(glm::vec3(1.0f), light_direction);
+    scene.setDirectionalLight(
+        DirectionalLight(glm::vec3(1.0f), light_direction));
 
     // set view, projection matrix for making depth map
     const glm::mat4 lightView =

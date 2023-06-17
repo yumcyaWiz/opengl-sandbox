@@ -113,9 +113,7 @@ int main()
 
   // setup scene
   Scene scene;
-  scene.addPointLight(
-      PointLight(glm::vec3(20000.0f), glm::vec3(0, 100.0f, 0), 0.0f));
-  scene.setPointLightIndex(0);
+  scene.setPointLight({glm::vec3(10000.0f), glm::vec3(0, 100.0f, 0), 0.0f});
 
   // setup shader
   const Shader vertex_shader = Shader::createVertexShader(
@@ -177,7 +175,7 @@ int main()
     glm::vec3 point_light_pos = glm::vec3(
         100.0f * std::cos(t), 300.0f * (std::sin(0.1f * t) + 1.0f) + 100.0f,
         100.0f * std::sin(t));
-    scene.pointLights[0] = PointLight(glm::vec3(1.0f), point_light_pos, 0.0f);
+    scene.setPointLight({glm::vec3(10000.0f), point_light_pos, 0.0f});
 
     // make depth map
     shadowMap.setLightPosition(point_light_pos);

@@ -16,14 +16,11 @@ namespace ogls
 class Scene
 {
  private:
-  void release();
+  PointLight pointLight;
+  DirectionalLight directionalLight;
 
  public:
   const Model* model = nullptr;
-
-  std::vector<PointLight> pointLights;
-  std::optional<std::size_t> pointLightIndex;
-  DirectionalLight directionalLight;
 
   Scene();
 
@@ -31,9 +28,7 @@ class Scene
 
   void setModel(const Model* model);
 
-  void addPointLight(const PointLight& light);
-
-  void setPointLightIndex(std::size_t index);
+  void setPointLight(const PointLight& light);
 
   void setDirectionalLight(const DirectionalLight& light);
 };

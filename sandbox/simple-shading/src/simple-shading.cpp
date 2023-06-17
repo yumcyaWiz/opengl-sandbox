@@ -109,8 +109,7 @@ int main()
 
   // setup scene
   Scene scene;
-  scene.addPointLight({glm::vec3(10000.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f});
-  scene.setPointLightIndex(0);
+  scene.setPointLight({glm::vec3(10000.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f});
 
   // setup shader
   const Shader vertex_shader = Shader::createVertexShader(
@@ -157,9 +156,9 @@ int main()
 
     // update light position
     t += io.DeltaTime;
-    scene.pointLights[0] = PointLight(
-        glm::vec3(1.0f),
-        glm::vec3(100.0f * std::cos(t), 100.0f, 100.0f * std::sin(t)), 0.0f);
+    scene.setPointLight(
+        {glm::vec3(10000.0f),
+         glm::vec3(100.0f * std::cos(t), 100.0f, 100.0f * std::sin(t)), 0.0f});
 
     // set uniform variables
     vertex_shader.setUniform("view", camera->computeViewMatrix());
