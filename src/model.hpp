@@ -25,7 +25,7 @@ class Model
   operator bool() const;
 
   // load model with assimp
-  void load_model(const std::filesystem::path& filepath);
+  void loadModel(const std::filesystem::path& filepath);
 
   // draw model by given shader
   void draw(const Pipeline& pipeline, const Shader& shader) const;
@@ -40,18 +40,18 @@ class Model
   std::vector<std::filesystem::path> loaded_textures;
 
   // parse assimp node object
-  void process_node(const aiNode* node, const aiScene* scene,
-                    const std::filesystem::path& parentPath);
+  void processAssimpNode(const aiNode* node, const aiScene* scene,
+                         const std::filesystem::path& parentPath);
 
   // parse assimp mesh object
-  Mesh process_mesh(const aiMesh* mesh, const aiScene* scene,
-                    const std::filesystem::path& parentPath);
+  Mesh processAssimpMesh(const aiMesh* mesh, const aiScene* scene,
+                         const std::filesystem::path& parentPath);
 
   std::optional<std::size_t> loadTexture(
       const aiMaterial* material, const TextureType& type,
       const std::filesystem::path& parentPath);
 
-  std::optional<std::size_t> hasTexture(
+  std::optional<std::size_t> getTextureIndex(
       const std::filesystem::path& filepath) const;
 
   static const std::map<TextureType, aiTextureType> assimp_texture_mapping;

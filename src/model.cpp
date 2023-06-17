@@ -30,11 +30,11 @@ const std::map<TextureType, aiTextureType> Model::assimp_texture_mapping = {
 
 Model::Model() {}
 
-Model::Model(const std::filesystem::path& filepath) { load_model(filepath); }
+Model::Model(const std::filesystem::path& filepath) { loadModel(filepath); }
 
 Model::operator bool() const { return meshes.size() > 0; }
 
-void Model::load_model(const std::filesystem::path& filepath)
+void Model::loadModel(const std::filesystem::path& filepath)
 {
   // load model with assimp
   Assimp::Importer importer;
@@ -51,7 +51,7 @@ void Model::load_model(const std::filesystem::path& filepath)
 
   // process scene graph
   const std::filesystem::path ps(filepath);
-  process_node(scene->mRootNode, scene, ps.parent_path());
+  processAssimpNode(scene->mRootNode, scene, ps.parent_path());
 
   // show info
   spdlog::info("[Model] " + filepath.string() + " loaded.");
@@ -88,22 +88,22 @@ void Model::destroy()
   textures.clear();
 }
 
-void Model::process_node(const aiNode* node, const aiScene* scene,
-                         const std::filesystem::path& parentPath)
+void Model::processAssimpNode(const aiNode* node, const aiScene* scene,
+                              const std::filesystem::path& parentPath)
 {
   // process all the node's meshes
   for (std::size_t i = 0; i < node->mNumMeshes; ++i) {
     const aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-    meshes.push_back(process_mesh(mesh, scene, parentPath));
+    meshes.push_back(processAssimpMesh(mesh, scene, parentPath));
   }
 
   for (std::size_t i = 0; i < node->mNumChildren; i++) {
-    process_node(node->mChildren[i], scene, parentPath);
+    processAssimpNode(node->mChildren[i], scene, parentPath);
   }
 }
 
-Mesh Model::process_mesh(const aiMesh* mesh, const aiScene* scene,
-                         const std::filesystem::path& parentPath)
+Mesh Model::processAssimpMesh(const aiMesh* mesh, const aiScene* scene,
+                              const std::filesystem::path& parentPath)
 {
   std::vector<Vertex> vertices;
   std::vector<unsigned int> indices;
@@ -287,7 +287,7 @@ std::optional<std::size_t> Model::loadTexture(
   const std::filesystem::path texturePath = (parentPath / str.C_Str());
 
   // load texture if we don't have it
-  const auto index = hasTexture(texturePath);
+  const auto index = getTextureIndex(texturePath);
   if (!index) {
     int x, y, c;
     unsigned char* image = stbi_load(texturePath.c_str(), &x, &y, &c, 3);
@@ -306,7 +306,7 @@ std::optional<std::size_t> Model::loadTexture(
   }
 }
 
-std::optional<std::size_t> Model::hasTexture(
+std::optional<std::size_t> Model::getTextureIndex(
     const std::filesystem::path& filepath) const
 {
   for (std::size_t i = 0; i < loaded_textures.size(); ++i) {
