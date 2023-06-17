@@ -7,6 +7,7 @@ experiment environment for realtime graphics methods in OpenGL.
 ## Requirements
 
 * C++17
+* Clang(Currently, GCC compiler doesn't work)
 * CMake 3.12 or Higher
 * OpenGL 3.3
 
@@ -27,7 +28,7 @@ git submodule update --init
 ```bash
 mkdir build
 cd build
-cmake ..
+CC=clang CXX=clang++ cmake ..
 make
 ```
 
