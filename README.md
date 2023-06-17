@@ -1,7 +1,5 @@
 # opengl-sandbox
 
-WIP.
-
 experiment environment for realtime graphics methods in OpenGL.
 
 ## Requirements
