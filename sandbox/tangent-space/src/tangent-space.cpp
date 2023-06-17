@@ -133,8 +133,6 @@ int main()
   tangent_space_pipeline.attachGeometryShader(tangent_space_geometry_shader);
   tangent_space_pipeline.attachFragmentShader(tangent_space_fragment_shader);
 
-  Model *model = nullptr;
-
   // app loop
   while (!glfwWindowShouldClose(window)) {
     glfwPollEvents();
@@ -150,9 +148,7 @@ int main()
       static char modelPath[100] = {"assets/sponza/sponza.obj"};
       ImGui::InputText("Model", modelPath, 100);
       if (ImGui::Button("Load Model")) {
-        if (model) { delete model; }
-        model = new Model(std::string(CMAKE_SOURCE_DIR) + "/" + modelPath);
-        scene.setModel(model);
+        scene.setModel({std::string(CMAKE_SOURCE_DIR) + "/" + modelPath});
       }
 
       ImGui::Separator();
@@ -195,8 +191,6 @@ int main()
   }
 
   // exit
-  delete model;
-
   ImGui_ImplOpenGL3_Shutdown();
   ImGui_ImplGlfw_Shutdown();
   ImGui::DestroyContext();

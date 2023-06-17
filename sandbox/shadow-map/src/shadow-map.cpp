@@ -143,8 +143,6 @@ int main()
 
   DepthMap depthMap(1024, 1024);
 
-  Model *model = nullptr;
-
   // app loop
   float t = 0.0f;
   while (!glfwWindowShouldClose(window)) {
@@ -161,9 +159,7 @@ int main()
     static char modelPath[100] = {"assets/sponza/sponza.obj"};
     ImGui::InputText("Model", modelPath, 100);
     if (ImGui::Button("Load Model")) {
-      if (model) { delete model; }
-      model = new Model(std::string(CMAKE_SOURCE_DIR) + "/" + modelPath);
-      scene.setModel(model);
+      scene.setModel({std::string(CMAKE_SOURCE_DIR) + "/" + modelPath});
     }
 
     ImGui::Separator();
@@ -242,8 +238,6 @@ int main()
   }
 
   // exit
-  delete model;
-
   ImGui_ImplOpenGL3_Shutdown();
   ImGui_ImplGlfw_Shutdown();
   ImGui::DestroyContext();

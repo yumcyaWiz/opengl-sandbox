@@ -59,17 +59,22 @@ class DirectionalLight : public Light
 class Scene
 {
  private:
+  Model model;
   PointLight pointLight;
   DirectionalLight directionalLight;
 
  public:
-  const Model* model = nullptr;
-
   Scene();
+  Scene(const Scene& other) = delete;
+  Scene(Scene&& other) = default;
+  ~Scene() = default;
+
+  Scene& operator=(const Scene& other) = delete;
+  Scene& operator=(Scene&& other) = default;
 
   void draw(const Pipeline& pipeline, const Shader& shader) const;
 
-  void setModel(const Model* model);
+  void setModel(Model&& model);
 
   void setPointLight(const PointLight& light);
 

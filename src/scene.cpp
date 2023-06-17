@@ -18,10 +18,10 @@ void Scene::draw(const Pipeline& pipeline, const Shader& shader) const
                     directionalLight.getDirection());
 
   // draw models
-  if (model) { model->draw(pipeline, shader); }
+  if (model) { model.draw(pipeline, shader); }
 }
 
-void Scene::setModel(const Model* model) { this->model = model; }
+void Scene::setModel(Model&& model) { this->model = std::move(model); }
 
 void Scene::setPointLight(const PointLight& light) { pointLight = light; }
 
