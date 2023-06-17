@@ -44,6 +44,23 @@ Model::Model() {}
 
 Model::Model(const std::filesystem::path& filepath) { loadModel(filepath); }
 
+Model::Model(Model&& other)
+    : meshes(std::move(other.meshes)),
+      textures(std::move(other.textures)),
+      loaded_textures(std::move(other.loaded_textures))
+{
+}
+
+Model& Model::operator=(Model&& other)
+{
+  if (this == &other) return *this;
+
+  meshes = std::move(other.meshes);
+  textures = std::move(other.textures);
+  loaded_textures = std::move(other.loaded_textures);
+  return *this;
+}
+
 Model::operator bool() const { return meshes.size() > 0; }
 
 void Model::loadModel(const std::filesystem::path& filepath)

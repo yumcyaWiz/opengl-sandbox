@@ -41,9 +41,7 @@ Mesh::Mesh(Mesh&& other)
 
 Mesh& Mesh::operator=(Mesh&& other)
 {
-  // TODO: need this
-  // if (*this == other) return *this;
-
+  if (this == &other) return *this;
   vertices = std::move(other.vertices);
   indices = std::move(other.indices);
   material = std::move(other.material);

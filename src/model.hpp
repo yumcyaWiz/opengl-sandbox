@@ -20,6 +20,12 @@ class Model
  public:
   Model();
   Model(const std::filesystem::path& filepath);
+  Model(const Model& other) = delete;
+  Model(Model&& other);
+  ~Model() = default;
+
+  Model& operator=(const Model& other) = delete;
+  Model& operator=(Model&& other);
 
   // does model have any meshes?
   operator bool() const;
