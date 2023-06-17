@@ -130,12 +130,16 @@ int main()
   Scene scene;
 
   // setup shader
-  Shader shader;
-  shader.load_vertex_shader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
-                            "shaders/shader.vert");
-  shader.load_fragment_shader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
-                              "shaders/shader.frag");
-  shader.link_shader();
+  const Shader vertex_shader = Shader::create_vertex_shader(
+      std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) / "shaders/shader.vert");
+  const Shader fragment_shader = Shader::create_fragment_shader(
+      std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) / "shaders/shader.frag");
+
+  const Pipeline pipeline;
+  pipeline.attachVertexShader(vertex_shader);
+  pipeline.attachFragmentShader(fragment_shader);
+
+  const Model *model = nullptr;
 
   // app loop
   while (!glfwWindowShouldClose(window)) {
@@ -152,7 +156,9 @@ int main()
     static char modelPath[100] = {"assets/sponza/sponza.obj"};
     ImGui::InputText("Model", modelPath, 100);
     if (ImGui::Button("Load Model")) {
-      scene.set_model({std::string(CMAKE_SOURCE_DIR) + "/" + modelPath});
+      if (model) { delete model; }
+      model = new Model(std::string(CMAKE_SOURCE_DIR) + "/" + modelPath);
+      scene.set_model(model);
     }
 
     ImGui::Separator();
@@ -175,14 +181,14 @@ int main()
     handleInput(window, io);
 
     // set uniform variables
-    shader.set_uniform("view", camera->compute_view_matrix());
-    shader.set_uniform("projection",
-                       camera->compute_projection_matrix(width, height));
-    shader.set_uniform("layerType", static_cast<GLint>(layerType));
+    vertex_shader.setUniform("view", camera->compute_view_matrix());
+    vertex_shader.setUniform("projection",
+                             camera->compute_projection_matrix(width, height));
+    fragment_shader.setUniform("layerType", static_cast<GLint>(layerType));
 
     // render
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    scene.draw(shader);
+    scene.draw(pipeline, fragment_shader);
 
     // render imgui
     ImGui::Render();
@@ -192,8 +198,8 @@ int main()
   }
 
   // exit
-  shader.destroy();
-  scene.destroy();
+  delete model;
+
   ImGui_ImplOpenGL3_Shutdown();
   ImGui_ImplGlfw_Shutdown();
   ImGui::DestroyContext();

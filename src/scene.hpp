@@ -16,7 +16,7 @@ namespace ogls
 class Scene
 {
  public:
-  Model model;
+  const Model* model = nullptr;
 
   std::vector<PointLight> pointLights;
   std::optional<std::size_t> pointLightIndex;
@@ -25,12 +25,12 @@ class Scene
   Scene();
 
   // draw scene
-  void draw(const Shader& shader) const;
+  void draw(const Pipeline& pipeline, const Shader& shader) const;
 
   // destroy scene object
   void destroy();
 
-  void set_model(const Model& model);
+  void set_model(const Model* model);
 
   void add_point_light(const PointLight& light);
 

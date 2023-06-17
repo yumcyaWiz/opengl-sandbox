@@ -106,7 +106,7 @@ int main()
 
   // initialize imgui backends
   ImGui_ImplGlfw_InitForOpenGL(window, true);
-  ImGui_ImplOpenGL3_Init("#version 330 core");
+  ImGui_ImplOpenGL3_Init("#version 460 core");
 
   // enable depth test
   glEnable(GL_DEPTH_TEST);
@@ -125,23 +125,29 @@ int main()
   Quad quad;
 
   // setup shader
-  Shader showDepthMap;
-  showDepthMap.load_vertex_shader(
+  const Shader show_depthmap_vert = Shader::create_vertex_shader(
       std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
       "shaders/show-depthmap.vert");
-  showDepthMap.load_fragment_shader(
+  const Shader show_depthmap_frag = Shader::create_fragment_shader(
       std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
       "shaders/show-depthmap.frag");
-  showDepthMap.link_shader();
 
-  Shader shader;
-  shader.load_vertex_shader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
-                            "shaders/shader.vert");
-  shader.load_fragment_shader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
-                              "shaders/shader.frag");
-  shader.link_shader();
+  const Pipeline show_depthmap_pipeline;
+  show_depthmap_pipeline.attachVertexShader(show_depthmap_vert);
+  show_depthmap_pipeline.attachFragmentShader(show_depthmap_frag);
+
+  const Shader vertex_shader = Shader::create_vertex_shader(
+      std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) / "shaders/shader.vert");
+  const Shader fragment_shader = Shader::create_fragment_shader(
+      std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) / "shaders/shader.frag");
+
+  const Pipeline pipeline;
+  pipeline.attachVertexShader(vertex_shader);
+  pipeline.attachFragmentShader(fragment_shader);
 
   DepthMap depthMap(1024, 1024);
+
+  Model *model = nullptr;
 
   // app loop
   float t = 0.0f;
@@ -159,7 +165,9 @@ int main()
     static char modelPath[100] = {"assets/sponza/sponza.obj"};
     ImGui::InputText("Model", modelPath, 100);
     if (ImGui::Button("Load Model")) {
-      scene.set_model({std::string(CMAKE_SOURCE_DIR) + "/" + modelPath});
+      if (model) { delete model; }
+      model = new Model(std::string(CMAKE_SOURCE_DIR) + "/" + modelPath);
+      scene.set_model(model);
     }
 
     ImGui::Separator();
@@ -205,26 +213,29 @@ int main()
 
     // render scene with shadow mapping
     // set uniforms
-    shader.set_uniform("viewProjection",
-                       CAMERA->compute_view_projection_matrix(WIDTH, HEIGHT));
-    shader.set_uniform("lightSpaceMatrix", lightSpaceMatrix);
-    shader.set_uniform("camPos", CAMERA->cam_pos);
+    vertex_shader.setUniform(
+        "viewProjection",
+        CAMERA->compute_view_projection_matrix(WIDTH, HEIGHT));
+    vertex_shader.setUniform("lightSpaceMatrix", lightSpaceMatrix);
+    fragment_shader.setUniform("camPos", CAMERA->cam_pos);
     // TODO: set texture unit number appropriately
-    shader.set_uniform_texture("depthMap", depthMap.texture, 10);
-    shader.set_uniform("depthBias", DEPTH_BIAS);
+    glBindTextureUnit(10, depthMap.texture);
+    fragment_shader.setUniform("depthMap", 10);
+    fragment_shader.setUniform("depthBias", DEPTH_BIAS);
 
     // render
     glViewport(0, 0, WIDTH, HEIGHT);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    scene.draw(shader);
+    scene.draw(pipeline, fragment_shader);
 
     // show depth map
     glViewport(WIDTH - 256, HEIGHT - 256, 256, 256);
     glClear(GL_DEPTH_BUFFER_BIT);
-    showDepthMap.set_uniform_texture("depthMap", depthMap.texture, 0);
-    showDepthMap.set_uniform("zNear", DEPTH_MAP_NEAR);
-    showDepthMap.set_uniform("zFar", DEPTH_MAP_FAR);
-    quad.draw(showDepthMap);
+    glBindTextureUnit(10, depthMap.texture);
+    show_depthmap_frag.setUniform("depthMap", 10);
+    show_depthmap_frag.setUniform("zNear", DEPTH_MAP_NEAR);
+    show_depthmap_frag.setUniform("zFar", DEPTH_MAP_FAR);
+    quad.draw(show_depthmap_pipeline);
 
     // render imgui
     ImGui::Render();
@@ -234,9 +245,8 @@ int main()
   }
 
   // exit
-  depthMap.destroy();
-  shader.destroy();
-  scene.destroy();
+  delete model;
+
   ImGui_ImplOpenGL3_Shutdown();
   ImGui_ImplGlfw_Shutdown();
   ImGui::DestroyContext();

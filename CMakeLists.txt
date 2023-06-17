@@ -17,13 +17,16 @@ find_package(OpenGL REQUIRED)
 
 # ogls
 add_library(ogls
-  src/shader.cpp
+  src/buffer.cpp
   src/camera.cpp
   src/texture.cpp
   src/mesh.cpp
   src/model.cpp
   src/scene.cpp
   src/quad.cpp
+  src/shader.cpp
+  src/texture.cpp
+  src/vertex-array-object.cpp
 )
 target_include_directories(ogls PUBLIC src/)
 

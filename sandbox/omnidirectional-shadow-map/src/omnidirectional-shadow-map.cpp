@@ -118,12 +118,16 @@ int main()
   scene.set_point_light_index(0);
 
   // setup shader
-  Shader shader;
-  shader.load_vertex_shader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
-                            "shaders/shader.vert");
-  shader.load_fragment_shader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
-                              "shaders/shader.frag");
-  shader.link_shader();
+  const Shader vertex_shader = Shader::create_vertex_shader(
+      std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) / "shaders/shader.vert");
+  const Shader fragment_shader = Shader::create_fragment_shader(
+      std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) / "shaders/shader.frag");
+
+  const Pipeline pipeline;
+  pipeline.attachVertexShader(vertex_shader);
+  pipeline.attachFragmentShader(fragment_shader);
+
+  Model *model = nullptr;
 
   OmnidirectionalShadowMap shadowMap(SHADOW_MAP_RES, SHADOW_MAP_RES);
 
@@ -143,7 +147,9 @@ int main()
     static char modelPath[100] = {"assets/sponza/sponza.obj"};
     ImGui::InputText("Model", modelPath, 100);
     if (ImGui::Button("Load Model")) {
-      scene.set_model({std::string(CMAKE_SOURCE_DIR) + "/" + modelPath});
+      if (model) { delete model; }
+      model = new Model(std::string(CMAKE_SOURCE_DIR) + "/" + modelPath);
+      scene.set_model(model);
     }
 
     ImGui::Separator();
@@ -177,18 +183,20 @@ int main()
 
     // render scene with shadow mapping
     // set uniforms
-    shader.set_uniform("viewProjection",
-                       CAMERA->compute_view_projection_matrix(WIDTH, HEIGHT));
-    shader.set_uniform("camPos", CAMERA->cam_pos);
-    shader.set_uniform("shadowBias", SHADOW_BIAS);
+    vertex_shader.setUniform(
+        "viewProjection",
+        CAMERA->compute_view_projection_matrix(WIDTH, HEIGHT));
+    fragment_shader.setUniform("camPos", CAMERA->cam_pos);
+    fragment_shader.setUniform("shadowBias", SHADOW_BIAS);
     // TODO: set texture unit number appropriately
-    shader.set_uniform_cubemap("shadowMap", shadowMap.cubemap, 10);
-    shader.set_uniform("zFar", shadowMap.zFar);
+    glBindTextureUnit(10, shadowMap.cubemap);
+    fragment_shader.setUniform("shadowMap", 10);
+    fragment_shader.setUniform("zFar", shadowMap.zFar);
 
     // render
     glViewport(0, 0, WIDTH, HEIGHT);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    scene.draw(shader);
+    scene.draw(pipeline, fragment_shader);
 
     // render imgui
     ImGui::Render();
@@ -198,9 +206,8 @@ int main()
   }
 
   // exit
-  shadowMap.destroy();
-  shader.destroy();
-  scene.destroy();
+  delete model;
+
   ImGui_ImplOpenGL3_Shutdown();
   ImGui_ImplGlfw_Shutdown();
   ImGui::DestroyContext();

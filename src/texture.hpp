@@ -1,9 +1,16 @@
 #pragma once
 #include <filesystem>
-#include <iostream>
-#include <string>
+#include <vector>
 
 #include "glad/glad.h"
+#include "glm/glm.hpp"
+
+// #ifndef STB_IMAGE_IMPLEMENTATION
+// #define STB_IMAGE_IMPLEMENTATION
+// #endif
+#include "stb_image.h"
+//
+#include "spdlog/spdlog.h"
 
 namespace ogls
 {
@@ -17,27 +24,69 @@ enum class TextureType {
   Normal,
   Shininess,
   Displacement,
-  Light,
+  Light
 };
 
 class Texture
 {
+ private:
+  glm::uvec2 resolution;
+  GLuint texture;
+  GLint internalFormat;
+  GLenum format;
+  GLenum type;
+
  public:
-  std::filesystem::path filepath;
-  GLuint id;
-  TextureType texture_type;
-
   Texture();
-  Texture(const std::filesystem::path& filepath,
-          const TextureType& textureType);
+  Texture(const glm::uvec2& resolution, GLint internalFormat, GLenum format,
+          GLenum type);
+  Texture(const Texture& other) = delete;
+  Texture(Texture&& other);
+  ~Texture();
 
-  // destroy texture object
-  void destroy();
+  Texture& operator=(const Texture& other) = delete;
+  Texture& operator=(Texture&& other);
 
-  // return texture type string
-  std::string typeName() const;
+  glm::uvec2 getResolution() const;
 
-  void loadImage(const std::filesystem::path& filepath) const;
+  GLuint getTextureName() const;
+
+  GLint getInternalFormat() const;
+
+  GLenum getFormat() const;
+
+  GLenum getType() const;
+
+  void initImage(const glm::uvec2& resolution, GLint internalFormat,
+                 GLenum format, GLenum type);
+
+  template <typename T>
+  void setImage(const T* image, const glm::uvec2& resolution,
+                GLint internalFormat, GLenum format, GLenum type)
+  {
+    this->resolution = resolution;
+    this->internalFormat = internalFormat;
+    this->format = format;
+    this->type = type;
+
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, resolution.x, resolution.y,
+                 0, format, type, image);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, 0);
+  }
+
+  void resize(const glm::uvec2& resolution);
+
+  void loadHDR(const std::filesystem::path& filepath);
+
+  // bind texture to the specified texture unit
+  void bindToTextureUnit(GLuint texture_unit_number) const;
+
+  // bind texture to the specified image unit
+  void bindToImageUnit(GLuint image_unit_number, GLenum access) const;
+
+  void release();
 };
 
 }  // namespace ogls

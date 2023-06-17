@@ -37,7 +37,8 @@ class Mesh
   void destroy();
 
   // draw mesh by given shader
-  void draw(const Shader& shader, const std::vector<Texture>& textures) const;
+  void draw(const Pipeline& pipeline, const Shader& shader,
+            const std::vector<Texture>& textures) const;
 
  private:
   GLuint VAO;

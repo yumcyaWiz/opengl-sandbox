@@ -21,21 +21,28 @@ class OmnidirectionalShadowMap
 
   GLuint FBO;
   GLuint cubemap;
-  Shader shader;
+
+  Shader vertex_shader;
+  Shader geometry_shader;
+  Shader fragment_shader;
+  Pipeline pipeline;
 
   OmnidirectionalShadowMap(int width, int height)
       : width(width), height(height), zNear(0.1f), zFar(10000.0f)
   {
     // setup shader
-    shader.load_vertex_shader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
-                              "shaders/shadow-map.vert");
-    shader.load_geometry_shader(
+    vertex_shader = Shader::create_vertex_shader(
+        std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+        "shaders/shadow-map.vert");
+    geometry_shader = Shader::create_geometry_shader(
         std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
         "shaders/shadow-map.geom");
-    shader.load_fragment_shader(
+    fragment_shader = Shader::create_fragment_shader(
         std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
         "shaders/shadow-map.frag");
-    shader.link_shader();
+    pipeline.attachVertexShader(vertex_shader);
+    pipeline.attachGeometryShader(geometry_shader);
+    pipeline.attachFragmentShader(fragment_shader);
 
     // setup shadow map FBO
     glGenFramebuffers(1, &FBO);
@@ -64,7 +71,6 @@ class OmnidirectionalShadowMap
 
   void destroy()
   {
-    shader.destroy();
     glDeleteTextures(1, &cubemap);
     glDeleteFramebuffers(1, &FBO);
   }
@@ -98,42 +104,42 @@ class OmnidirectionalShadowMap
     // set uniforms
     const glm::mat4 projection = glm::perspective(
         glm::radians(90.0f), static_cast<float>(width) / height, zNear, zFar);
-    shader.set_uniform(
+    geometry_shader.setUniform(
         "lightSpaceMatrix[0]",
         projection * glm::lookAt(lightPosition,
                                  lightPosition + glm::vec3(1, 0, 0),
                                  glm::vec3(0, -1, 0)));
-    shader.set_uniform(
+    geometry_shader.setUniform(
         "lightSpaceMatrix[1]",
         projection * glm::lookAt(lightPosition,
                                  lightPosition + glm::vec3(-1, 0, 0),
                                  glm::vec3(0, -1, 0)));
-    shader.set_uniform(
+    geometry_shader.setUniform(
         "lightSpaceMatrix[2]",
         projection * glm::lookAt(lightPosition,
                                  lightPosition + glm::vec3(0, 1, 0),
                                  glm::vec3(0, 0, 1)));
-    shader.set_uniform(
+    geometry_shader.setUniform(
         "lightSpaceMatrix[3]",
         projection * glm::lookAt(lightPosition,
                                  lightPosition + glm::vec3(0, -1, 0),
                                  glm::vec3(0, 0, -1)));
-    shader.set_uniform(
+    geometry_shader.setUniform(
         "lightSpaceMatrix[4]",
         projection * glm::lookAt(lightPosition,
                                  lightPosition + glm::vec3(0, 0, 1),
                                  glm::vec3(0, -1, 0)));
-    shader.set_uniform(
+    geometry_shader.setUniform(
         "lightSpaceMatrix[5]",
         projection * glm::lookAt(lightPosition,
                                  lightPosition + glm::vec3(0, 0, -1),
                                  glm::vec3(0, -1, 0)));
 
-    shader.set_uniform("lightPosition", lightPosition);
-    shader.set_uniform("zFar", zFar);
+    fragment_shader.setUniform("lightPosition", lightPosition);
+    fragment_shader.setUniform("zFar", zFar);
 
     // render
-    scene.draw(shader);
+    scene.draw(pipeline, fragment_shader);
 
     glCullFace(GL_BACK);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);

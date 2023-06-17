@@ -6,6 +6,9 @@ layout (location = 3) in vec3 vTangent;
 layout (location = 4) in vec3 vDndu;
 layout (location = 5) in vec3 vDndv;
 
+out gl_PerVertex {
+  vec4 gl_Position;
+};
 out VS_OUT {
   vec3 position;
   vec3 normal;

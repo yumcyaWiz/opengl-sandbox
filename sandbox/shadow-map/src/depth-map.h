@@ -17,16 +17,20 @@ class DepthMap
   int height;
   GLuint FBO;
   GLuint texture;
-  Shader shader;
+  Shader vertex_shader;
+  Shader fragment_shader;
+  Pipeline pipeline;
 
   DepthMap(int width, int height) : width(width), height(height)
   {
-    shader.load_vertex_shader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
-                              "shaders/make-depthmap.vert");
-    shader.load_fragment_shader(
+    vertex_shader = Shader::create_vertex_shader(
+        std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+        "shaders/make-depthmap.vert");
+    fragment_shader = Shader::create_fragment_shader(
         std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
         "shaders/make-depthmap.frag");
-    shader.link_shader();
+    pipeline.attachVertexShader(vertex_shader);
+    pipeline.attachFragmentShader(fragment_shader);
 
     // setup depth map FBO
     glGenFramebuffers(1, &FBO);
@@ -55,7 +59,8 @@ class DepthMap
 
   void destroy()
   {
-    shader.destroy();
+    vertex_shader.release();
+    fragment_shader.release();
     glDeleteTextures(1, &texture);
     glDeleteFramebuffers(1, &FBO);
   }
@@ -73,7 +78,7 @@ class DepthMap
 
   void setLightSpaceMatrix(const glm::mat4& lightSpaceMatrix)
   {
-    shader.set_uniform("lightSpaceMatrix", lightSpaceMatrix);
+    vertex_shader.setUniform("lightSpaceMatrix", lightSpaceMatrix);
   }
 
   void draw(const Scene& scene) const
@@ -83,7 +88,7 @@ class DepthMap
     glBindFramebuffer(GL_FRAMEBUFFER, FBO);
     glClear(GL_DEPTH_BUFFER_BIT);
     glCullFace(GL_FRONT);  // prevent peter panning
-    scene.draw(shader);
+    scene.draw(pipeline, fragment_shader);
     glCullFace(GL_BACK);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
   }

@@ -4,8 +4,14 @@
 #include <iostream>
 
 #include "assimp/Importer.hpp"
+#include "assimp/material.h"
 #include "assimp/postprocess.h"
 #include "spdlog/spdlog.h"
+
+#ifndef STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_IMPLEMENTATION
+#endif
+#include "stb_image.h"
 
 namespace ogls
 {
@@ -51,11 +57,11 @@ void Model::load_model(const std::filesystem::path& filepath)
                std::to_string(textures.size()));
 }
 
-void Model::draw(const Shader& shader) const
+void Model::draw(const Pipeline& pipeline, const Shader& shader) const
 {
   // draw all meshes
   for (std::size_t i = 0; i < meshes.size(); i++) {
-    meshes[i].draw(shader, textures);
+    meshes[i].draw(pipeline, shader, textures);
   }
 }
 
@@ -66,7 +72,7 @@ void Model::destroy()
   meshes.clear();
 
   // destroy all textures
-  for (auto& texture : textures) { texture.destroy(); }
+  for (auto& texture : textures) { texture.release(); }
   textures.clear();
 }
 
@@ -258,6 +264,7 @@ std::optional<std::size_t> Model::loadTexture(
     const aiMaterial* material, const TextureType& type,
     const std::filesystem::path& parentPath)
 {
+  // TODO: use std::map
   aiTextureType aiTexType;
   switch (type) {
     case TextureType::Diffuse:
@@ -300,8 +307,18 @@ std::optional<std::size_t> Model::loadTexture(
   // load texture if we don't have it
   const auto index = hasTexture(texturePath);
   if (!index) {
-    textures.emplace_back(texturePath, type);
-    return textures.size() - 1;
+    int x, y, c;
+    unsigned char* image = stbi_load(texturePath.c_str(), &x, &y, &c, 3);
+    const glm::uvec2 resolution = {x, y};
+    textures.emplace_back(glm::uvec2(x, y), GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
+    loaded_textures.emplace_back(texturePath);
+    const uint32_t index = textures.size() - 1;
+    Texture& texture = textures[index];
+    texture.setImage(image, resolution, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
+
+    stbi_image_free(image);
+
+    return index;
   } else {
     return index.value();
   }
@@ -310,9 +327,8 @@ std::optional<std::size_t> Model::loadTexture(
 std::optional<std::size_t> Model::hasTexture(
     const std::filesystem::path& filepath) const
 {
-  for (std::size_t i = 0; i < textures.size(); ++i) {
-    const Texture& texture = textures[i];
-    if (texture.filepath == filepath) { return i; }
+  for (std::size_t i = 0; i < loaded_textures.size(); ++i) {
+    if (loaded_textures[i] == filepath) return i;
   }
   return std::nullopt;
 }

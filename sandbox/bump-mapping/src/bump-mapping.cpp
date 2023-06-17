@@ -101,7 +101,7 @@ int main()
 
   // initialize imgui backends
   ImGui_ImplGlfw_InitForOpenGL(window, true);
-  ImGui_ImplOpenGL3_Init("#version 330 core");
+  ImGui_ImplOpenGL3_Init("#version 460 core");
 
   // enable depth test
   glEnable(GL_DEPTH_TEST);
@@ -117,12 +117,16 @@ int main()
   scene.set_point_light_index(0);
 
   // setup shader
-  Shader shader;
-  shader.load_vertex_shader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
-                            "shaders/shader.vert");
-  shader.load_fragment_shader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
-                              "shaders/shader.frag");
-  shader.link_shader();
+  const Shader vertex_shader = Shader::create_vertex_shader(
+      std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) / "shaders/shader.vert");
+  const Shader fragment_shader = Shader::create_fragment_shader(
+      std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) / "shaders/shader.frag");
+
+  const Pipeline pipeline;
+  pipeline.attachVertexShader(vertex_shader);
+  pipeline.attachFragmentShader(fragment_shader);
+
+  Model *model = nullptr;
 
   // app loop
   float t = 0.0f;
@@ -140,7 +144,9 @@ int main()
       static char modelPath[100] = {"assets/sponza/sponza.obj"};
       ImGui::InputText("Model", modelPath, 100);
       if (ImGui::Button("Load Model")) {
-        scene.set_model({std::string(CMAKE_SOURCE_DIR) + "/" + modelPath});
+        if (model) { delete model; }
+        model = new Model(std::string(CMAKE_SOURCE_DIR) + "/" + modelPath);
+        scene.set_model(model);
       }
 
       ImGui::Separator();
@@ -171,16 +177,16 @@ int main()
     const glm::mat4 view = CAMERA->compute_view_matrix();
     const glm::mat4 projection =
         CAMERA->compute_projection_matrix(WIDTH, HEIGHT);
-    shader.set_uniform("view", view);
-    shader.set_uniform("projection", projection);
-    shader.set_uniform("camPos", CAMERA->cam_pos);
-    shader.set_uniform("useHeightMap", USE_HEIGHT_MAP);
-    shader.set_uniform("heightMapMethod", HEIGHT_MAP_METHOD);
-    shader.set_uniform("heightMapScale", HEIGHT_MAP_SCALE);
+    vertex_shader.setUniform("view", view);
+    vertex_shader.setUniform("projection", projection);
+    fragment_shader.setUniform("camPos", CAMERA->cam_pos);
+    fragment_shader.setUniform("useHeightMap", USE_HEIGHT_MAP);
+    fragment_shader.setUniform("heightMapMethod", HEIGHT_MAP_METHOD);
+    fragment_shader.setUniform("heightMapScale", HEIGHT_MAP_SCALE);
 
     // render
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    scene.draw(shader);
+    scene.draw(pipeline, fragment_shader);
 
     // render imgui
     ImGui::Render();
@@ -190,8 +196,8 @@ int main()
   }
 
   // exit
-  shader.destroy();
-  scene.destroy();
+  delete model;
+
   ImGui_ImplOpenGL3_Shutdown();
   ImGui_ImplGlfw_Shutdown();
   ImGui::DestroyContext();

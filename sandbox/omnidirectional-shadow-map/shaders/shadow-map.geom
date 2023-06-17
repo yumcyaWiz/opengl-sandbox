@@ -4,6 +4,10 @@ layout (triangle_strip, max_vertices=18) out;
 
 uniform mat4 lightSpaceMatrix[6];
 
+out gl_PerVertex {
+  vec4 gl_Position;
+};
+
 out GS_OUT {
   vec4 position;
 } gs_out;

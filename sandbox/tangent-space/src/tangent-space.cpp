@@ -98,7 +98,7 @@ int main()
 
   // initialize imgui backends
   ImGui_ImplGlfw_InitForOpenGL(window, true);
-  ImGui_ImplOpenGL3_Init("#version 330 core");
+  ImGui_ImplOpenGL3_Init("#version 460 core");
 
   // enable depth test
   glEnable(GL_DEPTH_TEST);
@@ -112,24 +112,31 @@ int main()
   Scene scene;
 
   // setup shader
-  Shader shader;
-  shader.load_vertex_shader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
-                            "shaders/shader.vert");
-  shader.load_fragment_shader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
-                              "shaders/shader.frag");
-  shader.link_shader();
+  const Shader vertex_shader = Shader::create_vertex_shader(
+      std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) / "shaders/shader.vert");
+  const Shader fragment_shader = Shader::create_fragment_shader(
+      std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) / "shaders/shader.frag");
 
-  Shader showTangentSpace;
-  showTangentSpace.load_vertex_shader(
+  const Pipeline pipeline;
+  pipeline.attachVertexShader(vertex_shader);
+  pipeline.attachFragmentShader(fragment_shader);
+
+  const Shader tangent_space_vertex_shader = Shader::create_vertex_shader(
       std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
       "shaders/tangent-space.vert");
-  showTangentSpace.load_geometry_shader(
+  const Shader tangent_space_geometry_shader = Shader::create_geometry_shader(
       std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
       "shaders/tangent-space.geom");
-  showTangentSpace.load_fragment_shader(
+  const Shader tangent_space_fragment_shader = Shader::create_fragment_shader(
       std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
       "shaders/tangent-space.frag");
-  showTangentSpace.link_shader();
+
+  const Pipeline tangent_space_pipeline;
+  tangent_space_pipeline.attachVertexShader(tangent_space_vertex_shader);
+  tangent_space_pipeline.attachGeometryShader(tangent_space_geometry_shader);
+  tangent_space_pipeline.attachFragmentShader(tangent_space_fragment_shader);
+
+  Model *model = nullptr;
 
   // app loop
   while (!glfwWindowShouldClose(window)) {
@@ -146,7 +153,9 @@ int main()
       static char modelPath[100] = {"assets/sponza/sponza.obj"};
       ImGui::InputText("Model", modelPath, 100);
       if (ImGui::Button("Load Model")) {
-        scene.set_model({std::string(CMAKE_SOURCE_DIR) + "/" + modelPath});
+        if (model) { delete model; }
+        model = new Model(std::string(CMAKE_SOURCE_DIR) + "/" + modelPath);
+        scene.set_model(model);
       }
 
       ImGui::Separator();
@@ -169,18 +178,18 @@ int main()
     const glm::mat4 view = CAMERA->compute_view_matrix();
     const glm::mat4 projection =
         CAMERA->compute_projection_matrix(WIDTH, HEIGHT);
-    shader.set_uniform("view", view);
-    shader.set_uniform("projection", projection);
-    showTangentSpace.set_uniform("view", view);
-    showTangentSpace.set_uniform("projection", projection);
-    showTangentSpace.set_uniform("lineLength", LINE_LENGTH);
+    vertex_shader.setUniform("view", view);
+    vertex_shader.setUniform("projection", projection);
+    tangent_space_geometry_shader.setUniform("view", view);
+    tangent_space_geometry_shader.setUniform("projection", projection);
+    tangent_space_geometry_shader.setUniform("lineLength", LINE_LENGTH);
 
     // render
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    scene.draw(shader);
+    scene.draw(pipeline, fragment_shader);
 
     // show tangent space
-    scene.draw(showTangentSpace);
+    scene.draw(pipeline, tangent_space_fragment_shader);
 
     // render imgui
     ImGui::Render();
@@ -190,8 +199,8 @@ int main()
   }
 
   // exit
-  shader.destroy();
-  scene.destroy();
+  delete model;
+
   ImGui_ImplOpenGL3_Shutdown();
   ImGui_ImplGlfw_Shutdown();
   ImGui::DestroyContext();

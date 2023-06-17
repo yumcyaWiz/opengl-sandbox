@@ -25,7 +25,7 @@ class Model
   void load_model(const std::filesystem::path& filepath);
 
   // draw model by given shader
-  void draw(const Shader& shader) const;
+  void draw(const Pipeline& pipeline, const Shader& shader) const;
 
   // destroy model object
   void destroy();
@@ -33,6 +33,8 @@ class Model
  private:
   std::vector<Mesh> meshes;
   std::vector<Texture> textures;
+
+  std::vector<std::filesystem::path> loaded_textures;
 
   // parse assimp node object
   void process_node(const aiNode* node, const aiScene* scene,

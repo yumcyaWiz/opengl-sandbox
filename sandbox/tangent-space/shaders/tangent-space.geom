@@ -8,6 +8,10 @@ in VS_OUT {
   vec3 normal;
 } gs_in[];
 
+out gl_PerVertex
+{
+  vec4 gl_Position;
+};
 out GS_OUT {
   vec3 color;
 } gs_out;

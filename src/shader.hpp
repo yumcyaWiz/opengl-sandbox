@@ -1,11 +1,14 @@
 #pragma once
 #include <filesystem>
-#include <optional>
-#include <string>
+#include <fstream>
+#include <iostream>
+#include <sstream>
 #include <variant>
 
 #include "glad/glad.h"
 #include "glm/glm.hpp"
+#include "glm/gtc/type_ptr.hpp"
+#include "spdlog/spdlog.h"
 
 namespace ogls
 {
@@ -13,56 +16,57 @@ namespace ogls
 class Shader
 {
  private:
-  std::filesystem::path vertexShaderFilepath;
-  std::string vertexShaderSource;
-
-  std::optional<std::filesystem::path> geometryShaderFilepath;
-  std::optional<std::string> geometryShaderSource;
-
-  std::filesystem::path fragmentShaderFilepath;
-  std::string fragmentShaderSource;
-
-  GLuint vertexShader;
-  std::optional<GLuint> geometryShader;
-  GLuint fragmentShader;
   GLuint program;
 
-  void checkShaderCompilation(GLuint shader);
+  static std::string loadStringFromFile(const std::filesystem::path& filepath);
 
  public:
   Shader();
+  Shader(GLenum type, const std::filesystem::path& filepath);
+  virtual ~Shader();
+  Shader(const Shader& other) = delete;
+  Shader(Shader&& other);
 
-  void load_vertex_shader(const std::filesystem::path& vertexShaderFilepath);
-  void load_geometry_shader(
-      const std::filesystem::path& geometryShaderFilepath);
-  void load_fragment_shader(
-      const std::filesystem::path& fragmentShaderFilepath);
+  Shader& operator=(const Shader& other) = delete;
+  Shader& operator=(Shader&& other);
 
-  void link_shader();
+  void release();
 
-  // destroy shader object
-  void destroy();
+  GLuint getProgram() const;
 
-  // activate shader on the currect context
+  void setUniform(const std::string& uniform_name,
+                  const std::variant<bool, GLint, GLuint, GLfloat, glm::vec2,
+                                     glm::vec3, glm::mat4>& value) const;
+
+  static Shader create_vertex_shader(const std::filesystem::path& filepath);
+  static Shader create_fragment_shader(const std::filesystem::path& filepath);
+  static Shader create_geometry_shader(const std::filesystem::path& filepath);
+  static Shader create_compute_shader(const std::filesystem::path& filepath);
+};
+
+class Pipeline
+{
+ private:
+  GLuint pipeline;
+
+ public:
+  Pipeline();
+  Pipeline(const Pipeline& other) = delete;
+  Pipeline(Pipeline&& other);
+  ~Pipeline();
+
+  Pipeline& operator=(const Pipeline& other) = delete;
+  Pipeline& operator=(Pipeline&& other);
+
+  void release();
+
+  void attachVertexShader(const Shader& shader) const;
+  void attachGeometryShader(const Shader& shader) const;
+  void attachFragmentShader(const Shader& shader) const;
+  void attachComputeShader(const Shader& shader) const;
+
   void activate() const;
-  // deactivate shader on the currect context
   void deactivate() const;
-
-  // set value on shader's uniform variable
-  void set_uniform(const std::string& uniformName,
-                   const std::variant<bool, GLint, GLuint, GLfloat, glm::vec2,
-                                      glm::vec3, glm::mat4>& value) const;
-
-  // set texture on shader's sampler2D uniform variable
-  void set_uniform_texture(const std::string& uniformName, GLuint texture,
-                           GLuint textureUnitNumber) const;
-
-  // set cubemap on shader's samplerCube uniform variable
-  void set_uniform_cubemap(const std::string& uniformName, GLuint cubemap,
-                           GLuint textureUnitNumber) const;
-
-  // set uniform buffer object on shader
-  void set_UBO(const std::string& blockName, GLuint bindingNumber) const;
 };
 
 }  // namespace ogls
