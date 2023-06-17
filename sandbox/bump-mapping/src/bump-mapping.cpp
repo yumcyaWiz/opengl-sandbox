@@ -113,14 +113,11 @@ int main()
   scene.setPointLight({glm::vec3(10000), glm::vec3(0, 100, 0), 0});
 
   // setup shader
-  const Shader vertex_shader = Shader::createVertexShader(
-      std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) / "shaders/shader.vert");
-  const Shader fragment_shader = Shader::createFragmentShader(
-      std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) / "shaders/shader.frag");
-
-  const Pipeline pipeline;
-  pipeline.attachVertexShader(vertex_shader);
-  pipeline.attachFragmentShader(fragment_shader);
+  Pipeline pipeline;
+  pipeline.loadVertexShader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+                            "shaders/shader.vert");
+  pipeline.loadFragmentShader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+                              "shaders/shader.frag");
 
   // app loop
   float t = 0.0f;
@@ -162,22 +159,22 @@ int main()
 
     // set light position
     t += io.DeltaTime;
-    scene.setPointLight({glm::vec3(1.0f),
+    scene.setPointLight({glm::vec3(10000.0f),
                          CAMERA->cam_pos + 200.0f * CAMERA->cam_forward, 0.0f});
 
     // set uniform variables
     const glm::mat4 view = CAMERA->computeViewMatrix();
     const glm::mat4 projection = CAMERA->computeProjectionMatrix(WIDTH, HEIGHT);
-    vertex_shader.setUniform("view", view);
-    vertex_shader.setUniform("projection", projection);
-    fragment_shader.setUniform("camPos", CAMERA->cam_pos);
-    fragment_shader.setUniform("useHeightMap", USE_HEIGHT_MAP);
-    fragment_shader.setUniform("heightMapMethod", HEIGHT_MAP_METHOD);
-    fragment_shader.setUniform("heightMapScale", HEIGHT_MAP_SCALE);
+    pipeline.setUniform("view", view);
+    pipeline.setUniform("projection", projection);
+    pipeline.setUniform("camPos", CAMERA->cam_pos);
+    pipeline.setUniform("useHeightMap", USE_HEIGHT_MAP);
+    pipeline.setUniform("heightMapMethod", HEIGHT_MAP_METHOD);
+    pipeline.setUniform("heightMapScale", HEIGHT_MAP_SCALE);
 
     // render
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    scene.draw(pipeline, fragment_shader);
+    scene.draw(pipeline);
 
     // render imgui
     ImGui::Render();

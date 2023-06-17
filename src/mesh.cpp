@@ -51,110 +51,110 @@ Mesh& Mesh::operator=(Mesh&& other)
   return *this;
 }
 
-void Mesh::draw(const Pipeline& pipeline, const Shader& shader,
+void Mesh::draw(const Pipeline& pipeline,
                 const std::vector<Texture>& textures) const
 {
   // set texture uniform
   if (material.diffuse_map) {
     const Texture& tex = textures[material.diffuse_map.value()];
     tex.bindToTextureUnit(1);
-    shader.setUniform("material.diffuseMap", 1);
+    pipeline.setUniform("material.diffuseMap", 1);
   }
 
   if (material.specular_map) {
     const Texture& tex = textures[material.specular_map.value()];
     tex.bindToTextureUnit(2);
-    shader.setUniform("material.specularMap", 2);
+    pipeline.setUniform("material.specularMap", 2);
   }
 
   if (material.ambient_map) {
     const Texture& tex = textures[material.ambient_map.value()];
     tex.bindToTextureUnit(3);
-    shader.setUniform("material.ambientMap", 3);
+    pipeline.setUniform("material.ambientMap", 3);
   }
 
   if (material.emissive_map) {
     const Texture& tex = textures[material.emissive_map.value()];
     tex.bindToTextureUnit(4);
-    shader.setUniform("material.emissiveMap", 4);
+    pipeline.setUniform("material.emissiveMap", 4);
   }
 
   if (material.height_map) {
     const Texture& tex = textures[material.height_map.value()];
     tex.bindToTextureUnit(5);
-    shader.setUniform("material.heightMap", 5);
+    pipeline.setUniform("material.heightMap", 5);
 
     // TODO: remove this
-    shader.setUniform("material.hasHeightMap", true);
+    pipeline.setUniform("material.hasHeightMap", true);
   } else {
-    shader.setUniform("material.hasHeightMap", false);
+    pipeline.setUniform("material.hasHeightMap", false);
   }
 
   if (material.normal_map) {
     const Texture& tex = textures[material.normal_map.value()];
     tex.bindToTextureUnit(6);
-    shader.setUniform("material.normalMap", 6);
+    pipeline.setUniform("material.normalMap", 6);
 
     // TODO: remove this
-    shader.setUniform("material.hasNormalMap", true);
+    pipeline.setUniform("material.hasNormalMap", true);
   } else {
-    shader.setUniform("material.hasNormalMap", false);
+    pipeline.setUniform("material.hasNormalMap", false);
   }
 
   if (material.shininess_map) {
     const Texture& tex = textures[material.shininess_map.value()];
     tex.bindToTextureUnit(7);
-    shader.setUniform("material.shininessMap", 7);
+    pipeline.setUniform("material.shininessMap", 7);
   }
 
   if (material.displacement_map) {
     const Texture& tex = textures[material.displacement_map.value()];
     tex.bindToTextureUnit(8);
-    shader.setUniform("material.displacementMap", 8);
+    pipeline.setUniform("material.displacementMap", 8);
 
     // TODO: remove this
-    shader.setUniform("material.hasDisplacementMap", true);
+    pipeline.setUniform("material.hasDisplacementMap", true);
   } else {
-    shader.setUniform("material.hasDisplacementMap", false);
+    pipeline.setUniform("material.hasDisplacementMap", false);
   }
 
   if (material.light_map) {
     const Texture& tex = textures[material.light_map.value()];
     tex.bindToTextureUnit(9);
-    shader.setUniform("material.lightMap", 9);
+    pipeline.setUniform("material.lightMap", 9);
 
     // TODO: remove this
-    shader.setUniform("material.hasLightMap", true);
+    pipeline.setUniform("material.hasLightMap", true);
   } else {
-    shader.setUniform("material.hasLightMap", false);
+    pipeline.setUniform("material.hasLightMap", false);
   }
 
   // set material
   if (material.diffuse_map) {
-    shader.setUniform("material.kd", glm::vec3(0));
+    pipeline.setUniform("material.kd", glm::vec3(0));
   } else {
-    shader.setUniform("material.kd", material.kd);
+    pipeline.setUniform("material.kd", material.kd);
   }
 
   if (material.specular_map) {
-    shader.setUniform("material.ks", glm::vec3(0));
+    pipeline.setUniform("material.ks", glm::vec3(0));
   } else {
-    shader.setUniform("material.ks", material.ks);
+    pipeline.setUniform("material.ks", material.ks);
   }
 
   if (material.ambient_map) {
-    shader.setUniform("material.ka", glm::vec3(0));
+    pipeline.setUniform("material.ka", glm::vec3(0));
   } else {
-    shader.setUniform("material.ka", material.ka);
+    pipeline.setUniform("material.ka", material.ka);
   }
 
   if (material.emissive_map) {
-    shader.setUniform("material.ke", glm::vec3(0));
+    pipeline.setUniform("material.ke", glm::vec3(0));
   } else {
-    shader.setUniform("material.ke", material.ke);
+    pipeline.setUniform("material.ke", material.ke);
   }
 
-  shader.setUniform("material.shininess", material.shininess);
+  pipeline.setUniform("material.shininess", material.shininess);
 
   // draw mesh
   pipeline.activate();
@@ -164,19 +164,19 @@ void Mesh::draw(const Pipeline& pipeline, const Shader& shader,
   pipeline.deactivate();
 
   // reset texture uniforms
-  shader.setUniform("material.diffuseMap", 0);
-  shader.setUniform("material.specularMap", 0);
-  shader.setUniform("material.ambientMap", 0);
-  shader.setUniform("material.emissiveMap", 0);
-  shader.setUniform("material.heightMap", 0);
-  shader.setUniform("material.hasHeightMap", false);
-  shader.setUniform("material.normalMap", 0);
-  shader.setUniform("material.hasNormalMap", false);
-  shader.setUniform("material.shininessMap", 0);
-  shader.setUniform("material.displacementMap", 0);
-  shader.setUniform("material.hasDisplacementMap", false);
-  shader.setUniform("material.lightMap", 0);
-  shader.setUniform("material.hasLightMap", false);
+  pipeline.setUniform("material.diffuseMap", 0);
+  pipeline.setUniform("material.specularMap", 0);
+  pipeline.setUniform("material.ambientMap", 0);
+  pipeline.setUniform("material.emissiveMap", 0);
+  pipeline.setUniform("material.heightMap", 0);
+  pipeline.setUniform("material.hasHeightMap", false);
+  pipeline.setUniform("material.normalMap", 0);
+  pipeline.setUniform("material.hasNormalMap", false);
+  pipeline.setUniform("material.shininessMap", 0);
+  pipeline.setUniform("material.displacementMap", 0);
+  pipeline.setUniform("material.hasDisplacementMap", false);
+  pipeline.setUniform("material.lightMap", 0);
+  pipeline.setUniform("material.hasLightMap", false);
 }
 
 uint32_t Mesh::getNumberOfVertices() const { return vertices.size(); }

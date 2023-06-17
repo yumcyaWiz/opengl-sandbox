@@ -5,20 +5,20 @@ namespace ogls
 
 Scene::Scene() {}
 
-void Scene::draw(const Pipeline& pipeline, const Shader& shader) const
+void Scene::draw(const Pipeline& pipeline) const
 {
   // set point light
-  shader.setUniform("pointLight.ke", pointLight.getKe());
-  shader.setUniform("pointLight.position", pointLight.getPosition());
-  shader.setUniform("pointLight.radius", pointLight.getRadius());
+  pipeline.setUniform("pointLight.ke", pointLight.getKe());
+  pipeline.setUniform("pointLight.position", pointLight.getPosition());
+  pipeline.setUniform("pointLight.radius", pointLight.getRadius());
 
   // set directional light
-  shader.setUniform("directionalLight.ke", directionalLight.getKe());
-  shader.setUniform("directionalLight.direction",
-                    directionalLight.getDirection());
+  pipeline.setUniform("directionalLight.ke", directionalLight.getKe());
+  pipeline.setUniform("directionalLight.direction",
+                      directionalLight.getDirection());
 
   // draw models
-  if (model) { model.draw(pipeline, shader); }
+  if (model) { model.draw(pipeline); }
 }
 
 void Scene::setModel(Model&& model) { this->model = std::move(model); }

@@ -4,9 +4,9 @@
 
 using namespace ogls;
 
-Shader::Shader() : program(0) {}
+Pipeline::Shader::Shader() : program(0) {}
 
-Shader::Shader(GLenum type, const std::filesystem::path& filepath)
+Pipeline::Shader::Shader(GLenum type, const std::filesystem::path& filepath)
 {
   std::string shader_source = Shadinclude::load(filepath);
   const char* shader_source_c = shader_source.c_str();
@@ -28,11 +28,14 @@ Shader::Shader(GLenum type, const std::filesystem::path& filepath)
   }
 }
 
-Shader::~Shader() { release(); }
+Pipeline::Shader::~Shader() { release(); }
 
-Shader::Shader(Shader&& other) : program(other.program) { other.program = 0; }
+Pipeline::Shader::Shader(Shader&& other) : program(other.program)
+{
+  other.program = 0;
+}
 
-Shader& Shader::operator=(Shader&& other)
+Pipeline::Shader& Pipeline::Shader::operator=(Shader&& other)
 {
   if (this != &other) {
     release();
@@ -45,7 +48,9 @@ Shader& Shader::operator=(Shader&& other)
   return *this;
 }
 
-void Shader::release()
+Pipeline::Shader::operator bool() const { return this->program != 0; }
+
+void Pipeline::Shader::release()
 {
   if (program) {
     spdlog::debug("[Shader] release program {:x}", program);
@@ -53,9 +58,9 @@ void Shader::release()
   }
 }
 
-GLuint Shader::getProgram() const { return program; }
+GLuint Pipeline::Shader::getProgram() const { return program; }
 
-void Shader::setUniform(
+void Pipeline::Shader::setUniform(
     const std::string& uniform_name,
     const std::variant<bool, GLint, GLuint, GLfloat, glm::vec2, glm::vec3,
                        glm::mat4>& value) const
@@ -105,22 +110,26 @@ void Shader::setUniform(
   std::visit(Visitor{program, location}, value);
 }
 
-Shader Shader::createVertexShader(const std::filesystem::path& filepath)
+Pipeline::Shader Pipeline::Shader::createVertexShader(
+    const std::filesystem::path& filepath)
 {
   return Shader(GL_VERTEX_SHADER, filepath);
 }
 
-Shader Shader::createFragmentShader(const std::filesystem::path& filepath)
+Pipeline::Shader Pipeline::Shader::createFragmentShader(
+    const std::filesystem::path& filepath)
 {
   return Shader(GL_FRAGMENT_SHADER, filepath);
 }
 
-Shader Shader::createGeometryShader(const std::filesystem::path& filepath)
+Pipeline::Shader Pipeline::Shader::createGeometryShader(
+    const std::filesystem::path& filepath)
 {
   return Shader(GL_GEOMETRY_SHADER, filepath);
 }
 
-Shader Shader::createComputeShader(const std::filesystem::path& filepath)
+Pipeline::Shader Pipeline::Shader::createComputeShader(
+    const std::filesystem::path& filepath)
 {
   return Shader(GL_COMPUTE_SHADER, filepath);
 }
@@ -159,24 +168,63 @@ void Pipeline::release()
   }
 }
 
-void Pipeline::attachVertexShader(const Shader& shader) const
+void Pipeline::attachVertexShader(Shader&& shader)
 {
-  glUseProgramStages(pipeline, GL_VERTEX_SHADER_BIT, shader.getProgram());
+  vertex_shader = std::move(shader);
+  glUseProgramStages(pipeline, GL_VERTEX_SHADER_BIT,
+                     vertex_shader.getProgram());
 }
 
-void Pipeline::attachGeometryShader(const Shader& shader) const
+void Pipeline::attachGeometryShader(Shader&& shader)
 {
-  glUseProgramStages(pipeline, GL_GEOMETRY_SHADER_BIT, shader.getProgram());
+  geometry_shader = std::move(shader);
+  glUseProgramStages(pipeline, GL_GEOMETRY_SHADER_BIT,
+                     geometry_shader.getProgram());
 }
 
-void Pipeline::attachFragmentShader(const Shader& shader) const
+void Pipeline::attachFragmentShader(Shader&& shader)
 {
-  glUseProgramStages(pipeline, GL_FRAGMENT_SHADER_BIT, shader.getProgram());
+  fragment_shader = std::move(shader);
+  glUseProgramStages(pipeline, GL_FRAGMENT_SHADER_BIT,
+                     fragment_shader.getProgram());
 }
 
-void Pipeline::attachComputeShader(const Shader& shader) const
+void Pipeline::attachComputeShader(Shader&& shader)
 {
-  glUseProgramStages(pipeline, GL_COMPUTE_SHADER_BIT, shader.getProgram());
+  compute_shader = std::move(shader);
+  glUseProgramStages(pipeline, GL_COMPUTE_SHADER_BIT,
+                     compute_shader.getProgram());
+}
+
+void Pipeline::loadVertexShader(const std::filesystem::path& filepath)
+{
+  attachVertexShader(Shader::createVertexShader(filepath));
+}
+
+void Pipeline::loadFragmentShader(const std::filesystem::path& filepath)
+{
+  attachFragmentShader(Shader::createFragmentShader(filepath));
+}
+
+void Pipeline::loadGeometryShader(const std::filesystem::path& filepath)
+{
+  attachGeometryShader(Shader::createGeometryShader(filepath));
+}
+
+void Pipeline::loadComputeShader(const std::filesystem::path& filepath)
+{
+  attachComputeShader(Shader::createComputeShader(filepath));
+}
+
+void Pipeline::setUniform(
+    const std::string& uniform_name,
+    const std::variant<bool, GLint, GLuint, GLfloat, glm::vec2, glm::vec3,
+                       glm::mat4>& value) const
+{
+  if (vertex_shader) { vertex_shader.setUniform(uniform_name, value); }
+  if (geometry_shader) { geometry_shader.setUniform(uniform_name, value); }
+  if (fragment_shader) { fragment_shader.setUniform(uniform_name, value); }
+  if (compute_shader) { compute_shader.setUniform(uniform_name, value); }
 }
 
 void Pipeline::activate() const { glBindProgramPipeline(pipeline); }

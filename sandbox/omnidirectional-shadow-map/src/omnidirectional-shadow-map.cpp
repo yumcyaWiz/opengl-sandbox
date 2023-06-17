@@ -113,14 +113,11 @@ int main()
   scene.setPointLight({glm::vec3(10000.0f), glm::vec3(0, 100.0f, 0), 0.0f});
 
   // setup shader
-  const Shader vertex_shader = Shader::createVertexShader(
-      std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) / "shaders/shader.vert");
-  const Shader fragment_shader = Shader::createFragmentShader(
-      std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) / "shaders/shader.frag");
-
-  const Pipeline pipeline;
-  pipeline.attachVertexShader(vertex_shader);
-  pipeline.attachFragmentShader(fragment_shader);
+  Pipeline pipeline;
+  pipeline.loadVertexShader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+                            "shaders/shader.vert");
+  pipeline.loadFragmentShader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+                              "shaders/shader.frag");
 
   OmnidirectionalShadowMap shadowMap(SHADOW_MAP_RES, SHADOW_MAP_RES);
 
@@ -176,19 +173,19 @@ int main()
 
     // render scene with shadow mapping
     // set uniforms
-    vertex_shader.setUniform(
-        "viewProjection", CAMERA->computeViewProjectionMatrix(WIDTH, HEIGHT));
-    fragment_shader.setUniform("camPos", CAMERA->cam_pos);
-    fragment_shader.setUniform("shadowBias", SHADOW_BIAS);
+    pipeline.setUniform("viewProjection",
+                        CAMERA->computeViewProjectionMatrix(WIDTH, HEIGHT));
+    pipeline.setUniform("camPos", CAMERA->cam_pos);
+    pipeline.setUniform("shadowBias", SHADOW_BIAS);
     // TODO: set texture unit number appropriately
     glBindTextureUnit(10, shadowMap.cubemap);
-    fragment_shader.setUniform("shadowMap", 10);
-    fragment_shader.setUniform("zFar", shadowMap.zFar);
+    pipeline.setUniform("shadowMap", 10);
+    pipeline.setUniform("zFar", shadowMap.zFar);
 
     // render
     glViewport(0, 0, WIDTH, HEIGHT);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    scene.draw(pipeline, fragment_shader);
+    scene.draw(pipeline);
 
     // render imgui
     ImGui::Render();

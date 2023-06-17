@@ -33,7 +33,7 @@ class Model
   // load model with assimp
   void loadModel(const std::filesystem::path& filepath);
 
-  void draw(const Pipeline& pipeline, const Shader& shader) const;
+  void draw(const Pipeline& pipeline) const;
 
  private:
   std::vector<Mesh> meshes;

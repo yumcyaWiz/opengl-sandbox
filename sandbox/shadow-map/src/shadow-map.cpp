@@ -121,25 +121,19 @@ int main()
   Quad quad;
 
   // setup shader
-  const Shader show_depthmap_vert = Shader::createVertexShader(
+  Pipeline show_depthmap_pipeline;
+  show_depthmap_pipeline.loadVertexShader(
       std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
       "shaders/show-depthmap.vert");
-  const Shader show_depthmap_frag = Shader::createFragmentShader(
+  show_depthmap_pipeline.loadFragmentShader(
       std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
       "shaders/show-depthmap.frag");
 
-  const Pipeline show_depthmap_pipeline;
-  show_depthmap_pipeline.attachVertexShader(show_depthmap_vert);
-  show_depthmap_pipeline.attachFragmentShader(show_depthmap_frag);
-
-  const Shader vertex_shader = Shader::createVertexShader(
-      std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) / "shaders/shader.vert");
-  const Shader fragment_shader = Shader::createFragmentShader(
-      std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) / "shaders/shader.frag");
-
-  const Pipeline pipeline;
-  pipeline.attachVertexShader(vertex_shader);
-  pipeline.attachFragmentShader(fragment_shader);
+  Pipeline pipeline;
+  pipeline.loadVertexShader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+                            "shaders/shader.vert");
+  pipeline.loadFragmentShader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+                              "shaders/shader.frag");
 
   DepthMap depthMap(1024, 1024);
 
@@ -207,27 +201,27 @@ int main()
 
     // render scene with shadow mapping
     // set uniforms
-    vertex_shader.setUniform(
-        "viewProjection", CAMERA->computeViewProjectionMatrix(WIDTH, HEIGHT));
-    vertex_shader.setUniform("lightSpaceMatrix", lightSpaceMatrix);
-    fragment_shader.setUniform("camPos", CAMERA->cam_pos);
+    pipeline.setUniform("viewProjection",
+                        CAMERA->computeViewProjectionMatrix(WIDTH, HEIGHT));
+    pipeline.setUniform("lightSpaceMatrix", lightSpaceMatrix);
+    pipeline.setUniform("camPos", CAMERA->cam_pos);
     // TODO: set texture unit number appropriately
     glBindTextureUnit(10, depthMap.texture);
-    fragment_shader.setUniform("depthMap", 10);
-    fragment_shader.setUniform("depthBias", DEPTH_BIAS);
+    pipeline.setUniform("depthMap", 10);
+    pipeline.setUniform("depthBias", DEPTH_BIAS);
 
     // render
     glViewport(0, 0, WIDTH, HEIGHT);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    scene.draw(pipeline, fragment_shader);
+    scene.draw(pipeline);
 
     // show depth map
     glViewport(WIDTH - 256, HEIGHT - 256, 256, 256);
     glClear(GL_DEPTH_BUFFER_BIT);
     glBindTextureUnit(10, depthMap.texture);
-    show_depthmap_frag.setUniform("depthMap", 10);
-    show_depthmap_frag.setUniform("zNear", DEPTH_MAP_NEAR);
-    show_depthmap_frag.setUniform("zFar", DEPTH_MAP_FAR);
+    show_depthmap_pipeline.setUniform("depthMap", 10);
+    show_depthmap_pipeline.setUniform("zNear", DEPTH_MAP_NEAR);
+    show_depthmap_pipeline.setUniform("zFar", DEPTH_MAP_FAR);
     quad.draw(show_depthmap_pipeline);
 
     // render imgui

@@ -109,29 +109,22 @@ int main()
   Scene scene;
 
   // setup shader
-  const Shader vertex_shader = Shader::createVertexShader(
-      std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) / "shaders/shader.vert");
-  const Shader fragment_shader = Shader::createFragmentShader(
-      std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) / "shaders/shader.frag");
+  Pipeline pipeline;
+  pipeline.loadVertexShader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+                            "shaders/shader.vert");
+  pipeline.loadFragmentShader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+                              "shaders/shader.frag");
 
-  const Pipeline pipeline;
-  pipeline.attachVertexShader(vertex_shader);
-  pipeline.attachFragmentShader(fragment_shader);
-
-  const Shader tangent_space_vertex_shader = Shader::createVertexShader(
+  Pipeline tangent_space_pipeline;
+  tangent_space_pipeline.loadVertexShader(
       std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
       "shaders/tangent-space.vert");
-  const Shader tangent_space_geometry_shader = Shader::createGeometryShader(
+  tangent_space_pipeline.loadGeometryShader(
       std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
       "shaders/tangent-space.geom");
-  const Shader tangent_space_fragment_shader = Shader::createFragmentShader(
+  tangent_space_pipeline.loadFragmentShader(
       std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
       "shaders/tangent-space.frag");
-
-  const Pipeline tangent_space_pipeline;
-  tangent_space_pipeline.attachVertexShader(tangent_space_vertex_shader);
-  tangent_space_pipeline.attachGeometryShader(tangent_space_geometry_shader);
-  tangent_space_pipeline.attachFragmentShader(tangent_space_fragment_shader);
 
   // app loop
   while (!glfwWindowShouldClose(window)) {
@@ -170,18 +163,18 @@ int main()
     // set uniform variables
     const glm::mat4 view = CAMERA->computeViewMatrix();
     const glm::mat4 projection = CAMERA->computeProjectionMatrix(WIDTH, HEIGHT);
-    vertex_shader.setUniform("view", view);
-    vertex_shader.setUniform("projection", projection);
-    tangent_space_geometry_shader.setUniform("view", view);
-    tangent_space_geometry_shader.setUniform("projection", projection);
-    tangent_space_geometry_shader.setUniform("lineLength", LINE_LENGTH);
+    pipeline.setUniform("view", view);
+    pipeline.setUniform("projection", projection);
+    tangent_space_pipeline.setUniform("view", view);
+    tangent_space_pipeline.setUniform("projection", projection);
+    tangent_space_pipeline.setUniform("lineLength", LINE_LENGTH);
 
     // render
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    scene.draw(pipeline, fragment_shader);
+    scene.draw(pipeline);
 
     // show tangent space
-    scene.draw(pipeline, tangent_space_fragment_shader);
+    scene.draw(tangent_space_pipeline);
 
     // render imgui
     ImGui::Render();

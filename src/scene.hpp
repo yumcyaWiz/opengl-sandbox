@@ -72,7 +72,7 @@ class Scene
   Scene& operator=(const Scene& other) = delete;
   Scene& operator=(Scene&& other) = default;
 
-  void draw(const Pipeline& pipeline, const Shader& shader) const;
+  void draw(const Pipeline& pipeline) const;
 
   void setModel(Model&& model);
 

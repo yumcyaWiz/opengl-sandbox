@@ -6,6 +6,7 @@
 #include "GLFW/glfw3.h"
 //
 #include "ogls.hpp"
+#include "shader.hpp"
 
 using namespace ogls;
 
@@ -81,14 +82,11 @@ int main()
   vao.activateVertexAttribution(0, 1, 3, GL_FLOAT, 3 * sizeof(float));
 
   // setup shader
-  const Shader vertex_shader = Shader::createVertexShader(
-      std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) / "shaders/shader.vert");
-  const Shader fragment_shader = Shader::createFragmentShader(
-      std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) / "shaders/shader.frag");
-
-  const Pipeline pipeline;
-  pipeline.attachVertexShader(vertex_shader);
-  pipeline.attachFragmentShader(fragment_shader);
+  Pipeline pipeline;
+  pipeline.loadVertexShader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+                            "shaders/shader.vert");
+  pipeline.loadFragmentShader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+                              "shaders/shader.frag");
 
   // app loop
   while (!glfwWindowShouldClose(window)) {

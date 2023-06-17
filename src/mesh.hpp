@@ -59,7 +59,7 @@ class Mesh
   Mesh& operator=(Mesh&& other);
 
   // draw mesh by given shader
-  void draw(const Pipeline& pipeline, const Shader& shader,
+  void draw(const Pipeline& pipeline,
             const std::vector<Texture>& textures) const;
 
   uint32_t getNumberOfVertices() const;

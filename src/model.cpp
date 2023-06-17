@@ -97,11 +97,11 @@ void Model::loadModel(const std::filesystem::path& filepath)
                 std::to_string(textures.size()));
 }
 
-void Model::draw(const Pipeline& pipeline, const Shader& shader) const
+void Model::draw(const Pipeline& pipeline) const
 {
   // draw all meshes
   for (std::size_t i = 0; i < meshes.size(); i++) {
-    meshes[i].draw(pipeline, shader, textures);
+    meshes[i].draw(pipeline, textures);
   }
 }
 

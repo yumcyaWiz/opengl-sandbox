@@ -109,14 +109,11 @@ int main()
   scene.setPointLight({glm::vec3(10000.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f});
 
   // setup shader
-  const Shader vertex_shader = Shader::createVertexShader(
-      std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) / "shaders/shader.vert");
-  const Shader fragment_shader = Shader::createFragmentShader(
-      std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) / "shaders/shader.frag");
-
-  const Pipeline pipeline;
-  pipeline.attachVertexShader(vertex_shader);
-  pipeline.attachFragmentShader(fragment_shader);
+  Pipeline pipeline;
+  pipeline.loadVertexShader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+                            "shaders/shader.vert");
+  pipeline.loadFragmentShader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+                              "shaders/shader.frag");
 
   // app loop
   float t = 0.0f;
@@ -154,14 +151,14 @@ int main()
          glm::vec3(100.0f * std::cos(t), 100.0f, 100.0f * std::sin(t)), 0.0f});
 
     // set uniform variables
-    vertex_shader.setUniform("view", camera->computeViewMatrix());
-    vertex_shader.setUniform("projection",
-                             camera->computeProjectionMatrix(width, height));
-    fragment_shader.setUniform("camPos", camera->cam_pos);
+    pipeline.setUniform("view", camera->computeViewMatrix());
+    pipeline.setUniform("projection",
+                        camera->computeProjectionMatrix(width, height));
+    pipeline.setUniform("camPos", camera->cam_pos);
 
     // render
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    scene.draw(pipeline, fragment_shader);
+    scene.draw(pipeline);
 
     // render imgui
     ImGui::Render();
