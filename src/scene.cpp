@@ -1,4 +1,4 @@
-#include "ogls/scene.hpp"
+#include "scene.hpp"
 
 namespace ogls
 {

@@ -6,8 +6,8 @@
 #include <string>
 #include <vector>
 
-#include "ogls/mesh.hpp"
-#include "ogls/shader.hpp"
+#include "mesh.hpp"
+#include "shader.hpp"
 
 namespace ogls
 {

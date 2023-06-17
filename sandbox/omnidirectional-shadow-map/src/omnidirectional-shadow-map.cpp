@@ -10,10 +10,10 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 //
-#include "ogls/camera.hpp"
-#include "ogls/model.hpp"
-#include "ogls/scene.hpp"
-#include "ogls/shader.hpp"
+#include "camera.hpp"
+#include "model.hpp"
+#include "scene.hpp"
+#include "shader.hpp"
 //
 #include "omnidirectional-shadow-map.h"
 

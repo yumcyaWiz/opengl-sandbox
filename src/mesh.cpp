@@ -1,4 +1,4 @@
-#include "ogls/mesh.hpp"
+#include "mesh.hpp"
 
 namespace ogls
 {

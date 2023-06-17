@@ -5,7 +5,7 @@
 //
 #include "GLFW/glfw3.h"
 //
-#include "ogls/shader.hpp"
+#include "shader.hpp"
 
 using namespace ogls;
 

@@ -1,4 +1,4 @@
-#include "ogls/texture.hpp"
+#include "texture.hpp"
 
 #include <iostream>
 

@@ -1,4 +1,4 @@
-#include "ogls/model.hpp"
+#include "model.hpp"
 
 #include <filesystem>
 #include <iostream>

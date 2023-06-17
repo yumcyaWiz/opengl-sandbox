@@ -25,7 +25,7 @@ add_library(ogls
   src/scene.cpp
   src/quad.cpp
 )
-target_include_directories(ogls PUBLIC include)
+target_include_directories(ogls PUBLIC src/)
 
 # compile options
 target_compile_options(ogls PRIVATE

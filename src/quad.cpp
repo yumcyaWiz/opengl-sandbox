@@ -1,4 +1,4 @@
-#include "ogls/quad.hpp"
+#include "quad.hpp"
 
 namespace ogls
 {
