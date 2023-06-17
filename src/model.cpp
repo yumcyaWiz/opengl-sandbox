@@ -88,8 +88,8 @@ void Model::loadModel(const std::filesystem::path& filepath)
   std::size_t nVertices = 0;
   std::size_t nFaces = 0;
   for (std::size_t i = 0; i < meshes.size(); ++i) {
-    nVertices += meshes[i].vertices.size();
-    nFaces += meshes[i].indices.size() / 3;
+    nVertices += meshes[i].getNumberOfVertices();
+    nFaces += meshes[i].getNumberOfFaces();
   }
   spdlog::debug("[Model] number of vertices: " + std::to_string(nVertices));
   spdlog::debug("[Model] number of faces: " + std::to_string(nFaces));

@@ -179,4 +179,8 @@ void Mesh::draw(const Pipeline& pipeline, const Shader& shader,
   shader.setUniform("material.hasLightMap", false);
 }
 
+uint32_t Mesh::getNumberOfVertices() const { return vertices.size(); }
+
+uint32_t Mesh::getNumberOfFaces() const { return indices.size() / 3; }
+
 }  // namespace ogls

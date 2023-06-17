@@ -28,10 +28,6 @@ struct Vertex {
 class Mesh
 {
  public:
-  std::vector<Vertex> vertices;
-  std::vector<unsigned int> indices;
-  Material material;
-
   Mesh();
   Mesh(const std::vector<Vertex>& vertices,
        const std::vector<unsigned int>& indices, const Material& material);
@@ -46,7 +42,14 @@ class Mesh
   void draw(const Pipeline& pipeline, const Shader& shader,
             const std::vector<Texture>& textures) const;
 
+  uint32_t getNumberOfVertices() const;
+  uint32_t getNumberOfFaces() const;
+
  private:
+  std::vector<Vertex> vertices;
+  std::vector<unsigned int> indices;
+  Material material;
+
   VertexArrayObject vao;
   Buffer vbo;
   Buffer ebo;

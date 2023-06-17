@@ -41,11 +41,9 @@ class Model
 
   std::vector<std::filesystem::path> loaded_textures;
 
-  // parse assimp node object
   void processAssimpNode(const aiNode* node, const aiScene* scene,
                          const std::filesystem::path& parentPath);
 
-  // parse assimp mesh object
   Mesh processAssimpMesh(const aiMesh* mesh, const aiScene* scene,
                          const std::filesystem::path& parentPath);
 
