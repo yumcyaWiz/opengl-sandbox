@@ -1,4 +1,4 @@
-#version 330 core
+#version 460 core
 #include ../../common/shaders/uniforms.glsl
 
 in VS_OUT {
