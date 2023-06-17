@@ -6,7 +6,7 @@ experiment environment for realtime graphics methods in OpenGL.
 
 ## Requirements
 
-* C++17
+* C++20
 * Clang(Currently, GCC compiler doesn't work)
 * CMake 3.12 or Higher
 * OpenGL 4.6

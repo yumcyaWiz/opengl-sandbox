@@ -3,6 +3,12 @@ project(opengl-sandbox LANGUAGES C CXX)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# C++ version and std
+if(NOT DEFINED CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 20)
+  set(CMAKE_CXX_STANDARD_REQUIRED ON)
+endif()
+
 # externals
 add_subdirectory(externals)
 
@@ -19,8 +25,6 @@ add_library(ogls
   src/scene.cpp
   src/quad.cpp
 )
-target_compile_features(ogls PUBLIC cxx_std_17)
-set_target_properties(ogls PROPERTIES CXX_EXTENSIONS OFF)
 target_include_directories(ogls PUBLIC include)
 
 # compile options
