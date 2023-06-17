@@ -54,7 +54,6 @@ Model::Model(Model&& other)
 Model& Model::operator=(Model&& other)
 {
   if (this == &other) return *this;
-
   meshes = std::move(other.meshes);
   textures = std::move(other.textures);
   loaded_textures = std::move(other.loaded_textures);
@@ -83,8 +82,8 @@ void Model::loadModel(const std::filesystem::path& filepath)
   processAssimpNode(scene->mRootNode, scene, ps.parent_path());
 
   // show info
-  spdlog::info("[Model] " + filepath.string() + " loaded.");
-  spdlog::info("[Model] number of meshes: " + std::to_string(meshes.size()));
+  spdlog::debug("[Model] " + filepath.string() + " loaded.");
+  spdlog::debug("[Model] number of meshes: " + std::to_string(meshes.size()));
 
   std::size_t nVertices = 0;
   std::size_t nFaces = 0;
@@ -92,10 +91,10 @@ void Model::loadModel(const std::filesystem::path& filepath)
     nVertices += meshes[i].vertices.size();
     nFaces += meshes[i].indices.size() / 3;
   }
-  spdlog::info("[Model] number of vertices: " + std::to_string(nVertices));
-  spdlog::info("[Model] number of faces: " + std::to_string(nFaces));
-  spdlog::info("[Model] number of textures: " +
-               std::to_string(textures.size()));
+  spdlog::debug("[Model] number of vertices: " + std::to_string(nVertices));
+  spdlog::debug("[Model] number of faces: " + std::to_string(nFaces));
+  spdlog::debug("[Model] number of textures: " +
+                std::to_string(textures.size()));
 }
 
 void Model::draw(const Pipeline& pipeline, const Shader& shader) const
@@ -127,9 +126,9 @@ Mesh Model::processAssimpMesh(const aiMesh* mesh, const aiScene* scene,
   std::vector<unsigned int> indices;
   Material material;
 
-  spdlog::info("[Mesh] Processing " + std::string(mesh->mName.C_Str()));
-  spdlog::info("[Mesh] number of vertices " +
-               std::to_string(mesh->mNumVertices));
+  spdlog::debug("[Mesh] Processing " + std::string(mesh->mName.C_Str()));
+  spdlog::debug("[Mesh] number of vertices " +
+                std::to_string(mesh->mNumVertices));
 
   // vertices
   for (std::size_t i = 0; i < mesh->mNumVertices; ++i) {
@@ -163,7 +162,7 @@ Mesh Model::processAssimpMesh(const aiMesh* mesh, const aiScene* scene,
     vertices.push_back(vertex);
   }
 
-  spdlog::info("[Mesh] number of faces " + std::to_string(mesh->mNumFaces));
+  spdlog::debug("[Mesh] number of faces " + std::to_string(mesh->mNumFaces));
 
   // indices
   for (std::size_t i = 0; i < mesh->mNumFaces; ++i) {
@@ -205,34 +204,34 @@ Mesh Model::processAssimpMesh(const aiMesh* mesh, const aiScene* scene,
     const aiMaterial* mat = scene->mMaterials[mesh->mMaterialIndex];
 
     if (mat->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
-      spdlog::info("[Mesh] Diffuse Map Detected");
+      spdlog::debug("[Mesh] Diffuse Map Detected");
     }
     if (mat->GetTextureCount(aiTextureType_SPECULAR) > 0) {
-      spdlog::info("[Mesh] Specular Map Detected");
+      spdlog::debug("[Mesh] Specular Map Detected");
     }
     if (mat->GetTextureCount(aiTextureType_AMBIENT) > 0) {
-      spdlog::info("[Mesh] Ambient Map Detected");
+      spdlog::debug("[Mesh] Ambient Map Detected");
     }
     if (mat->GetTextureCount(aiTextureType_EMISSIVE) > 0) {
-      spdlog::info("[Mesh] Emissive Map Detected");
+      spdlog::debug("[Mesh] Emissive Map Detected");
     }
     if (mat->GetTextureCount(aiTextureType_EMISSIVE) > 0) {
-      spdlog::info("[Mesh] Emissive Map Detected");
+      spdlog::debug("[Mesh] Emissive Map Detected");
     }
     if (mat->GetTextureCount(aiTextureType_HEIGHT) > 0) {
-      spdlog::info("[Mesh] Height Map Detected");
+      spdlog::debug("[Mesh] Height Map Detected");
     }
     if (mat->GetTextureCount(aiTextureType_NORMALS) > 0) {
-      spdlog::info("[Mesh] Normal Map Detected");
+      spdlog::debug("[Mesh] Normal Map Detected");
     }
     if (mat->GetTextureCount(aiTextureType_SHININESS) > 0) {
-      spdlog::info("[Mesh] Shininess Map Detected");
+      spdlog::debug("[Mesh] Shininess Map Detected");
     }
     if (mat->GetTextureCount(aiTextureType_DISPLACEMENT) > 0) {
-      spdlog::info("[Mesh] Displacement Map Detected");
+      spdlog::debug("[Mesh] Displacement Map Detected");
     }
     if (mat->GetTextureCount(aiTextureType_LIGHTMAP) > 0) {
-      spdlog::info("[Mesh] Light Map Detected");
+      spdlog::debug("[Mesh] Light Map Detected");
     }
 
     // kd

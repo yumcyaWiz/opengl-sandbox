@@ -11,7 +11,7 @@ Texture::Texture()
   glTextureParameteri(texture, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTextureParameteri(texture, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
 
-  spdlog::info("[Texture] texture {:x} created", this->texture);
+  spdlog::debug("[Texture] texture {:x} created", this->texture);
 }
 
 Texture::Texture(const glm::uvec2& resolution, GLint internalFormat,
@@ -93,7 +93,7 @@ void Texture::bindToImageUnit(GLuint image_unit_number, GLenum access) const
 void Texture::release()
 {
   if (texture) {
-    spdlog::info("[Texture] release texture {:x}", this->texture);
+    spdlog::debug("[Texture] release texture {:x}", this->texture);
 
     glDeleteTextures(1, &this->texture);
     this->texture = 0;

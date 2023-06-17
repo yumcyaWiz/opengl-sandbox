@@ -2,7 +2,12 @@
 
 using namespace ogls;
 
-VertexArrayObject::VertexArrayObject() { glCreateVertexArrays(1, &array); }
+VertexArrayObject::VertexArrayObject()
+{
+  glCreateVertexArrays(1, &array);
+
+  spdlog::debug("[VertexArrayObject] VAO {:x} created", array);
+}
 
 VertexArrayObject::VertexArrayObject(VertexArrayObject&& other)
     : array(other.array)
@@ -52,7 +57,7 @@ void VertexArrayObject::deactivate() const { glBindVertexArray(0); }
 void VertexArrayObject::release()
 {
   if (array) {
-    spdlog::info("[VertexArrayObject] release VAO {:x}", array);
+    spdlog::debug("[VertexArrayObject] release VAO {:x}", array);
     glDeleteVertexArrays(1, &array);
   }
 }

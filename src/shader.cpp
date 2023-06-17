@@ -11,7 +11,7 @@ Shader::Shader(GLenum type, const std::filesystem::path& filepath)
   std::string shader_source = Shadinclude::load(filepath);
   const char* shader_source_c = shader_source.c_str();
   program = glCreateShaderProgramv(type, 1, &shader_source_c);
-  spdlog::info("[Shader] program {:x} created", program);
+  spdlog::debug("[Shader] program {:x} created", program);
 
   // check compile and link error
   int success = 0;
@@ -48,7 +48,7 @@ Shader& Shader::operator=(Shader&& other)
 void Shader::release()
 {
   if (program) {
-    spdlog::info("[Shader] release program {:x}", program);
+    spdlog::debug("[Shader] release program {:x}", program);
     glDeleteProgram(program);
   }
 }
@@ -128,7 +128,7 @@ Shader Shader::createComputeShader(const std::filesystem::path& filepath)
 Pipeline::Pipeline()
 {
   glCreateProgramPipelines(1, &pipeline);
-  spdlog::info("[Pipeline] pipeline {:x} created", pipeline);
+  spdlog::debug("[Pipeline] pipeline {:x} created", pipeline);
 }
 
 Pipeline::Pipeline(Pipeline&& other) : pipeline(other.pipeline)
@@ -154,7 +154,7 @@ Pipeline& Pipeline::operator=(Pipeline&& other)
 void Pipeline::release()
 {
   if (pipeline) {
-    spdlog::info("[Pipeline] release pipeline {:x}", pipeline);
+    spdlog::debug("[Pipeline] release pipeline {:x}", pipeline);
     glDeleteProgramPipelines(1, &pipeline);
   }
 }

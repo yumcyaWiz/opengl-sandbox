@@ -6,7 +6,7 @@ Buffer::Buffer() : buffer{0}, size{0}
 {
   glCreateBuffers(1, &buffer);
 
-  spdlog::info("[Buffer] created buffer {:x}", buffer);
+  spdlog::debug("[Buffer] created buffer {:x}", buffer);
 }
 
 Buffer::Buffer(Buffer&& other) : buffer(other.buffer), size(other.size)
@@ -33,7 +33,7 @@ Buffer& Buffer::operator=(Buffer&& other)
 void Buffer::release()
 {
   if (buffer) {
-    spdlog::info("[Buffer] release buffer {:x}", buffer);
+    spdlog::debug("[Buffer] release buffer {:x}", buffer);
 
     glDeleteBuffers(1, &buffer);
     this->buffer = 0;
