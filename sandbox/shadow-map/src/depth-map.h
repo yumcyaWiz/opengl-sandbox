@@ -23,10 +23,10 @@ class DepthMap
 
   DepthMap(int width, int height) : width(width), height(height)
   {
-    vertex_shader = Shader::create_vertex_shader(
+    vertex_shader = Shader::createVertexShader(
         std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
         "shaders/make-depthmap.vert");
-    fragment_shader = Shader::create_fragment_shader(
+    fragment_shader = Shader::createFragmentShader(
         std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
         "shaders/make-depthmap.frag");
     pipeline.attachVertexShader(vertex_shader);

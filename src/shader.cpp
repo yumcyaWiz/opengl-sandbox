@@ -116,22 +116,22 @@ void Shader::setUniform(
   std::visit(Visitor{program, location}, value);
 }
 
-Shader Shader::create_vertex_shader(const std::filesystem::path& filepath)
+Shader Shader::createVertexShader(const std::filesystem::path& filepath)
 {
   return Shader(GL_VERTEX_SHADER, filepath);
 }
 
-Shader Shader::create_fragment_shader(const std::filesystem::path& filepath)
+Shader Shader::createFragmentShader(const std::filesystem::path& filepath)
 {
   return Shader(GL_FRAGMENT_SHADER, filepath);
 }
 
-Shader Shader::create_geometry_shader(const std::filesystem::path& filepath)
+Shader Shader::createGeometryShader(const std::filesystem::path& filepath)
 {
   return Shader(GL_GEOMETRY_SHADER, filepath);
 }
 
-Shader Shader::create_compute_shader(const std::filesystem::path& filepath)
+Shader Shader::createComputeShader(const std::filesystem::path& filepath)
 {
   return Shader(GL_COMPUTE_SHADER, filepath);
 }

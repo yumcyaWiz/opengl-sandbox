@@ -130,9 +130,9 @@ int main()
   Scene scene;
 
   // setup shader
-  const Shader vertex_shader = Shader::create_vertex_shader(
+  const Shader vertex_shader = Shader::createVertexShader(
       std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) / "shaders/shader.vert");
-  const Shader fragment_shader = Shader::create_fragment_shader(
+  const Shader fragment_shader = Shader::createFragmentShader(
       std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) / "shaders/shader.frag");
 
   const Pipeline pipeline;

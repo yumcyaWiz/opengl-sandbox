@@ -38,10 +38,10 @@ class Shader
                   const std::variant<bool, GLint, GLuint, GLfloat, glm::vec2,
                                      glm::vec3, glm::mat4>& value) const;
 
-  static Shader create_vertex_shader(const std::filesystem::path& filepath);
-  static Shader create_fragment_shader(const std::filesystem::path& filepath);
-  static Shader create_geometry_shader(const std::filesystem::path& filepath);
-  static Shader create_compute_shader(const std::filesystem::path& filepath);
+  static Shader createVertexShader(const std::filesystem::path& filepath);
+  static Shader createFragmentShader(const std::filesystem::path& filepath);
+  static Shader createGeometryShader(const std::filesystem::path& filepath);
+  static Shader createComputeShader(const std::filesystem::path& filepath);
 };
 
 class Pipeline

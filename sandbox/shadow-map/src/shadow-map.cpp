@@ -125,10 +125,10 @@ int main()
   Quad quad;
 
   // setup shader
-  const Shader show_depthmap_vert = Shader::create_vertex_shader(
+  const Shader show_depthmap_vert = Shader::createVertexShader(
       std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
       "shaders/show-depthmap.vert");
-  const Shader show_depthmap_frag = Shader::create_fragment_shader(
+  const Shader show_depthmap_frag = Shader::createFragmentShader(
       std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
       "shaders/show-depthmap.frag");
 
@@ -136,9 +136,9 @@ int main()
   show_depthmap_pipeline.attachVertexShader(show_depthmap_vert);
   show_depthmap_pipeline.attachFragmentShader(show_depthmap_frag);
 
-  const Shader vertex_shader = Shader::create_vertex_shader(
+  const Shader vertex_shader = Shader::createVertexShader(
       std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) / "shaders/shader.vert");
-  const Shader fragment_shader = Shader::create_fragment_shader(
+  const Shader fragment_shader = Shader::createFragmentShader(
       std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) / "shaders/shader.frag");
 
   const Pipeline pipeline;

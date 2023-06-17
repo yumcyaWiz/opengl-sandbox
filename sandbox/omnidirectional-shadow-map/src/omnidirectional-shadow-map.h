@@ -31,13 +31,13 @@ class OmnidirectionalShadowMap
       : width(width), height(height), zNear(0.1f), zFar(10000.0f)
   {
     // setup shader
-    vertex_shader = Shader::create_vertex_shader(
+    vertex_shader = Shader::createVertexShader(
         std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
         "shaders/shadow-map.vert");
-    geometry_shader = Shader::create_geometry_shader(
+    geometry_shader = Shader::createGeometryShader(
         std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
         "shaders/shadow-map.geom");
-    fragment_shader = Shader::create_fragment_shader(
+    fragment_shader = Shader::createFragmentShader(
         std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
         "shaders/shadow-map.frag");
     pipeline.attachVertexShader(vertex_shader);
