@@ -34,6 +34,7 @@ void Texture::destroy() { glDeleteTextures(1, &id); }
 
 std::string Texture::typeName() const
 {
+  // TODO: use std::map
   switch (texture_type) {
     case TextureType::Diffuse:
       return "Diffuse";
