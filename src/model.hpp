@@ -2,12 +2,15 @@
 
 #include <assimp/scene.h>
 
+#include <map>
 #include <optional>
 #include <string>
 #include <vector>
 
+#include "assimp/material.h"
 #include "mesh.hpp"
 #include "shader.hpp"
+#include "texture.hpp"
 
 namespace ogls
 {
@@ -50,6 +53,8 @@ class Model
 
   std::optional<std::size_t> hasTexture(
       const std::filesystem::path& filepath) const;
+
+  static const std::map<TextureType, aiTextureType> assimp_texture_mapping;
 };
 
 }  // namespace ogls

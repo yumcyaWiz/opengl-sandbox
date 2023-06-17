@@ -7,6 +7,7 @@
 #include "assimp/material.h"
 #include "assimp/postprocess.h"
 #include "spdlog/spdlog.h"
+#include "texture.hpp"
 
 #ifndef STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
@@ -15,6 +16,17 @@
 
 namespace ogls
 {
+
+const std::map<TextureType, aiTextureType> Model::assimp_texture_mapping = {
+    {TextureType::Diffuse, aiTextureType_DIFFUSE},
+    {TextureType::Specular, aiTextureType_SPECULAR},
+    {TextureType::Ambient, aiTextureType_AMBIENT},
+    {TextureType::Emissive, aiTextureType_EMISSIVE},
+    {TextureType::Height, aiTextureType_HEIGHT},
+    {TextureType::Normal, aiTextureType_NORMALS},
+    {TextureType::Shininess, aiTextureType_SHININESS},
+    {TextureType::Displacement, aiTextureType_DISPLACEMENT},
+    {TextureType::Light, aiTextureType_LIGHTMAP}};
 
 Model::Model() {}
 
@@ -264,37 +276,7 @@ std::optional<std::size_t> Model::loadTexture(
     const aiMaterial* material, const TextureType& type,
     const std::filesystem::path& parentPath)
 {
-  // TODO: use std::map
-  aiTextureType aiTexType;
-  switch (type) {
-    case TextureType::Diffuse:
-      aiTexType = aiTextureType_DIFFUSE;
-      break;
-    case TextureType::Specular:
-      aiTexType = aiTextureType_SPECULAR;
-      break;
-    case TextureType::Ambient:
-      aiTexType = aiTextureType_AMBIENT;
-      break;
-    case TextureType::Emissive:
-      aiTexType = aiTextureType_EMISSIVE;
-      break;
-    case TextureType::Height:
-      aiTexType = aiTextureType_HEIGHT;
-      break;
-    case TextureType::Normal:
-      aiTexType = aiTextureType_NORMALS;
-      break;
-    case TextureType::Shininess:
-      aiTexType = aiTextureType_SHININESS;
-      break;
-    case TextureType::Displacement:
-      aiTexType = aiTextureType_DISPLACEMENT;
-      break;
-    case TextureType::Light:
-      aiTexType = aiTextureType_LIGHTMAP;
-      break;
-  }
+  const aiTextureType aiTexType = assimp_texture_mapping.at(type);
 
   // if there is no texture
   if (material->GetTextureCount(aiTexType) == 0) { return std::nullopt; }
