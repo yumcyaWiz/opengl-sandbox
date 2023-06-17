@@ -55,7 +55,7 @@ Mesh::Mesh(const std::vector<Vertex>& vertices,
   glBindVertexArray(0);
 }
 
-void Mesh::destroy()
+void Mesh::release()
 {
   glDeleteBuffers(1, &VBO);
   glDeleteBuffers(1, &EBO);

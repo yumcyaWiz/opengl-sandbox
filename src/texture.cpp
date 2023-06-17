@@ -79,23 +79,6 @@ void Texture::resize(const glm::uvec2& resolution)
   initImage(resolution, internalFormat, format, type);
 }
 
-void Texture::loadHDR(const std::filesystem::path& filepath)
-{
-  const std::string filepath_str = filepath.generic_string();
-  int width, height, channels;
-  stbi_set_flip_vertically_on_load(true);
-  float* image =
-      stbi_loadf(filepath_str.c_str(), &width, &height, &channels, 4);
-  if (!image) { spdlog::error("[Texture] failed to load {}", filepath_str); }
-
-  this->internalFormat = GL_RGBA32F;
-  this->format = GL_RGBA;
-  this->type = GL_FLOAT;
-  setImage(image, glm::uvec2(width, height), GL_RGBA32F, GL_RGBA, GL_FLOAT);
-
-  stbi_image_free(image);
-}
-
 void Texture::bindToTextureUnit(GLuint texture_unit_number) const
 {
   glBindTextureUnit(texture_unit_number, texture);

@@ -33,8 +33,7 @@ class Mesh
   Mesh(const std::vector<Vertex>& vertices,
        const std::vector<unsigned int>& indices, const Material& material);
 
-  // destroy mesh object
-  void destroy();
+  void release();
 
   // draw mesh by given shader
   void draw(const Pipeline& pipeline, const Shader& shader,

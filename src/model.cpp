@@ -77,10 +77,10 @@ void Model::draw(const Pipeline& pipeline, const Shader& shader) const
   }
 }
 
-void Model::destroy()
+void Model::release()
 {
   // destroy all meshes
-  for (auto& mesh : meshes) { mesh.destroy(); }
+  for (auto& mesh : meshes) { mesh.release(); }
   meshes.clear();
 
   // destroy all textures

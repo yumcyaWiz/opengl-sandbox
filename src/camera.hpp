@@ -33,9 +33,9 @@ class Camera
 
   Camera();
 
-  glm::mat4 compute_view_matrix() const;
-  glm::mat4 compute_projection_matrix(int width, int height) const;
-  glm::mat4 compute_view_projection_matrix(int width, int height) const;
+  glm::mat4 computeViewMatrix() const;
+  glm::mat4 computeProjectionMatrix(int width, int height) const;
+  glm::mat4 computeViewProjectionMatrix(int width, int height) const;
 
   // reset camera parameters
   void reset();
@@ -44,7 +44,7 @@ class Camera
   void move(const CameraMovement& direction, float ds);
 
   // look around camera forward
-  void look_around(float dPhi, float dTheta);
+  void lookAround(float dPhi, float dTheta);
 };
 
 }  // namespace ogls

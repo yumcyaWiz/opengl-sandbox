@@ -48,7 +48,7 @@ void handleInput(GLFWwindow *window, const ImGuiIO &io)
 
   // camera look around
   if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
-    CAMERA->look_around(io.MouseDelta.x, io.MouseDelta.y);
+    CAMERA->lookAround(io.MouseDelta.x, io.MouseDelta.y);
   }
 }
 
@@ -113,8 +113,8 @@ int main()
 
   // setup scene
   Scene scene;
-  scene.add_point_light(PointLight(glm::vec3(10000), glm::vec3(0, 100, 0), 0));
-  scene.set_point_light_index(0);
+  scene.addPointLight(PointLight(glm::vec3(10000), glm::vec3(0, 100, 0), 0));
+  scene.setPointLightIndex(0);
 
   // setup shader
   const Shader vertex_shader = Shader::createVertexShader(
@@ -146,7 +146,7 @@ int main()
       if (ImGui::Button("Load Model")) {
         if (model) { delete model; }
         model = new Model(std::string(CMAKE_SOURCE_DIR) + "/" + modelPath);
-        scene.set_model(model);
+        scene.setModel(model);
       }
 
       ImGui::Separator();
@@ -174,9 +174,8 @@ int main()
         CAMERA->cam_pos + 200.0f * CAMERA->cam_forward;
 
     // set uniform variables
-    const glm::mat4 view = CAMERA->compute_view_matrix();
-    const glm::mat4 projection =
-        CAMERA->compute_projection_matrix(WIDTH, HEIGHT);
+    const glm::mat4 view = CAMERA->computeViewMatrix();
+    const glm::mat4 projection = CAMERA->computeProjectionMatrix(WIDTH, HEIGHT);
     vertex_shader.setUniform("view", view);
     vertex_shader.setUniform("projection", projection);
     fragment_shader.setUniform("camPos", CAMERA->cam_pos);

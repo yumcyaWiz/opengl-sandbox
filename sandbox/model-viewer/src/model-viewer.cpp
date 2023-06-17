@@ -63,7 +63,7 @@ void handleInput(GLFWwindow *window, const ImGuiIO &io)
 
   // camera look around
   if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
-    camera->look_around(io.MouseDelta.x, io.MouseDelta.y);
+    camera->lookAround(io.MouseDelta.x, io.MouseDelta.y);
   }
 }
 
@@ -158,7 +158,7 @@ int main()
     if (ImGui::Button("Load Model")) {
       if (model) { delete model; }
       model = new Model(std::string(CMAKE_SOURCE_DIR) + "/" + modelPath);
-      scene.set_model(model);
+      scene.setModel(model);
     }
 
     ImGui::Separator();
@@ -181,9 +181,9 @@ int main()
     handleInput(window, io);
 
     // set uniform variables
-    vertex_shader.setUniform("view", camera->compute_view_matrix());
+    vertex_shader.setUniform("view", camera->computeViewMatrix());
     vertex_shader.setUniform("projection",
-                             camera->compute_projection_matrix(width, height));
+                             camera->computeProjectionMatrix(width, height));
     fragment_shader.setUniform("layerType", static_cast<GLint>(layerType));
 
     // render

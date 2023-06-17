@@ -18,8 +18,6 @@ class Shader
  private:
   GLuint program;
 
-  static std::string loadStringFromFile(const std::filesystem::path& filepath);
-
  public:
   Shader();
   Shader(GLenum type, const std::filesystem::path& filepath);

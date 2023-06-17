@@ -49,7 +49,7 @@ void handleInput(GLFWwindow *window, const ImGuiIO &io)
 
   // camera look around
   if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
-    CAMERA->look_around(io.MouseDelta.x, io.MouseDelta.y);
+    CAMERA->lookAround(io.MouseDelta.x, io.MouseDelta.y);
   }
 }
 
@@ -113,9 +113,9 @@ int main()
 
   // setup scene
   Scene scene;
-  scene.add_point_light(
+  scene.addPointLight(
       PointLight(glm::vec3(20000.0f), glm::vec3(0, 100.0f, 0), 0.0f));
-  scene.set_point_light_index(0);
+  scene.setPointLightIndex(0);
 
   // setup shader
   const Shader vertex_shader = Shader::createVertexShader(
@@ -149,7 +149,7 @@ int main()
     if (ImGui::Button("Load Model")) {
       if (model) { delete model; }
       model = new Model(std::string(CMAKE_SOURCE_DIR) + "/" + modelPath);
-      scene.set_model(model);
+      scene.setModel(model);
     }
 
     ImGui::Separator();
@@ -184,8 +184,7 @@ int main()
     // render scene with shadow mapping
     // set uniforms
     vertex_shader.setUniform(
-        "viewProjection",
-        CAMERA->compute_view_projection_matrix(WIDTH, HEIGHT));
+        "viewProjection", CAMERA->computeViewProjectionMatrix(WIDTH, HEIGHT));
     fragment_shader.setUniform("camPos", CAMERA->cam_pos);
     fragment_shader.setUniform("shadowBias", SHADOW_BIAS);
     // TODO: set texture unit number appropriately

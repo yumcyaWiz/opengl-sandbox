@@ -25,25 +25,22 @@ void Scene::draw(const Pipeline& pipeline, const Shader& shader) const
   if (model) { model->draw(pipeline, shader); }
 }
 
-void Scene::destroy()
+void Scene::release()
 {
   // clear vectors
   pointLights.clear();
 }
 
-void Scene::set_model(const Model* model) { this->model = model; }
+void Scene::setModel(const Model* model) { this->model = model; }
 
-void Scene::add_point_light(const PointLight& light)
+void Scene::addPointLight(const PointLight& light)
 {
   pointLights.push_back(light);
 }
 
-void Scene::set_point_light_index(std::size_t index)
-{
-  pointLightIndex = index;
-}
+void Scene::setPointLightIndex(std::size_t index) { pointLightIndex = index; }
 
-void Scene::set_directional_light(const DirectionalLight& light)
+void Scene::setDirectionalLight(const DirectionalLight& light)
 {
   directionalLight = light;
 }

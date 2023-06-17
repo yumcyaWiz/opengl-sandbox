@@ -24,19 +24,17 @@ class Scene
 
   Scene();
 
-  // draw scene
   void draw(const Pipeline& pipeline, const Shader& shader) const;
 
-  // destroy scene object
-  void destroy();
+  void release();
 
-  void set_model(const Model* model);
+  void setModel(const Model* model);
 
-  void add_point_light(const PointLight& light);
+  void addPointLight(const PointLight& light);
 
-  void set_point_light_index(std::size_t index);
+  void setPointLightIndex(std::size_t index);
 
-  void set_directional_light(const DirectionalLight& light);
+  void setDirectionalLight(const DirectionalLight& light);
 };
 
 }  // namespace ogls

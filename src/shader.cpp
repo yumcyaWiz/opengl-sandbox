@@ -4,17 +4,6 @@
 
 using namespace ogls;
 
-std::string Shader::loadStringFromFile(const std::filesystem::path& filepath)
-{
-  std::ifstream file(filepath);
-  if (!file.is_open()) {
-    spdlog::error("[Shader] failed to open {}", filepath.generic_string());
-    std::exit(EXIT_FAILURE);
-  }
-  return std::string(std::istreambuf_iterator<char>(file),
-                     std::istreambuf_iterator<char>());
-}
-
 Shader::Shader() : program(0) {}
 
 Shader::Shader(GLenum type, const std::filesystem::path& filepath)

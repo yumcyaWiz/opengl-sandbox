@@ -27,11 +27,9 @@ class Model
   // load model with assimp
   void loadModel(const std::filesystem::path& filepath);
 
-  // draw model by given shader
   void draw(const Pipeline& pipeline, const Shader& shader) const;
 
-  // destroy model object
-  void destroy();
+  void release();
 
  private:
   std::vector<Mesh> meshes;

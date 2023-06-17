@@ -18,20 +18,20 @@ Camera::Camera()
 {
 }
 
-glm::mat4 Camera::compute_view_matrix() const
+glm::mat4 Camera::computeViewMatrix() const
 {
   return glm::lookAt(cam_pos, cam_pos + cam_forward, cam_up);
 }
 
-glm::mat4 Camera::compute_projection_matrix(int width, int height) const
+glm::mat4 Camera::computeProjectionMatrix(int width, int height) const
 {
   return glm::perspective(glm::radians(fov), static_cast<float>(width) / height,
                           0.1f, 10000.0f);
 }
 
-glm::mat4 Camera::compute_view_projection_matrix(int width, int height) const
+glm::mat4 Camera::computeViewProjectionMatrix(int width, int height) const
 {
-  return compute_projection_matrix(width, height) * compute_view_matrix();
+  return computeProjectionMatrix(width, height) * computeViewMatrix();
 }
 
 void Camera::reset() { *this = Camera(); }
@@ -61,7 +61,7 @@ void Camera::move(const CameraMovement& direction, float ds)
   }
 }
 
-void Camera::look_around(float dPhi, float dTheta)
+void Camera::lookAround(float dPhi, float dTheta)
 {
   // update phi, theta
   phi += look_around_speed * dPhi;

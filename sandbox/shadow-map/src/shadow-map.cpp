@@ -54,7 +54,7 @@ void handleInput(GLFWwindow *window, const ImGuiIO &io)
 
   // camera look around
   if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
-    CAMERA->look_around(io.MouseDelta.x, io.MouseDelta.y);
+    CAMERA->lookAround(io.MouseDelta.x, io.MouseDelta.y);
   }
 }
 
@@ -118,7 +118,7 @@ int main()
 
   // setup scene
   Scene scene;
-  scene.set_directional_light(
+  scene.setDirectionalLight(
       {glm::vec3(1.0f), glm::normalize(glm::vec3(0.5f, 1.0f, 0.5f))});
 
   // quad for showing depth map
@@ -167,7 +167,7 @@ int main()
     if (ImGui::Button("Load Model")) {
       if (model) { delete model; }
       model = new Model(std::string(CMAKE_SOURCE_DIR) + "/" + modelPath);
-      scene.set_model(model);
+      scene.setModel(model);
     }
 
     ImGui::Separator();
@@ -214,8 +214,7 @@ int main()
     // render scene with shadow mapping
     // set uniforms
     vertex_shader.setUniform(
-        "viewProjection",
-        CAMERA->compute_view_projection_matrix(WIDTH, HEIGHT));
+        "viewProjection", CAMERA->computeViewProjectionMatrix(WIDTH, HEIGHT));
     vertex_shader.setUniform("lightSpaceMatrix", lightSpaceMatrix);
     fragment_shader.setUniform("camPos", CAMERA->cam_pos);
     // TODO: set texture unit number appropriately

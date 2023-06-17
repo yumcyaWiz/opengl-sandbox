@@ -4,12 +4,6 @@
 
 #include "glad/glad.h"
 #include "glm/glm.hpp"
-
-// #ifndef STB_IMAGE_IMPLEMENTATION
-// #define STB_IMAGE_IMPLEMENTATION
-// #endif
-#include "stb_image.h"
-//
 #include "spdlog/spdlog.h"
 
 namespace ogls
@@ -77,8 +71,6 @@ class Texture
   }
 
   void resize(const glm::uvec2& resolution);
-
-  void loadHDR(const std::filesystem::path& filepath);
 
   // bind texture to the specified texture unit
   void bindToTextureUnit(GLuint texture_unit_number) const;
