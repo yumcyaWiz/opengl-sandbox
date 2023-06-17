@@ -32,8 +32,15 @@ class Mesh
   std::vector<unsigned int> indices;
   Material material;
 
+  Mesh();
   Mesh(const std::vector<Vertex>& vertices,
        const std::vector<unsigned int>& indices, const Material& material);
+  Mesh(const Mesh& other) = delete;
+  Mesh(Mesh&& other);
+  ~Mesh() = default;
+
+  Mesh& operator=(const Mesh& other) = delete;
+  Mesh& operator=(Mesh&& other);
 
   void release();
 

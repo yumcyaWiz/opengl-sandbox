@@ -3,6 +3,8 @@
 namespace ogls
 {
 
+Mesh::Mesh() {}
+
 Mesh::Mesh(const std::vector<Vertex>& vertices,
            const std::vector<unsigned int>& indices, const Material& material)
     : vertices{vertices}, indices{indices}, material{material}
@@ -25,6 +27,27 @@ Mesh::Mesh(const std::vector<Vertex>& vertices,
   vao.activateVertexAttribution(0, 4, 3, GL_FLOAT, offsetof(Vertex, dndu));
   // dndv
   vao.activateVertexAttribution(0, 5, 3, GL_FLOAT, offsetof(Vertex, dndv));
+}
+
+Mesh::Mesh(Mesh&& other)
+{
+  vertices = std::move(other.vertices);
+  indices = std::move(other.indices);
+  material = std::move(other.material);
+  vbo = std::move(other.vbo);
+  ebo = std::move(other.ebo);
+  vao = std::move(other.vao);
+}
+
+Mesh& Mesh::operator=(Mesh&& other)
+{
+  vertices = std::move(other.vertices);
+  indices = std::move(other.indices);
+  material = std::move(other.material);
+  vbo = std::move(other.vbo);
+  ebo = std::move(other.ebo);
+  vao = std::move(other.vao);
+  return *this;
 }
 
 void Mesh::release()
