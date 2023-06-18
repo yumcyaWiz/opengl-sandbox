@@ -96,7 +96,7 @@ int main()
 
   // initialize imgui backends
   ImGui_ImplGlfw_InitForOpenGL(window, true);
-  ImGui_ImplOpenGL3_Init("#version 330 core");
+  ImGui_ImplOpenGL3_Init("#version 460 core");
 
   // enable depth test
   glEnable(GL_DEPTH_TEST);
@@ -129,7 +129,7 @@ int main()
     // imgui
     ImGui::Begin("UI");
     {
-      static char modelPath[100] = {"assets/normal-mapping-test/test.obj"};
+      static char modelPath[100] = {"assets/normalmap_test/normalmap_test.obj"};
       ImGui::InputText("Model", modelPath, 100);
       if (ImGui::Button("Load Model")) {
         scene.setModel({std::string(CMAKE_SOURCE_DIR) + "/" + modelPath});
