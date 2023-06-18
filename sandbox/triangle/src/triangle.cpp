@@ -58,11 +58,6 @@ int main()
     return EXIT_FAILURE;
   }
 
-  // setup VAO
-  GLuint VAO;
-  glGenVertexArrays(1, &VAO);
-  glBindVertexArray(VAO);
-
   // setup VBO
   Buffer buffer;
   float vertices[] = {
