@@ -21,8 +21,13 @@ class Pipeline
    private:
     GLuint program;
 
+    static GLuint createShaderProgram(GLenum type,
+                                      const std::filesystem::path& filepath);
+    static void checkCompileError(GLuint program);
+
    public:
     Shader();
+    void extracted(GLenum& type, const std::filesystem::path& filepath);
     Shader(GLenum type, const std::filesystem::path& filepath);
     ~Shader();
     Shader(const Shader& other) = delete;

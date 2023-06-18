@@ -6,14 +6,18 @@ using namespace ogls;
 
 Pipeline::Shader::Shader() : program(0) {}
 
-Pipeline::Shader::Shader(GLenum type, const std::filesystem::path& filepath)
+GLuint Pipeline::Shader::createShaderProgram(
+    GLenum type, const std::filesystem::path& filepath)
 {
   std::string shader_source = Shadinclude::load(filepath);
   const char* shader_source_c = shader_source.c_str();
-  program = glCreateShaderProgramv(type, 1, &shader_source_c);
+  GLuint program = glCreateShaderProgramv(type, 1, &shader_source_c);
   spdlog::debug("[Shader] program {:x} created", program);
+  return program;
+}
 
-  // check compile and link error
+void Pipeline::Shader::checkCompileError(GLuint program)
+{
   int success = 0;
   glGetProgramiv(program, GL_LINK_STATUS, &success);
   if (success == GL_FALSE) {
@@ -26,6 +30,12 @@ Pipeline::Shader::Shader(GLenum type, const std::filesystem::path& filepath)
     std::string errorLogStr(errorLog.begin(), errorLog.end());
     spdlog::error("[Shader] {}", errorLogStr);
   }
+}
+
+Pipeline::Shader::Shader(GLenum type, const std::filesystem::path& filepath)
+{
+  program = createShaderProgram(type, filepath);
+  checkCompileError(program);
 }
 
 Pipeline::Shader::~Shader() { release(); }
