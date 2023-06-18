@@ -62,6 +62,26 @@ Model& Model::operator=(Model&& other)
 
 Model::operator bool() const { return meshes.size() > 0; }
 
+uint32_t Model::getNumberOfVertices() const
+{
+  uint32_t n_vertices = 0;
+  for (std::size_t i = 0; i < meshes.size(); ++i) {
+    n_vertices += meshes[i].getNumberOfVertices();
+  }
+  return n_vertices;
+}
+
+uint32_t Model::getNumberOfFaces() const
+{
+  uint32_t n_faces = 0;
+  for (std::size_t i = 0; i < meshes.size(); ++i) {
+    n_faces += meshes[i].getNumberOfFaces();
+  }
+  return n_faces;
+}
+
+uint32_t Model::getNumberOfTextures() const { return textures.size(); }
+
 void Model::loadModel(const std::filesystem::path& filepath)
 {
   // load model with assimp
@@ -85,16 +105,12 @@ void Model::loadModel(const std::filesystem::path& filepath)
   spdlog::debug("[Model] " + filepath.string() + " loaded.");
   spdlog::debug("[Model] number of meshes: " + std::to_string(meshes.size()));
 
-  std::size_t nVertices = 0;
-  std::size_t nFaces = 0;
-  for (std::size_t i = 0; i < meshes.size(); ++i) {
-    nVertices += meshes[i].getNumberOfVertices();
-    nFaces += meshes[i].getNumberOfFaces();
-  }
-  spdlog::debug("[Model] number of vertices: " + std::to_string(nVertices));
-  spdlog::debug("[Model] number of faces: " + std::to_string(nFaces));
+  spdlog::debug("[Model] number of vertices: " +
+                std::to_string(getNumberOfVertices()));
+  spdlog::debug("[Model] number of faces: " +
+                std::to_string(getNumberOfFaces()));
   spdlog::debug("[Model] number of textures: " +
-                std::to_string(textures.size()));
+                std::to_string(getNumberOfTextures()));
 }
 
 void Model::draw(const Pipeline& pipeline) const
@@ -304,26 +320,27 @@ std::optional<std::size_t> Model::loadTexture(
   const std::filesystem::path texturePath = (parentPath / str.C_Str());
 
   // load texture if it's not loaded
-  const auto index = getTextureIndex(texturePath);
-  if (!index) {
-    int x, y, c;
-    unsigned char* image = stbi_load(texturePath.c_str(), &x, &y, &c, 3);
-
-    const glm::uvec2 resolution = {x, y};
-    textures.emplace_back(glm::uvec2(x, y), GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
-    loaded_textures.emplace_back(texturePath);
-
-    const uint32_t index = textures.size() - 1;
-    Texture& texture = textures[index];
-    texture.setImage(image, resolution, getTextureInternalFormat(type), GL_RGB,
-                     GL_UNSIGNED_BYTE);
-
-    stbi_image_free(image);
-
-    return index;
-  } else {
-    return index.value();
+  {
+    const auto index = getTextureIndex(texturePath);
+    if (index) { return index; }
   }
+
+  int x, y, c;
+  unsigned char* image = stbi_load(texturePath.c_str(), &x, &y, &c, 3);
+
+  const glm::uvec2 resolution = {x, y};
+  const GLuint internal_format = getTextureInternalFormat(type);
+  textures.emplace_back(resolution, internal_format, GL_RGB, GL_UNSIGNED_BYTE);
+  loaded_textures.emplace_back(texturePath);
+
+  const uint32_t index = textures.size() - 1;
+  Texture& texture = textures[index];
+  texture.setImage(image, resolution, internal_format, GL_RGB,
+                   GL_UNSIGNED_BYTE);
+
+  stbi_image_free(image);
+
+  return index;
 }
 
 std::optional<std::size_t> Model::getTextureIndex(

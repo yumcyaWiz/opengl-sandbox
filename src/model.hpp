@@ -33,6 +33,10 @@ class Model
   // load model with assimp
   void loadModel(const std::filesystem::path& filepath);
 
+  uint32_t getNumberOfVertices() const;
+  uint32_t getNumberOfFaces() const;
+  uint32_t getNumberOfTextures() const;
+
   void draw(const Pipeline& pipeline) const;
 
  private:

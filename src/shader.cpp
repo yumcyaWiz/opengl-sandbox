@@ -9,7 +9,7 @@ Pipeline::Shader::Shader() : program(0) {}
 GLuint Pipeline::Shader::createShaderProgram(
     GLenum type, const std::filesystem::path& filepath)
 {
-  std::string shader_source = Shadinclude::load(filepath);
+  const std::string shader_source = Shadinclude::load(filepath);
   const char* shader_source_c = shader_source.c_str();
   GLuint program = glCreateShaderProgramv(type, 1, &shader_source_c);
   spdlog::debug("[Shader] program {:x} created", program);
