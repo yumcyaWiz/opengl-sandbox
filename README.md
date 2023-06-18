@@ -30,6 +30,12 @@ CC=clang CXX=clang++ cmake ..
 make
 ```
 
+## Download assets
+
+```bash
+./scripts/download_assets.sh
+```
+
 ## Gallery
 
 ### triangle
