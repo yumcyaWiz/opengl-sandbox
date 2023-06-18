@@ -29,7 +29,7 @@ class Buffer
   uint32_t getLength() const;
 
   template <typename T>
-  void setData(T* data, uint32_t n, GLenum usage)
+  void setData(const T* data, uint32_t n, GLenum usage)
   {
     glNamedBufferData(this->buffer, sizeof(T) * n, data, usage);
     this->size = n;
