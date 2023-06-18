@@ -135,18 +135,10 @@ void Model::processAssimpNode(const aiNode* node, const aiScene* scene,
   }
 }
 
-Mesh Model::processAssimpMesh(const aiMesh* mesh, const aiScene* scene,
-                              const std::filesystem::path& parentPath)
+std::vector<Vertex> Model::getVerticesFromAssimpMesh(const aiMesh* mesh)
 {
-  std::vector<Vertex> vertices;
-  std::vector<unsigned int> indices;
-  Material material;
+  std::vector<Vertex> ret;
 
-  spdlog::debug("[Mesh] Processing " + std::string(mesh->mName.C_Str()));
-  spdlog::debug("[Mesh] number of vertices " +
-                std::to_string(mesh->mNumVertices));
-
-  // vertices
   for (std::size_t i = 0; i < mesh->mNumVertices; ++i) {
     Vertex vertex;
     // position
@@ -157,11 +149,9 @@ Mesh Model::processAssimpMesh(const aiMesh* mesh, const aiScene* scene,
     if (mesh->mNormals) {
       vertex.normal = glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y,
                                 mesh->mNormals[i].z);
-    } else {
-      vertex.normal = glm::vec3(0.0f, 0.0f, 0.0f);
     }
 
-    // texcoords
+    // texture coordinates
     if (mesh->mTextureCoords[0]) {
       vertex.texcoords =
           glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
@@ -175,18 +165,97 @@ Mesh Model::processAssimpMesh(const aiMesh* mesh, const aiScene* scene,
                                  mesh->mTangents[i].z);
     }
 
-    vertices.push_back(vertex);
+    ret.push_back(vertex);
   }
 
-  spdlog::debug("[Mesh] number of faces " + std::to_string(mesh->mNumFaces));
+  return ret;
+}
 
-  // indices
+std::vector<uint32_t> Model::getIndicesFromAssimpMesh(const aiMesh* mesh)
+{
+  std::vector<uint32_t> ret;
+
   for (std::size_t i = 0; i < mesh->mNumFaces; ++i) {
     const aiFace& face = mesh->mFaces[i];
     for (std::size_t j = 0; j < face.mNumIndices; ++j) {
-      indices.push_back(face.mIndices[j]);
+      ret.push_back(face.mIndices[j]);
     }
   }
+
+  return ret;
+}
+
+Material Model::getMaterialFromAssimpMesh(
+    const aiMesh* mesh, const aiScene* scene,
+    const std::filesystem::path& parentPath)
+{
+  Material ret;
+
+  if (!scene->mMaterials[mesh->mMaterialIndex]) return ret;
+  const aiMaterial* mat = scene->mMaterials[mesh->mMaterialIndex];
+
+  // kd
+  aiColor3D color;
+  mat->Get(AI_MATKEY_COLOR_DIFFUSE, color);
+  // convert sRGB to linear
+  ret.kd = glm::pow(glm::vec3(color.r, color.g, color.b), glm::vec3(2.2f));
+
+  // ks
+  mat->Get(AI_MATKEY_COLOR_SPECULAR, color);
+  ret.ks = glm::vec3(color.r, color.g, color.b);
+
+  // ka
+  mat->Get(AI_MATKEY_COLOR_AMBIENT, color);
+  ret.ka = glm::vec3(color.r, color.g, color.b);
+
+  // ke
+  mat->Get(AI_MATKEY_COLOR_EMISSIVE, color);
+  ret.ke = glm::vec3(color.r, color.g, color.b);
+
+  // shininess
+  mat->Get(AI_MATKEY_SHININESS, ret.shininess);
+
+  // diffuse map
+  ret.diffuse_map = loadTexture(mat, TextureType::Diffuse, parentPath);
+
+  // specular map
+  ret.specular_map = loadTexture(mat, TextureType::Specular, parentPath);
+
+  // ambient map
+  ret.ambient_map = loadTexture(mat, TextureType::Ambient, parentPath);
+
+  // emissive map
+  ret.emissive_map = loadTexture(mat, TextureType::Emissive, parentPath);
+
+  // height map
+  ret.height_map = loadTexture(mat, TextureType::Height, parentPath);
+
+  // normal map
+  ret.normal_map = loadTexture(mat, TextureType::Normal, parentPath);
+
+  // shininess map
+  ret.shininess_map = loadTexture(mat, TextureType::Shininess, parentPath);
+
+  // displacement map
+  ret.displacement_map =
+      loadTexture(mat, TextureType::Displacement, parentPath);
+
+  // light map
+  ret.light_map = loadTexture(mat, TextureType::Light, parentPath);
+
+  return ret;
+}
+
+Mesh Model::processAssimpMesh(const aiMesh* mesh, const aiScene* scene,
+                              const std::filesystem::path& parentPath)
+{
+  spdlog::debug("[Mesh] Processing " + std::string(mesh->mName.C_Str()));
+  spdlog::debug("[Mesh] number of vertices " +
+                std::to_string(mesh->mNumVertices));
+  spdlog::debug("[Mesh] number of faces " + std::to_string(mesh->mNumFaces));
+
+  std::vector<Vertex> vertices = getVerticesFromAssimpMesh(mesh);
+  const std::vector<uint32_t> indices = getIndicesFromAssimpMesh(mesh);
 
   // compute dn/dp, dn/dv
   for (std::size_t i = 0; i < indices.size(); i += 3) {
@@ -206,7 +275,7 @@ Mesh Model::processAssimpMesh(const aiMesh* mesh, const aiScene* scene,
     const glm::vec3 dndu = invDeterminant * (dv2 * dn1 - dv1 * dn2);
     const glm::vec3 dndv = invDeterminant * (-du2 * dn1 + du1 * dn2);
 
-    // NOTE: smoothing will give more nice result
+    // TODO: smoothing will give more nice result
     vertices[idx1].dndu = dndu;
     vertices[idx2].dndu = dndu;
     vertices[idx3].dndu = dndu;
@@ -215,94 +284,30 @@ Mesh Model::processAssimpMesh(const aiMesh* mesh, const aiScene* scene,
     vertices[idx3].dndv = dndv;
   }
 
-  // materials
-  if (scene->mMaterials[mesh->mMaterialIndex]) {
-    const aiMaterial* mat = scene->mMaterials[mesh->mMaterialIndex];
-
-    if (mat->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
-      spdlog::debug("[Mesh] Diffuse Map Detected");
-    }
-    if (mat->GetTextureCount(aiTextureType_SPECULAR) > 0) {
-      spdlog::debug("[Mesh] Specular Map Detected");
-    }
-    if (mat->GetTextureCount(aiTextureType_AMBIENT) > 0) {
-      spdlog::debug("[Mesh] Ambient Map Detected");
-    }
-    if (mat->GetTextureCount(aiTextureType_EMISSIVE) > 0) {
-      spdlog::debug("[Mesh] Emissive Map Detected");
-    }
-    if (mat->GetTextureCount(aiTextureType_EMISSIVE) > 0) {
-      spdlog::debug("[Mesh] Emissive Map Detected");
-    }
-    if (mat->GetTextureCount(aiTextureType_HEIGHT) > 0) {
-      spdlog::debug("[Mesh] Height Map Detected");
-    }
-    if (mat->GetTextureCount(aiTextureType_NORMALS) > 0) {
-      spdlog::debug("[Mesh] Normal Map Detected");
-    }
-    if (mat->GetTextureCount(aiTextureType_SHININESS) > 0) {
-      spdlog::debug("[Mesh] Shininess Map Detected");
-    }
-    if (mat->GetTextureCount(aiTextureType_DISPLACEMENT) > 0) {
-      spdlog::debug("[Mesh] Displacement Map Detected");
-    }
-    if (mat->GetTextureCount(aiTextureType_LIGHTMAP) > 0) {
-      spdlog::debug("[Mesh] Light Map Detected");
-    }
-
-    // kd
-    aiColor3D color;
-    mat->Get(AI_MATKEY_COLOR_DIFFUSE, color);
-    // convert sRGB to linear
-    material.kd =
-        glm::pow(glm::vec3(color.r, color.g, color.b), glm::vec3(2.2f));
-
-    // ks
-    mat->Get(AI_MATKEY_COLOR_SPECULAR, color);
-    material.ks = glm::vec3(color.r, color.g, color.b);
-
-    // ka
-    mat->Get(AI_MATKEY_COLOR_AMBIENT, color);
-    material.ka = glm::vec3(color.r, color.g, color.b);
-
-    // ke
-    mat->Get(AI_MATKEY_COLOR_EMISSIVE, color);
-    material.ke = glm::vec3(color.r, color.g, color.b);
-
-    // shininess
-    mat->Get(AI_MATKEY_SHININESS, material.shininess);
-
-    // diffuse map
-    material.diffuse_map = loadTexture(mat, TextureType::Diffuse, parentPath);
-
-    // specular map
-    material.specular_map = loadTexture(mat, TextureType::Specular, parentPath);
-
-    // ambient map
-    material.ambient_map = loadTexture(mat, TextureType::Ambient, parentPath);
-
-    // emissive map
-    material.emissive_map = loadTexture(mat, TextureType::Emissive, parentPath);
-
-    // height map
-    material.height_map = loadTexture(mat, TextureType::Height, parentPath);
-
-    // normal map
-    material.normal_map = loadTexture(mat, TextureType::Normal, parentPath);
-
-    // shininess map
-    material.shininess_map =
-        loadTexture(mat, TextureType::Shininess, parentPath);
-
-    // displacement map
-    material.displacement_map =
-        loadTexture(mat, TextureType::Displacement, parentPath);
-
-    // light map
-    material.light_map = loadTexture(mat, TextureType::Light, parentPath);
-  }
+  const Material material = getMaterialFromAssimpMesh(mesh, scene, parentPath);
 
   return Mesh(vertices, indices, material);
+}
+
+std::vector<uint8_t> Model::loadImage(const std::filesystem::path& filepath,
+                                      glm::vec2& resolution)
+{
+  int x, y, c;
+  unsigned char* image = stbi_load(filepath.c_str(), &x, &y, &c, 3);
+
+  if (!image) {
+    spdlog::error("[Model] Failed to load image " + filepath.string());
+    throw std::runtime_error("Failed to load image " + filepath.string());
+  }
+
+  resolution = glm::vec2(x, y);
+
+  std::vector<uint8_t> ret(x * y * c);
+  std::memcpy(ret.data(), image, ret.size());
+
+  stbi_image_free(image);
+
+  return ret;
 }
 
 std::optional<std::size_t> Model::loadTexture(
@@ -320,27 +325,21 @@ std::optional<std::size_t> Model::loadTexture(
   const std::filesystem::path texturePath = (parentPath / str.C_Str());
 
   // load texture if it's not loaded
-  {
-    const auto index = getTextureIndex(texturePath);
-    if (index) { return index; }
-  }
+  const auto index = getTextureIndex(texturePath);
+  if (index) { return index; }
 
-  int x, y, c;
-  unsigned char* image = stbi_load(texturePath.c_str(), &x, &y, &c, 3);
-
-  const glm::uvec2 resolution = {x, y};
-  const GLuint internal_format = getTextureInternalFormat(type);
-  textures.emplace_back(resolution, internal_format, GL_RGB, GL_UNSIGNED_BYTE);
+  glm::vec2 resolution;
+  const std::vector<uint8_t> image = loadImage(texturePath, resolution);
   loaded_textures.emplace_back(texturePath);
 
-  const uint32_t index = textures.size() - 1;
-  Texture& texture = textures[index];
-  texture.setImage(image, resolution, internal_format, GL_RGB,
+  const GLuint internal_format = getTextureInternalFormat(type);
+  Texture texture(resolution, internal_format, GL_RGB, GL_UNSIGNED_BYTE);
+  texture.setImage(image.data(), resolution, internal_format, GL_RGB,
                    GL_UNSIGNED_BYTE);
 
-  stbi_image_free(image);
+  textures.emplace_back(std::move(texture));
 
-  return index;
+  return textures.size() - 1;
 }
 
 std::optional<std::size_t> Model::getTextureIndex(
