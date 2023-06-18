@@ -328,14 +328,17 @@ std::optional<std::size_t> Model::loadTexture(
   const auto index = getTextureIndex(texturePath);
   if (index) { return index; }
 
+  // load image
   glm::vec2 resolution;
   const std::vector<uint8_t> image = loadImage(texturePath, resolution);
   loaded_textures.emplace_back(texturePath);
 
+  // create texture
   const GLuint internal_format = getTextureInternalFormat(type);
-  Texture texture(resolution, internal_format, GL_RGB, GL_UNSIGNED_BYTE);
-  texture.setImage(image.data(), resolution, internal_format, GL_RGB,
-                   GL_UNSIGNED_BYTE);
+  Texture texture = Texture::TextureBuilder(resolution)
+                        .setInternalFormat(internal_format)
+                        .setImage(image.data())
+                        .build();
 
   textures.emplace_back(std::move(texture));
 

@@ -2,23 +2,21 @@
 
 using namespace ogls;
 
-Texture::Texture()
+Texture::Texture(const TextureBuilder& builder)
 {
-  // init texture
+  resolution = builder.resolution;
+  internalFormat = builder.internalFormat;
+  format = builder.format;
+  type = builder.type;
+
   glCreateTextures(GL_TEXTURE_2D, 1, &texture);
   glTextureParameteri(texture, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTextureParameteri(texture, GL_TEXTURE_WRAP_T, GL_REPEAT);
   glTextureParameteri(texture, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTextureParameteri(texture, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+  setImage(builder.image);
 
   spdlog::debug("[Texture] texture {:x} created", this->texture);
-}
-
-Texture::Texture(const glm::uvec2& resolution, GLint internalFormat,
-                 GLenum format, GLenum type)
-    : Texture()
-{
-  initImage(resolution, internalFormat, format, type);
 }
 
 Texture::Texture(Texture&& other)
@@ -60,23 +58,13 @@ GLenum Texture::getFormat() const { return this->format; }
 
 GLenum Texture::getType() const { return this->type; }
 
-void Texture::initImage(const glm::uvec2& resolution, GLint internalFormat,
-                        GLenum format, GLenum type)
+void Texture::setImage(const void* image) const
 {
-  this->resolution = resolution;
-  this->internalFormat = internalFormat;
-  this->format = format;
-  this->type = type;
-
   glBindTexture(GL_TEXTURE_2D, texture);
   glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, resolution.x, resolution.y, 0,
-               format, type, nullptr);
+               format, type, image);
+  glGenerateMipmap(GL_TEXTURE_2D);
   glBindTexture(GL_TEXTURE_2D, 0);
-}
-
-void Texture::resize(const glm::uvec2& resolution)
-{
-  initImage(resolution, internalFormat, format, type);
 }
 
 void Texture::bindToTextureUnit(GLuint texture_unit_number) const
