@@ -102,6 +102,7 @@ class Texture
     friend class Texture;
   };
 
+  Texture();
   Texture(const Texture& other) = delete;
   Texture(Texture&& other);
   ~Texture();

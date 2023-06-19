@@ -2,6 +2,8 @@
 
 using namespace ogls;
 
+Texture::Texture() {}
+
 Texture::Texture(const TextureBuilder& builder)
 {
   resolution = builder.resolution;
