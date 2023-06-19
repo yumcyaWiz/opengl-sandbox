@@ -9,7 +9,7 @@ in vec4 positionLightSpace;
 out vec4 fragColor;
 
 uniform vec3 camPos;
-uniform sampler2D depthMap;
+uniform sampler2DShadow depthMap;
 uniform float depthBias;
 
 // Blinn-Phong reflection model
@@ -36,18 +36,9 @@ float testShadow(in vec4 positionLightSpace) {
   }
 
   // shadow bias
-  float bias = max(depthBias * (1.0 - dot(normal, directionalLight.direction)), 0.001);
+  float bias = clamp(depthBias * tan(acos(dot(normal, directionalLight.direction))), 0.0, 0.01);
 
-  // PCF
-  vec2 texelSize = 1.0 / textureSize(depthMap, 0);
-  float shadow = 0.0;
-  for(int i = -1; i <= 1; ++i) {
-    for(int j = -1; j <= 1; ++j) {
-      float closestDepth = texture(depthMap, projCoords.xy + vec2(i, j) * texelSize).x;
-      shadow += currentDepth > closestDepth + bias ? 1.0 : 0.0;
-    }
-  }
-  shadow /= 9.0;
+  float shadow = clamp(1.0 - texture(depthMap, vec3(projCoords.xy, currentDepth - bias)), 0.0, 1.0);
 
   return shadow;
 }

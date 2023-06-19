@@ -14,7 +14,7 @@ using namespace ogls;
 
 class DepthMap
 {
- public:
+ private:
   int width;
   int height;
 
@@ -24,6 +24,7 @@ class DepthMap
   // GLuint texture;
   Pipeline pipeline;
 
+ public:
   DepthMap(int width, int height)
       : width(width), height(height), fbo({GL_DEPTH_ATTACHMENT})
   {
@@ -39,11 +40,14 @@ class DepthMap
                   .setType(GL_FLOAT)
                   .setWrapS(GL_CLAMP_TO_EDGE)
                   .setWrapT(GL_CLAMP_TO_EDGE)
+                  .setDepthCompareMode(true)
                   .build();
 
     fbo.bindTexture(texture, 0);
     fbo.setDrawBuffer(GL_NONE);
   }
+
+  const Texture& getTextureRef() const { return texture; }
 
   void setResolution(int width, int height)
   {
@@ -56,7 +60,10 @@ class DepthMap
                   .setType(GL_FLOAT)
                   .setWrapS(GL_CLAMP_TO_EDGE)
                   .setWrapT(GL_CLAMP_TO_EDGE)
+                  .setDepthCompareMode(true)
                   .build();
+
+    fbo.bindTexture(texture, 0);
   }
 
   void setLightSpaceMatrix(const glm::mat4& lightSpaceMatrix)

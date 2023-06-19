@@ -206,7 +206,7 @@ int main()
     pipeline.setUniform("lightSpaceMatrix", lightSpaceMatrix);
     pipeline.setUniform("camPos", CAMERA->cam_pos);
     // TODO: set texture unit number appropriately
-    depthMap.texture.bindToTextureUnit(10);
+    depthMap.getTextureRef().bindToTextureUnit(10);
     pipeline.setUniform("depthMap", 10);
     pipeline.setUniform("depthBias", DEPTH_BIAS);
 
@@ -218,7 +218,7 @@ int main()
     // show depth map
     glViewport(WIDTH - 256, HEIGHT - 256, 256, 256);
     glClear(GL_DEPTH_BUFFER_BIT);
-    depthMap.texture.bindToTextureUnit(10);
+    depthMap.getTextureRef().bindToTextureUnit(10);
     show_depthmap_pipeline.setUniform("depthMap", 10);
     show_depthmap_pipeline.setUniform("zNear", DEPTH_MAP_NEAR);
     show_depthmap_pipeline.setUniform("zFar", DEPTH_MAP_FAR);

@@ -37,6 +37,7 @@ class Texture
     GLenum mag_filter = GL_LINEAR;
     GLenum min_filter = GL_LINEAR;
     bool generate_mipmap = false;
+    bool depth_compare_mode = false;
 
     const void* image = nullptr;
 
@@ -97,6 +98,12 @@ class Texture
       return *this;
     }
 
+    TextureBuilder setDepthCompareMode(bool depth_compare_mode)
+    {
+      this->depth_compare_mode = depth_compare_mode;
+      return *this;
+    }
+
     Texture build() const { return Texture(*this); }
 
     friend class Texture;
@@ -140,6 +147,7 @@ class Texture
   GLenum mag_filter;
   GLenum min_filter;
   bool generate_mipmap;
+  bool depth_compare_mode;
 
   void release();
 };

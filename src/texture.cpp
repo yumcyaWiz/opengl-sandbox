@@ -15,6 +15,7 @@ Texture::Texture(const TextureBuilder& builder)
   mag_filter = builder.mag_filter;
   min_filter = builder.min_filter;
   generate_mipmap = builder.generate_mipmap;
+  depth_compare_mode = builder.depth_compare_mode;
 
   createTexture();
   setImage(builder.image);
@@ -68,6 +69,10 @@ void Texture::createTexture()
   glTextureParameteri(texture, GL_TEXTURE_WRAP_T, wrap_t);
   glTextureParameteri(texture, GL_TEXTURE_MAG_FILTER, mag_filter);
   glTextureParameteri(texture, GL_TEXTURE_MIN_FILTER, min_filter);
+  if (depth_compare_mode) {
+    glTextureParameteri(texture, GL_TEXTURE_COMPARE_MODE,
+                        GL_COMPARE_REF_TO_TEXTURE);
+  }
 }
 
 void Texture::setImage(const void* image) const
