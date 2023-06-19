@@ -14,12 +14,7 @@ Texture::Texture(const TextureBuilder& builder)
   min_filter = builder.min_filter;
   generate_mipmap = builder.generate_mipmap;
 
-  glCreateTextures(GL_TEXTURE_2D, 1, &texture);
-  glTextureParameteri(texture, GL_TEXTURE_WRAP_S, wrap_s);
-  glTextureParameteri(texture, GL_TEXTURE_WRAP_T, wrap_t);
-  glTextureParameteri(texture, GL_TEXTURE_MAG_FILTER, mag_filter);
-  glTextureParameteri(texture, GL_TEXTURE_MIN_FILTER, min_filter);
-
+  createTexture();
   setImage(builder.image);
 
   spdlog::debug("[Texture] texture {:x} created", this->texture);
@@ -63,6 +58,15 @@ GLint Texture::getInternalFormat() const { return this->internalFormat; }
 GLenum Texture::getFormat() const { return this->format; }
 
 GLenum Texture::getType() const { return this->type; }
+
+void Texture::createTexture()
+{
+  glCreateTextures(GL_TEXTURE_2D, 1, &texture);
+  glTextureParameteri(texture, GL_TEXTURE_WRAP_S, wrap_s);
+  glTextureParameteri(texture, GL_TEXTURE_WRAP_T, wrap_t);
+  glTextureParameteri(texture, GL_TEXTURE_MAG_FILTER, mag_filter);
+  glTextureParameteri(texture, GL_TEXTURE_MIN_FILTER, min_filter);
+}
 
 void Texture::setImage(const void* image) const
 {

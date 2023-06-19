@@ -124,6 +124,8 @@ class Texture
  private:
   Texture(const TextureBuilder& builder);
 
+  void createTexture();
+
   void setImage(const void* image) const;
 
   glm::uvec2 resolution;
