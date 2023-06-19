@@ -8,12 +8,18 @@ Texture::Texture(const TextureBuilder& builder)
   internalFormat = builder.internalFormat;
   format = builder.format;
   type = builder.type;
+  wrap_s = builder.wrap_s;
+  wrap_t = builder.wrap_t;
+  mag_filter = builder.mag_filter;
+  min_filter = builder.min_filter;
+  generate_mipmap = builder.generate_mipmap;
 
   glCreateTextures(GL_TEXTURE_2D, 1, &texture);
-  glTextureParameteri(texture, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTextureParameteri(texture, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  glTextureParameteri(texture, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTextureParameteri(texture, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+  glTextureParameteri(texture, GL_TEXTURE_WRAP_S, wrap_s);
+  glTextureParameteri(texture, GL_TEXTURE_WRAP_T, wrap_t);
+  glTextureParameteri(texture, GL_TEXTURE_MAG_FILTER, mag_filter);
+  glTextureParameteri(texture, GL_TEXTURE_MIN_FILTER, min_filter);
+
   setImage(builder.image);
 
   spdlog::debug("[Texture] texture {:x} created", this->texture);
@@ -63,7 +69,7 @@ void Texture::setImage(const void* image) const
   glBindTexture(GL_TEXTURE_2D, texture);
   glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, resolution.x, resolution.y, 0,
                format, type, image);
-  glGenerateMipmap(GL_TEXTURE_2D);
+  if (generate_mipmap) { glGenerateMipmap(GL_TEXTURE_2D); }
   glBindTexture(GL_TEXTURE_2D, 0);
 }
 

@@ -337,6 +337,9 @@ std::optional<std::size_t> Model::loadTexture(
   const GLuint internal_format = getTextureInternalFormat(type);
   Texture texture = Texture::TextureBuilder(resolution)
                         .setInternalFormat(internal_format)
+                        .setMagFilter(GL_LINEAR)
+                        .setMinFilter(GL_LINEAR_MIPMAP_LINEAR)
+                        .setGenerateMipmap(true)
                         .setImage(image.data())
                         .build();
 

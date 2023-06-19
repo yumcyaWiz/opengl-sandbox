@@ -19,6 +19,7 @@ find_package(OpenGL REQUIRED)
 add_library(ogls
   src/buffer.cpp
   src/camera.cpp
+  src/framebuffer.cpp
   src/texture.cpp
   src/mesh.cpp
   src/model.cpp

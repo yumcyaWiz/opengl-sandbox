@@ -28,9 +28,16 @@ class Texture
   {
    private:
     glm::uvec2 resolution = {0, 0};
+
     GLint internalFormat = GL_SRGB;
     GLenum format = GL_RGB;
     GLenum type = GL_UNSIGNED_BYTE;
+    GLenum wrap_s = GL_REPEAT;
+    GLenum wrap_t = GL_REPEAT;
+    GLenum mag_filter = GL_LINEAR;
+    GLenum min_filter = GL_LINEAR;
+    bool generate_mipmap = false;
+
     const void* image = nullptr;
 
    public:
@@ -51,6 +58,36 @@ class Texture
     TextureBuilder setType(GLenum type)
     {
       this->type = type;
+      return *this;
+    }
+
+    TextureBuilder setWrapS(GLenum wrap_s)
+    {
+      this->wrap_s = wrap_s;
+      return *this;
+    }
+
+    TextureBuilder setWrapT(GLenum wrap_t)
+    {
+      this->wrap_t = wrap_t;
+      return *this;
+    }
+
+    TextureBuilder setMagFilter(GLenum mag_filter)
+    {
+      this->mag_filter = mag_filter;
+      return *this;
+    }
+
+    TextureBuilder setMinFilter(GLenum min_filter)
+    {
+      this->min_filter = min_filter;
+      return *this;
+    }
+
+    TextureBuilder setGenerateMipmap(bool generate_mipmap)
+    {
+      this->generate_mipmap = generate_mipmap;
       return *this;
     }
 
@@ -90,10 +127,16 @@ class Texture
   void setImage(const void* image) const;
 
   glm::uvec2 resolution;
+
   GLuint texture;
   GLint internalFormat;
   GLenum format;
   GLenum type;
+  GLenum wrap_s;
+  GLenum wrap_t;
+  GLenum mag_filter;
+  GLenum min_filter;
+  bool generate_mipmap;
 
   void release();
 };

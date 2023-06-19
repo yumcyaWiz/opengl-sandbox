@@ -2,6 +2,7 @@
 
 #include "buffer.hpp"
 #include "camera.hpp"
+#include "framebuffer.hpp"
 #include "mesh.hpp"
 #include "model.hpp"
 #include "quad.hpp"
