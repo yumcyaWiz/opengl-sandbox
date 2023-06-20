@@ -1,153 +1,44 @@
+#include <cstdlib>
 #include <filesystem>
-#include <iostream>
-#include <memory>
 
-#include "glad/glad.h"
-//
-#include "GLFW/glfw3.h"
-#include "glm/gtc/matrix_transform.hpp"
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
-//
-#include "ogls.hpp"
-//
 #include "depth-map.h"
+#include "sandbox-base.hpp"
 
-using namespace ogls;
-
-// globals
-std::unique_ptr<Camera> CAMERA;
-int WIDTH = 1600;
-int HEIGHT = 900;
-int DEPTH_MAP_RES = 1024;
-float DEPTH_BIAS = 0.005f;
-float DEPTH_MAP_NEAR = 100.0f;
-float DEPTH_MAP_FAR = 10000.0f;
-float DEPTH_MAP_SIZE = 2000.0f;
-float LIGHT_DISTANCE = 2000.0f;
-
-void handleInput(GLFWwindow *window, const ImGuiIO &io)
+namespace sandbox
 {
-  // close application
-  if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-    glfwSetWindowShouldClose(window, GLFW_TRUE);
-  }
 
-  // camera movement
-  if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-    CAMERA->move(CameraMovement::FORWARD, io.DeltaTime);
-  }
-  if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-    CAMERA->move(CameraMovement::LEFT, io.DeltaTime);
-  }
-  if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-    CAMERA->move(CameraMovement::BACKWARD, io.DeltaTime);
-  }
-  if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-    CAMERA->move(CameraMovement::RIGHT, io.DeltaTime);
-  }
-
-  // camera look around
-  if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
-    CAMERA->lookAround(io.MouseDelta.x, io.MouseDelta.y);
-  }
-}
-
-void framebuffer_size_callback([[maybe_unused]] GLFWwindow *window, int _width,
-                               int _height)
+class ShadowMap : public SandboxBase
 {
-  WIDTH = _width;
-  HEIGHT = _height;
-}
-
-int main()
-{
-  // initialize glfw
-  if (!glfwInit()) {
-    std::cerr << "failed to initialize GLFW" << std::endl;
-    return EXIT_FAILURE;
+ public:
+  ShadowMap(uint32_t width, uint32_t height)
+      : SandboxBase(width, height), depth_map(1024, 1024)
+  {
   }
 
-  // setup window and OpenGL context
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);  // required for Mac
-  glfwWindowHint(GLFW_SAMPLES, 4);                      // 4x MSAA
-  GLFWwindow *window =
-      glfwCreateWindow(WIDTH, HEIGHT, "shadow-map", nullptr, nullptr);
-  if (!window) {
-    std::cerr << "failed to create window" << std::endl;
-    return EXIT_FAILURE;
+  void beforeRender() override
+  {
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_MULTISAMPLE);
+
+    scene.setDirectionalLight(
+        {glm::vec3(1.0f), glm::normalize(glm::vec3(0.5f, 1.0f, 0.5f))});
+
+    show_depthmap_pipeline.loadVertexShader(
+        std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+        "shaders/show-depthmap.vert");
+    show_depthmap_pipeline.loadFragmentShader(
+        std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+        "shaders/show-depthmap.frag");
+
+    pipeline.loadVertexShader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+                              "shaders/shader.vert");
+    pipeline.loadFragmentShader(
+        std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+        "shaders/shader.frag");
   }
-  glfwMakeContextCurrent(window);
 
-  glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
-  // initialize glad
-  if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-    std::cerr << "failed to initialize glad" << std::endl;
-    return EXIT_FAILURE;
-  }
-
-  // initialize imgui
-  IMGUI_CHECKVERSION();
-  ImGui::CreateContext();
-  ImGuiIO &io = ImGui::GetIO();
-  (void)io;
-
-  // set imgui style
-  ImGui::StyleColorsDark();
-
-  // initialize imgui backends
-  ImGui_ImplGlfw_InitForOpenGL(window, true);
-  ImGui_ImplOpenGL3_Init("#version 460 core");
-
-  // enable depth test
-  glEnable(GL_DEPTH_TEST);
-  // enable MSAA
-  glEnable(GL_MULTISAMPLE);
-
-  // initialize camera
-  CAMERA = std::make_unique<Camera>();
-
-  // setup scene
-  Scene scene;
-  scene.setDirectionalLight(
-      {glm::vec3(1.0f), glm::normalize(glm::vec3(0.5f, 1.0f, 0.5f))});
-
-  // quad for showing depth map
-  Quad quad;
-
-  // setup shader
-  Pipeline show_depthmap_pipeline;
-  show_depthmap_pipeline.loadVertexShader(
-      std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
-      "shaders/show-depthmap.vert");
-  show_depthmap_pipeline.loadFragmentShader(
-      std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
-      "shaders/show-depthmap.frag");
-
-  Pipeline pipeline;
-  pipeline.loadVertexShader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
-                            "shaders/shader.vert");
-  pipeline.loadFragmentShader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
-                              "shaders/shader.frag");
-
-  DepthMap depthMap(1024, 1024);
-
-  // app loop
-  float t = 0.0f;
-  while (!glfwWindowShouldClose(window)) {
-    glfwPollEvents();
-
-    // start imgui frame
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
-    ImGui::NewFrame();
-
-    // imgui
+  void runImGui() override
+  {
     ImGui::Begin("UI");
 
     static char modelPath[100] = {"assets/sponza/sponza.obj"};
@@ -158,85 +49,123 @@ int main()
 
     ImGui::Separator();
 
-    ImGui::InputFloat("FOV", &CAMERA->fov);
-    ImGui::InputFloat("Movement Speed", &CAMERA->movement_speed);
-    ImGui::InputFloat("Look Around Speed", &CAMERA->look_around_speed);
+    ImGui::InputFloat("FOV", &camera.fov);
+    ImGui::InputFloat("Movement Speed", &camera.movement_speed);
+    ImGui::InputFloat("Look Around Speed", &camera.look_around_speed);
 
-    if (ImGui::Button("Reset Camera")) { CAMERA->reset(); }
+    if (ImGui::Button("Reset Camera")) { camera.reset(); }
 
     ImGui::Separator();
 
-    if (ImGui::InputInt("Depth Map Resolution", &DEPTH_MAP_RES)) {
-      depthMap.setResolution(DEPTH_MAP_RES, DEPTH_MAP_RES);
+    if (ImGui::InputInt("Depth Map Resolution", &depth_map_res)) {
+      depth_map.setResolution(depth_map_res, depth_map_res);
     }
-    ImGui::InputFloat("Depth Bias", &DEPTH_BIAS);
-    ImGui::InputFloat("Depth Map Size", &DEPTH_MAP_SIZE);
-    ImGui::InputFloat("Directional Light Distance", &LIGHT_DISTANCE);
-    ImGui::InputFloat("Depth Map zNear", &DEPTH_MAP_NEAR);
-    ImGui::InputFloat("Depth Map zFar", &DEPTH_MAP_FAR);
+    ImGui::InputFloat("Depth Bias", &depth_bias);
+    ImGui::InputFloat("Depth Map Size", &depth_map_size);
+    ImGui::InputFloat("Directional Light Distance", &light_distance);
+    ImGui::InputFloat("Depth Map zNear", &depth_map_near);
+    ImGui::InputFloat("Depth Map zFar", &depth_map_far);
 
     ImGui::End();
+  }
 
-    handleInput(window, io);
+  void handleInput() override
+  {
+    // close application
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+      glfwSetWindowShouldClose(window, GLFW_TRUE);
+    }
 
+    // camera movement
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+      camera.move(ogls::CameraMovement::FORWARD, io->DeltaTime);
+    }
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+      camera.move(ogls::CameraMovement::LEFT, io->DeltaTime);
+    }
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+      camera.move(ogls::CameraMovement::BACKWARD, io->DeltaTime);
+    }
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+      camera.move(ogls::CameraMovement::RIGHT, io->DeltaTime);
+    }
+
+    // camera look around
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
+      camera.lookAround(io->MouseDelta.x, io->MouseDelta.y);
+    }
+  }
+
+  void render() override
+  {
     // update light direction
-    t += 0.1f * io.DeltaTime;
+    t += 0.1f * io->DeltaTime;
     const glm::vec3 light_direction =
         glm::normalize(glm::vec3(0.5f * glm::cos(t), 1.0f, 0.5f * std::sin(t)));
     scene.setDirectionalLight(
-        DirectionalLight(glm::vec3(1.0f), light_direction));
+        ogls::DirectionalLight(glm::vec3(1.0f), light_direction));
 
     // set view, projection matrix for making depth map
     const glm::mat4 lightView =
-        glm::lookAt(LIGHT_DISTANCE * light_direction, glm::vec3(0.0f),
+        glm::lookAt(light_distance * light_direction, glm::vec3(0.0f),
                     glm::vec3(0.0f, 1.0f, 0.0f));
     const glm::mat4 lightProjection =
-        glm::ortho(-DEPTH_MAP_SIZE, DEPTH_MAP_SIZE, -DEPTH_MAP_SIZE,
-                   DEPTH_MAP_SIZE, DEPTH_MAP_NEAR, DEPTH_MAP_FAR);
+        glm::ortho(-depth_map_size, depth_map_size, -depth_map_size,
+                   depth_map_size, depth_map_near, depth_map_far);
     const glm::mat4 lightSpaceMatrix = lightProjection * lightView;
-    depthMap.setLightSpaceMatrix(lightSpaceMatrix);
+    depth_map.setLightSpaceMatrix(lightSpaceMatrix);
 
     // make depth map
-    depthMap.draw(scene);
+    depth_map.draw(scene);
 
     // render scene with shadow mapping
     // set uniforms
     pipeline.setUniform("viewProjection",
-                        CAMERA->computeViewProjectionMatrix(WIDTH, HEIGHT));
+                        camera.computeViewProjectionMatrix(width, height));
     pipeline.setUniform("lightSpaceMatrix", lightSpaceMatrix);
-    pipeline.setUniform("camPos", CAMERA->cam_pos);
+    pipeline.setUniform("camPos", camera.cam_pos);
     // TODO: set texture unit number appropriately
-    depthMap.getTextureRef().bindToTextureUnit(10);
+    depth_map.getTextureRef().bindToTextureUnit(10);
     pipeline.setUniform("depthMap", 10);
-    pipeline.setUniform("depthBias", DEPTH_BIAS);
+    pipeline.setUniform("depthBias", depth_bias);
 
     // render
-    glViewport(0, 0, WIDTH, HEIGHT);
+    glViewport(0, 0, width, height);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     scene.draw(pipeline);
 
     // show depth map
-    glViewport(WIDTH - 256, HEIGHT - 256, 256, 256);
+    glViewport(width - 256, height - 256, 256, 256);
     glClear(GL_DEPTH_BUFFER_BIT);
-    depthMap.getTextureRef().bindToTextureUnit(10);
+    depth_map.getTextureRef().bindToTextureUnit(10);
     show_depthmap_pipeline.setUniform("depthMap", 10);
-    show_depthmap_pipeline.setUniform("zNear", DEPTH_MAP_NEAR);
-    show_depthmap_pipeline.setUniform("zFar", DEPTH_MAP_FAR);
+    show_depthmap_pipeline.setUniform("zNear", depth_map_near);
+    show_depthmap_pipeline.setUniform("zFar", depth_map_far);
     quad.draw(show_depthmap_pipeline);
-
-    // render imgui
-    ImGui::Render();
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-    glfwSwapBuffers(window);
   }
 
-  // exit
-  ImGui_ImplOpenGL3_Shutdown();
-  ImGui_ImplGlfw_Shutdown();
-  ImGui::DestroyContext();
-  glfwDestroyWindow(window);
-  glfwTerminate();
+ private:
+  ogls::Quad quad;
+  ogls::Pipeline show_depthmap_pipeline;
+  ogls::Pipeline pipeline;
+  DepthMap depth_map;
+
+  float t = 0.0f;
+  int depth_map_res = 1024;
+  float depth_bias = 0.005f;
+  float depth_map_near = 100.0f;
+  float depth_map_far = 10000.0f;
+  float depth_map_size = 2000.0f;
+  float light_distance = 2000.0f;
+};
+
+}  // namespace sandbox
+
+int main()
+{
+  sandbox::ShadowMap app(1280, 720);
+
+  app.run();
 
   return 0;
 }

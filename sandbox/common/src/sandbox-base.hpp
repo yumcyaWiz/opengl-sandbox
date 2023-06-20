@@ -37,7 +37,7 @@ class SandboxBase
   virtual void beforeRender() = 0;
   virtual void runImGui() = 0;
   virtual void handleInput() = 0;
-  virtual void render() const = 0;
+  virtual void render() = 0;
 
   virtual void release();
   virtual void framebufferSizeCallback(GLFWwindow* window, int width,

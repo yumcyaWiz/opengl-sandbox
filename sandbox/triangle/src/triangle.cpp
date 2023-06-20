@@ -42,7 +42,7 @@ class Triangle : public SandboxBase
     }
   }
 
-  void render() const override
+  void render() override
   {
     glClear(GL_COLOR_BUFFER_BIT);
     pipeline.activate();

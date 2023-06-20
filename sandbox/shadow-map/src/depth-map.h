@@ -1,16 +1,7 @@
 #pragma once
 #include <filesystem>
-#include <memory>
-#include <string>
 
-#include "framebuffer.hpp"
-#include "glad/glad.h"
-#include "glm/glm.hpp"
-//
-#include "scene.hpp"
-#include "shader.hpp"
-
-using namespace ogls;
+#include "ogls.hpp"
 
 class DepthMap
 {
@@ -18,11 +9,9 @@ class DepthMap
   int width;
   int height;
 
-  Texture texture;
-  FrameBuffer fbo;
-  // GLuint FBO;
-  // GLuint texture;
-  Pipeline pipeline;
+  ogls::Texture texture;
+  ogls::FrameBuffer fbo;
+  ogls::Pipeline pipeline;
 
  public:
   DepthMap(int width, int height)
@@ -34,7 +23,7 @@ class DepthMap
         std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
         "shaders/make-depthmap.frag");
 
-    texture = Texture::TextureBuilder({width, height})
+    texture = ogls::Texture::TextureBuilder({width, height})
                   .setInternalFormat(GL_DEPTH_COMPONENT16)
                   .setFormat(GL_DEPTH_COMPONENT)
                   .setType(GL_FLOAT)
@@ -47,14 +36,14 @@ class DepthMap
     fbo.setDrawBuffer(GL_NONE);
   }
 
-  const Texture& getTextureRef() const { return texture; }
+  const ogls::Texture& getTextureRef() const { return texture; }
 
   void setResolution(int width, int height)
   {
     this->width = width;
     this->height = height;
 
-    texture = Texture::TextureBuilder({width, height})
+    texture = ogls::Texture::TextureBuilder({width, height})
                   .setInternalFormat(GL_DEPTH_COMPONENT16)
                   .setFormat(GL_DEPTH_COMPONENT)
                   .setType(GL_FLOAT)
@@ -71,7 +60,7 @@ class DepthMap
     pipeline.setUniform("lightSpaceMatrix", lightSpaceMatrix);
   }
 
-  void draw(const Scene& scene) const
+  void draw(const ogls::Scene& scene) const
   {
     // render to depth map
     glViewport(0, 0, width, height);

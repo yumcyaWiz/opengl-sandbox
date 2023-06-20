@@ -96,7 +96,7 @@ class ModelViewer : public SandboxBase
     }
   }
 
-  void render() const override
+  void render() override
   {
     // set uniform variables
     pipeline.setUniform("view", camera.computeViewMatrix());
