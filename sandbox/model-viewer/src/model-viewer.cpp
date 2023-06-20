@@ -1,11 +1,6 @@
 #include <filesystem>
-#include <iostream>
-#include <memory>
 
-#include "model.hpp"
 #include "sandbox-base.hpp"
-
-using namespace ogls;
 
 namespace sandbox
 {
@@ -83,16 +78,16 @@ class ModelViewer : public SandboxBase
 
     // camera movement
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-      camera.move(CameraMovement::FORWARD, io->DeltaTime);
+      camera.move(ogls::CameraMovement::FORWARD, io->DeltaTime);
     }
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-      camera.move(CameraMovement::LEFT, io->DeltaTime);
+      camera.move(ogls::CameraMovement::LEFT, io->DeltaTime);
     }
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-      camera.move(CameraMovement::BACKWARD, io->DeltaTime);
+      camera.move(ogls::CameraMovement::BACKWARD, io->DeltaTime);
     }
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-      camera.move(CameraMovement::RIGHT, io->DeltaTime);
+      camera.move(ogls::CameraMovement::RIGHT, io->DeltaTime);
     }
 
     // camera look around
@@ -114,7 +109,7 @@ class ModelViewer : public SandboxBase
     scene.draw(pipeline);
   }
 
-  Pipeline pipeline;
+  ogls::Pipeline pipeline;
   LayerType layerType = LayerType::Normal;
 };
 
