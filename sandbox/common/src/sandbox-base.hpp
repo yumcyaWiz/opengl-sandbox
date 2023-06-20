@@ -7,8 +7,6 @@
 //
 #include "ogls.hpp"
 
-using namespace ogls;
-
 namespace sandbox
 {
 
@@ -39,8 +37,8 @@ class SandboxBase
   GLFWwindow* window;
   ImGuiIO* io;
 
-  Camera camera;
-  Scene scene;
+  ogls::Camera camera;
+  ogls::Scene scene;
 
  private:
   static void framebufferSizeCallbackStatic(GLFWwindow* window, int width,

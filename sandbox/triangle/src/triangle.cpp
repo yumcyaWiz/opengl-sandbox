@@ -9,8 +9,6 @@
 #include "sandbox-base.hpp"
 #include "shader.hpp"
 
-using namespace ogls;
-
 namespace sandbox
 {
 class Triangle : public SandboxBase
@@ -61,9 +59,9 @@ class Triangle : public SandboxBase
   }
 
  private:
-  Buffer buffer;
-  VertexArrayObject vao;
-  Pipeline pipeline;
+  ogls::Buffer buffer;
+  ogls::VertexArrayObject vao;
+  ogls::Pipeline pipeline;
 };
 
 }  // namespace sandbox
