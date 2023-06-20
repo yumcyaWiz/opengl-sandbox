@@ -185,6 +185,10 @@ std::vector<uint32_t> Model::getIndicesFromAssimp(const aiMesh* mesh)
 
   for (std::size_t i = 0; i < mesh->mNumFaces; ++i) {
     const aiFace& face = mesh->mFaces[i];
+
+    // only support triangles
+    assert(face.mNumIndices == 3);
+
     for (std::size_t j = 0; j < face.mNumIndices; ++j) {
       ret.push_back(face.mIndices[j]);
     }

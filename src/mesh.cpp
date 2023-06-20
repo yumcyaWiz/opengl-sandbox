@@ -9,6 +9,8 @@ Mesh::Mesh(const std::vector<Vertex>& vertices,
            const std::vector<unsigned int>& indices, MaterialID material_id)
     : vertices{vertices}, indices{indices}, material_id{material_id}
 {
+  // TODO: maybe this is bad, because we are sending all the model data to the
+  // GPU. This is consuming a lot of VRAM.
   vertex_buffer.setData(vertices, GL_STATIC_DRAW);
   index_buffer.setData(indices, GL_STATIC_DRAW);
 
