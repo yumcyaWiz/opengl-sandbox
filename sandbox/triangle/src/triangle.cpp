@@ -33,9 +33,9 @@ class Triangle : public SandboxBase
         "shaders/shader.frag");
   }
 
-  void runImGui() const override {}
+  void runImGui() override {}
 
-  void handleInput() const override
+  void handleInput() override
   {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
       glfwSetWindowShouldClose(window, GLFW_TRUE);
@@ -62,9 +62,9 @@ class Triangle : public SandboxBase
 
 int main()
 {
-  sandbox::Triangle renderer(512, 512);
+  sandbox::Triangle app(1280, 720);
 
-  renderer.run();
+  app.run();
 
   return 0;
 }
