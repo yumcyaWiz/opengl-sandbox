@@ -1,3 +1,16 @@
+add_library(sandbox
+    common/src/sandbox-base.cpp
+)
+target_include_directories(sandbox PUBLIC
+    common/src/
+)
+target_link_libraries(sandbox PUBLIC
+    ogls
+    glfw
+    imgui
+    imgui_glfw_opengl3
+)
+
 add_subdirectory(triangle)
 add_subdirectory(model-viewer)
 add_subdirectory(tangent-space)

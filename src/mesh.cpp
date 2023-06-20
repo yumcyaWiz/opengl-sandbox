@@ -92,6 +92,7 @@ void Mesh::draw(const Pipeline& pipeline, const Material& material,
     tex.bindToTextureUnit(5);
 
     // TODO: remove this
+    // maybe we can use default normal map texture instead of this
     pipeline.setUniform("material.hasNormalMap", true);
   } else {
     pipeline.setUniform("material.hasNormalMap", false);
