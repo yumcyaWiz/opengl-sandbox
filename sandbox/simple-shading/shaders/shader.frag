@@ -23,8 +23,8 @@ void main() {
   // view direction
   vec3 viewDir = normalize(camPos - position);
 
-  vec3 kd = texture(material.diffuseMap, texCoords).xyz + material.kd;
-  vec3 ks = texture(material.specularMap, texCoords).xyz + material.ks;
+  vec3 kd = texture(diffuseMap, texCoords).xyz + material.kd;
+  vec3 ks = texture(specularMap, texCoords).xyz + material.ks;
 
   vec3 color = vec3(0);
 
