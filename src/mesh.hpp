@@ -28,36 +28,36 @@ struct Material {
   float shininess = 0.0f;
 
   // index of diffuse map texture
-  std::optional<unsigned int> diffuse_map = std::nullopt;
+  std::optional<TextureID> diffuse_map = std::nullopt;
   // index of specular map texture
-  std::optional<unsigned int> specular_map = std::nullopt;
+  std::optional<TextureID> specular_map = std::nullopt;
   // index of ambient map texture
-  std::optional<unsigned int> ambient_map = std::nullopt;
+  std::optional<TextureID> ambient_map = std::nullopt;
   // index of emissive map texture
-  std::optional<unsigned int> emissive_map = std::nullopt;
+  std::optional<TextureID> emissive_map = std::nullopt;
   // index of height map texture
-  std::optional<unsigned int> height_map = std::nullopt;
+  std::optional<TextureID> height_map = std::nullopt;
   // index of normal map texture
-  std::optional<unsigned int> normal_map = std::nullopt;
+  std::optional<TextureID> normal_map = std::nullopt;
   // index of shininess map texture
-  std::optional<unsigned int> shininess_map = std::nullopt;
+  std::optional<TextureID> shininess_map = std::nullopt;
   // index of displacement map texture
-  std::optional<unsigned int> displacement_map = std::nullopt;
+  std::optional<TextureID> displacement_map = std::nullopt;
   // index of light map texture
-  std::optional<unsigned int> light_map = std::nullopt;
+  std::optional<TextureID> light_map = std::nullopt;
 
   Material() {}
 };
 
 struct Vertex {
-  glm::vec3 position;   // vertex position
-  glm::vec3 normal;     // vertex normal
-  glm::vec2 texcoords;  // texture coordinates
-  glm::vec3 tangent;    // tangent vector(dp/du)
-  glm::vec3 dndu;       // differential of normal by texcoords
-  glm::vec3 dndv;       // differential of normal by texcoords
+  glm::vec3 position = glm::vec3(0.0f);   // vertex position
+  glm::vec3 normal = glm::vec3(0.0f);     // vertex normal
+  glm::vec2 texcoords = glm::vec3(0.0f);  // texture coordinates
+  glm::vec3 tangent = glm::vec3(0.0f);    // tangent vector(dp/du)
+  glm::vec3 dndu = glm::vec3(0.0f);       // differential of normal by texcoords
+  glm::vec3 dndv = glm::vec3(0.0f);       // differential of normal by texcoords
 
-  Vertex() : position{0.0f}, normal{0.0f}, texcoords{0.0f}, tangent{0.0f} {}
+  Vertex() {}
 };
 
 // TODO: maybe this class should be data class and all the methods should be
@@ -76,7 +76,7 @@ class Mesh
   Mesh& operator=(const Mesh& other) = delete;
   Mesh& operator=(Mesh&& other);
 
-  // draw mesh by given shader
+  // TODO: should be placed in Model class
   void draw(const Pipeline& pipeline, const Material& material,
             const std::vector<Texture>& textures) const;
 
@@ -86,7 +86,7 @@ class Mesh
 
  private:
   std::vector<Vertex> vertices;
-  std::vector<unsigned int> indices;
+  std::vector<uint32_t> indices;
   // TODO: remove this field, this is only used in Model class
   MaterialID material_id;
 
