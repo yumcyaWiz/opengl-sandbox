@@ -28,14 +28,14 @@ void main() {
   // compute normal
   vec3 n = fs_in.normal;
   if(useNormalMap) {
-    n = normalize(fs_in.TBN * (2.0 * texture(material.normalMap, fs_in.texCoords).xyz - 1.0));
+    n = normalize(fs_in.TBN * (2.0 * texture(normalMap, fs_in.texCoords).xyz - 1.0));
   }
 
   // view direction
   vec3 viewDir = normalize(camPos - fs_in.position);
 
-  vec3 kd = texture(material.diffuseMap, fs_in.texCoords).xyz + material.kd;
-  vec3 ks = texture(material.specularMap, fs_in.texCoords).xyz + material.ks;
+  vec3 kd = texture(diffuseMap, fs_in.texCoords).xyz + material.kd;
+  vec3 ks = texture(specularMap, fs_in.texCoords).xyz + material.ks;
 
   vec3 color = vec3(0);
 

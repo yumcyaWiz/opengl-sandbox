@@ -8,7 +8,7 @@ in vec2 texCoords;
 out vec4 fragColor;
 
 void main() {
-  vec3 color = texture(material.diffuseMap, texCoords).xyz + material.kd;
+  vec3 color = texture(diffuseMap, texCoords).xyz + material.kd;
 
   // gamma correction
   color = pow(color, vec3(1.0 / 2.2));

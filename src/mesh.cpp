@@ -59,32 +59,27 @@ void Mesh::draw(const Pipeline& pipeline, const Material& material,
   // set texture uniform
   if (material.diffuse_map) {
     const Texture& tex = textures[material.diffuse_map.value()];
-    tex.bindToTextureUnit(1);
-    pipeline.setUniform("material.diffuseMap", 1);
+    tex.bindToTextureUnit(0);
   }
 
   if (material.specular_map) {
     const Texture& tex = textures[material.specular_map.value()];
-    tex.bindToTextureUnit(2);
-    pipeline.setUniform("material.specularMap", 2);
+    tex.bindToTextureUnit(1);
   }
 
   if (material.ambient_map) {
     const Texture& tex = textures[material.ambient_map.value()];
-    tex.bindToTextureUnit(3);
-    pipeline.setUniform("material.ambientMap", 3);
+    tex.bindToTextureUnit(2);
   }
 
   if (material.emissive_map) {
     const Texture& tex = textures[material.emissive_map.value()];
-    tex.bindToTextureUnit(4);
-    pipeline.setUniform("material.emissiveMap", 4);
+    tex.bindToTextureUnit(3);
   }
 
   if (material.height_map) {
     const Texture& tex = textures[material.height_map.value()];
-    tex.bindToTextureUnit(5);
-    pipeline.setUniform("material.heightMap", 5);
+    tex.bindToTextureUnit(4);
 
     // TODO: remove this
     pipeline.setUniform("material.hasHeightMap", true);
@@ -94,8 +89,7 @@ void Mesh::draw(const Pipeline& pipeline, const Material& material,
 
   if (material.normal_map) {
     const Texture& tex = textures[material.normal_map.value()];
-    tex.bindToTextureUnit(6);
-    pipeline.setUniform("material.normalMap", 6);
+    tex.bindToTextureUnit(5);
 
     // TODO: remove this
     pipeline.setUniform("material.hasNormalMap", true);
@@ -105,14 +99,12 @@ void Mesh::draw(const Pipeline& pipeline, const Material& material,
 
   if (material.shininess_map) {
     const Texture& tex = textures[material.shininess_map.value()];
-    tex.bindToTextureUnit(7);
-    pipeline.setUniform("material.shininessMap", 7);
+    tex.bindToTextureUnit(6);
   }
 
   if (material.displacement_map) {
     const Texture& tex = textures[material.displacement_map.value()];
-    tex.bindToTextureUnit(8);
-    pipeline.setUniform("material.displacementMap", 8);
+    tex.bindToTextureUnit(7);
 
     // TODO: remove this
     pipeline.setUniform("material.hasDisplacementMap", true);
@@ -122,8 +114,7 @@ void Mesh::draw(const Pipeline& pipeline, const Material& material,
 
   if (material.light_map) {
     const Texture& tex = textures[material.light_map.value()];
-    tex.bindToTextureUnit(9);
-    pipeline.setUniform("material.lightMap", 9);
+    tex.bindToTextureUnit(8);
 
     // TODO: remove this
     pipeline.setUniform("material.hasLightMap", true);
@@ -166,18 +157,9 @@ void Mesh::draw(const Pipeline& pipeline, const Material& material,
   pipeline.deactivate();
 
   // reset texture uniforms
-  pipeline.setUniform("material.diffuseMap", 0);
-  pipeline.setUniform("material.specularMap", 0);
-  pipeline.setUniform("material.ambientMap", 0);
-  pipeline.setUniform("material.emissiveMap", 0);
-  pipeline.setUniform("material.heightMap", 0);
   pipeline.setUniform("material.hasHeightMap", false);
-  pipeline.setUniform("material.normalMap", 0);
   pipeline.setUniform("material.hasNormalMap", false);
-  pipeline.setUniform("material.shininessMap", 0);
-  pipeline.setUniform("material.displacementMap", 0);
   pipeline.setUniform("material.hasDisplacementMap", false);
-  pipeline.setUniform("material.lightMap", 0);
   pipeline.setUniform("material.hasLightMap", false);
 }
 

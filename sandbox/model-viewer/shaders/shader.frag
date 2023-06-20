@@ -36,37 +36,37 @@ void main() {
     color = 0.5 * fs_in.dndv + 0.5;
   }
   else if(layerType == 6) {
-    color = texture(material.diffuseMap, fs_in.texCoords).xyz + material.kd;
+    color = texture(diffuseMap, fs_in.texCoords).xyz + material.kd;
     // gamma correction
     color = pow(color, vec3(1.0 / 2.2));
   }
   else if(layerType == 7) {
-    color = texture(material.specularMap, fs_in.texCoords).xyz + material.ks;
+    color = texture(specularMap, fs_in.texCoords).xyz + material.ks;
   }
   else if(layerType == 8) {
-    color = texture(material.ambientMap, fs_in.texCoords).xyz + material.ka;
+    color = texture(ambientMap, fs_in.texCoords).xyz + material.ka;
     // gamma correction
     color = pow(color, vec3(1.0 / 2.2));
   }
   else if(layerType == 9) {
-    color = texture(material.emissiveMap, fs_in.texCoords).xyz + material.ke;
+    color = texture(emissiveMap, fs_in.texCoords).xyz + material.ke;
     // gamma correction
     color = pow(color, vec3(1.0 / 2.2));
   }
   else if(layerType == 10) {
-    color = texture(material.heightMap, fs_in.texCoords).xyz;
+    color = texture(heightMap, fs_in.texCoords).xyz;
   }
   else if(layerType == 11) {
-    color = texture(material.normalMap, fs_in.texCoords).xyz;
+    color = texture(normalMap, fs_in.texCoords).xyz;
   }
   else if(layerType == 12) {
-    color = texture(material.shininessMap, fs_in.texCoords).xyz;
+    color = texture(shininessMap, fs_in.texCoords).xyz;
   }
   else if(layerType == 13) {
-    color = texture(material.displacementMap, fs_in.texCoords).xyz;
+    color = texture(displacementMap, fs_in.texCoords).xyz;
   }
   else if(layerType == 14) {
-    color = texture(material.lightMap, fs_in.texCoords).xyz;
+    color = texture(lightMap, fs_in.texCoords).xyz;
   }
 
   fragColor = vec4(color, 1.0);

@@ -60,15 +60,15 @@ void main() {
   vec3 normal = fs_in.normal;
   if(useHeightMap) {
     if(heightMapMethod == 0) {
-      normal = computeNormalFromHeightMap(material.heightMap, fs_in.texCoords, fs_in.normal, fs_in.tangent, fs_in.binormal, fs_in.dndu, fs_in.dndv);
+      normal = computeNormalFromHeightMap(heightMap, fs_in.texCoords, fs_in.normal, fs_in.tangent, fs_in.binormal, fs_in.dndu, fs_in.dndv);
     }
     else if(heightMapMethod == 1) {
-      normal = computeNormalFromHeightMap2(material.heightMap, fs_in.texCoords, fs_in.TBN);
+      normal = computeNormalFromHeightMap2(heightMap, fs_in.texCoords, fs_in.TBN);
     }
   }
 
-  vec3 kd = texture(material.diffuseMap, fs_in.texCoords).xyz + material.kd;
-  vec3 ks = texture(material.specularMap, fs_in.texCoords).xyz + material.ks;
+  vec3 kd = texture(diffuseMap, fs_in.texCoords).xyz + material.kd;
+  vec3 ks = texture(specularMap, fs_in.texCoords).xyz + material.ks;
 
   vec3 color = vec3(0);
 
