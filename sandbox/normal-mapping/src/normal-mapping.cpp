@@ -1,132 +1,31 @@
 #include <filesystem>
-#include <iostream>
-#include <memory>
 
-#include "glad/glad.h"
-//
-#include "GLFW/glfw3.h"
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
-//
-#include "ogls.hpp"
+#include "sandbox-base.hpp"
 
-using namespace ogls;
-
-// globals
-std::unique_ptr<Camera> CAMERA;
-int WIDTH = 1600;
-int HEIGHT = 900;
-bool SHOW_NORMAL = false;
-bool USE_NORMAL_MAP = false;
-
-void handleInput(GLFWwindow *window, const ImGuiIO &io)
+namespace sandbox
 {
-  // close application
-  if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-    glfwSetWindowShouldClose(window, GLFW_TRUE);
-  }
 
-  // camera movement
-  if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-    CAMERA->move(CameraMovement::FORWARD, io.DeltaTime);
-  }
-  if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-    CAMERA->move(CameraMovement::LEFT, io.DeltaTime);
-  }
-  if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-    CAMERA->move(CameraMovement::BACKWARD, io.DeltaTime);
-  }
-  if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-    CAMERA->move(CameraMovement::RIGHT, io.DeltaTime);
-  }
-
-  // camera look around
-  if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
-    CAMERA->lookAround(io.MouseDelta.x, io.MouseDelta.y);
-  }
-}
-
-void framebuffer_size_callback([[maybe_unused]] GLFWwindow *window, int _width,
-                               int _height)
+class NormalMapping : public SandboxBase
 {
-  WIDTH = _width;
-  HEIGHT = _height;
-  glViewport(0, 0, WIDTH, HEIGHT);
-}
+ public:
+  NormalMapping(uint32_t width, uint32_t height) : SandboxBase(width, height) {}
 
-int main()
-{
-  // initialize glfw
-  if (!glfwInit()) {
-    std::cerr << "failed to initialize GLFW" << std::endl;
-    return EXIT_FAILURE;
+  void beforeRender() override
+  {
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_MULTISAMPLE);
+
+    scene.setPointLight({glm::vec3(1.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f});
+
+    pipeline.loadVertexShader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+                              "shaders/shader.vert");
+    pipeline.loadFragmentShader(
+        std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+        "shaders/shader.frag");
   }
 
-  // setup window and OpenGL context
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);  // required for Mac
-  glfwWindowHint(GLFW_SAMPLES, 4);                      // 4x MSAA
-  GLFWwindow *window =
-      glfwCreateWindow(WIDTH, HEIGHT, "normal-mapping", nullptr, nullptr);
-  if (!window) {
-    std::cerr << "failed to create window" << std::endl;
-    return EXIT_FAILURE;
-  }
-  glfwMakeContextCurrent(window);
-
-  glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
-  // initialize glad
-  if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-    std::cerr << "failed to initialize glad" << std::endl;
-    return EXIT_FAILURE;
-  }
-
-  // initialize imgui
-  IMGUI_CHECKVERSION();
-  ImGui::CreateContext();
-  ImGuiIO &io = ImGui::GetIO();
-  (void)io;
-
-  // set imgui style
-  ImGui::StyleColorsDark();
-
-  // initialize imgui backends
-  ImGui_ImplGlfw_InitForOpenGL(window, true);
-  ImGui_ImplOpenGL3_Init("#version 460 core");
-
-  // enable depth test
-  glEnable(GL_DEPTH_TEST);
-  // enable MSAA
-  glEnable(GL_MULTISAMPLE);
-
-  // initialize camera
-  CAMERA = std::make_unique<Camera>();
-
-  // setup scene
-  Scene scene;
-  scene.setPointLight({glm::vec3(1.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f});
-
-  // setup shader
-  Pipeline pipeline;
-  pipeline.loadVertexShader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
-                            "shaders/shader.vert");
-  pipeline.loadFragmentShader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
-                              "shaders/shader.frag");
-
-  // app loop
-  while (!glfwWindowShouldClose(window)) {
-    glfwPollEvents();
-
-    // start imgui frame
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
-    ImGui::NewFrame();
-
-    // imgui
+  void runImGui() override
+  {
     ImGui::Begin("UI");
     {
       static char modelPath[100] = {"assets/normalmap_test/normalmap_test.obj"};
@@ -137,46 +36,76 @@ int main()
 
       ImGui::Separator();
 
-      ImGui::InputFloat("FOV", &CAMERA->fov);
-      ImGui::InputFloat("Movement Speed", &CAMERA->movement_speed);
-      ImGui::InputFloat("Look Around Speed", &CAMERA->look_around_speed);
+      ImGui::InputFloat("FOV", &camera.fov);
+      ImGui::InputFloat("Movement Speed", &camera.movement_speed);
+      ImGui::InputFloat("Look Around Speed", &camera.look_around_speed);
 
-      if (ImGui::Button("Reset Camera")) { CAMERA->reset(); }
+      if (ImGui::Button("Reset Camera")) { camera.reset(); }
 
       ImGui::Separator();
 
-      ImGui::Checkbox("Normal Mapping", &USE_NORMAL_MAP);
-      ImGui::Checkbox("Show Normal", &SHOW_NORMAL);
+      ImGui::Checkbox("Normal Mapping", &use_normal_map);
+      ImGui::Checkbox("Show Normal", &show_normal);
     }
     ImGui::End();
+  }
 
-    handleInput(window, io);
+  void handleInput() override
+  {
+    // close application
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+      glfwSetWindowShouldClose(window, GLFW_TRUE);
+    }
 
+    // camera movement
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+      camera.move(ogls::CameraMovement::FORWARD, io->DeltaTime);
+    }
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+      camera.move(ogls::CameraMovement::LEFT, io->DeltaTime);
+    }
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+      camera.move(ogls::CameraMovement::BACKWARD, io->DeltaTime);
+    }
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+      camera.move(ogls::CameraMovement::RIGHT, io->DeltaTime);
+    }
+
+    // camera look around
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
+      camera.lookAround(io->MouseDelta.x, io->MouseDelta.y);
+    }
+  }
+
+  void render() const override
+  {
     // set uniform variables
-    pipeline.setUniform("view", CAMERA->computeViewMatrix());
+    pipeline.setUniform("view", camera.computeViewMatrix());
     pipeline.setUniform("projection",
-                        CAMERA->computeProjectionMatrix(WIDTH, HEIGHT));
-    pipeline.setUniform("camPos", CAMERA->cam_pos);
-    pipeline.setUniform("useNormalMap", USE_NORMAL_MAP);
-    pipeline.setUniform("showNormal", SHOW_NORMAL);
+                        camera.computeProjectionMatrix(width, height));
+    pipeline.setUniform("camPos", camera.cam_pos);
+    pipeline.setUniform("useNormalMap", use_normal_map);
+    pipeline.setUniform("showNormal", show_normal);
 
     // render
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     scene.draw(pipeline);
-
-    // render imgui
-    ImGui::Render();
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-    glfwSwapBuffers(window);
   }
 
-  // exit
-  ImGui_ImplOpenGL3_Shutdown();
-  ImGui_ImplGlfw_Shutdown();
-  ImGui::DestroyContext();
-  glfwDestroyWindow(window);
-  glfwTerminate();
+ private:
+  ogls::Pipeline pipeline;
+
+  bool use_normal_map = false;
+  bool show_normal = false;
+};
+
+}  // namespace sandbox
+
+int main()
+{
+  sandbox::NormalMapping app(1280, 720);
+
+  app.run();
 
   return 0;
 }
