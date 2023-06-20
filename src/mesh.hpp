@@ -13,6 +13,9 @@
 namespace ogls
 {
 
+using MaterialID = uint32_t;
+using TextureID = uint32_t;
+
 struct Material {
   // diffuse color
   glm::vec3 kd = glm::vec3(0.0f);
@@ -57,12 +60,15 @@ struct Vertex {
   Vertex() : position{0.0f}, normal{0.0f}, texcoords{0.0f}, tangent{0.0f} {}
 };
 
+// TODO: maybe this class should be data class and all the methods should be
+// moved to Model class
 class Mesh
+
 {
  public:
   Mesh();
   Mesh(const std::vector<Vertex>& vertices,
-       const std::vector<unsigned int>& indices, uint32_t material_index);
+       const std::vector<unsigned int>& indices, MaterialID material_index);
   Mesh(const Mesh& other) = delete;
   Mesh(Mesh&& other);
   ~Mesh() = default;
@@ -76,12 +82,13 @@ class Mesh
 
   uint32_t getNumberOfVertices() const;
   uint32_t getNumberOfFaces() const;
-  uint32_t getMaterialIndex() const;
+  MaterialID getMaterialID() const;
 
  private:
   std::vector<Vertex> vertices;
   std::vector<unsigned int> indices;
-  uint32_t material_index;
+  // TODO: remove this field, this is only used in Model class
+  MaterialID material_id;
 
   VertexArrayObject vao;
   Buffer vertex_buffer;

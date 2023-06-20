@@ -124,7 +124,7 @@ void Model::draw(const Pipeline& pipeline) const
   // draw all meshes
   for (std::size_t i = 0; i < meshes.size(); i++) {
     const Mesh& mesh = meshes[i];
-    mesh.draw(pipeline, materials[mesh.getMaterialIndex()], textures);
+    mesh.draw(pipeline, materials[mesh.getMaterialID()], textures);
   }
 }
 
@@ -143,7 +143,7 @@ void Model::processAssimpNode(const aiNode* node, const aiScene* scene,
   }
 }
 
-std::vector<Vertex> Model::getVerticesFromAssimpMesh(const aiMesh* mesh)
+std::vector<Vertex> Model::getVerticesFromAssimp(const aiMesh* mesh)
 {
   std::vector<Vertex> ret;
 
@@ -179,7 +179,7 @@ std::vector<Vertex> Model::getVerticesFromAssimpMesh(const aiMesh* mesh)
   return ret;
 }
 
-std::vector<uint32_t> Model::getIndicesFromAssimpMesh(const aiMesh* mesh)
+std::vector<uint32_t> Model::getIndicesFromAssimp(const aiMesh* mesh)
 {
   std::vector<uint32_t> ret;
 
@@ -193,8 +193,8 @@ std::vector<uint32_t> Model::getIndicesFromAssimpMesh(const aiMesh* mesh)
   return ret;
 }
 
-Material Model::getMaterialFromAssimpMesh(
-    const aiMaterial* material, const std::filesystem::path& parent_path)
+Material Model::getMaterialFromAssimp(const aiMaterial* material,
+                                      const std::filesystem::path& parent_path)
 {
   Material ret;
 
@@ -261,8 +261,8 @@ Mesh Model::processAssimpMesh(const aiMesh* mesh, const aiScene* scene,
                 std::to_string(mesh->mNumVertices));
   spdlog::debug("[Mesh] number of faces " + std::to_string(mesh->mNumFaces));
 
-  std::vector<Vertex> vertices = getVerticesFromAssimpMesh(mesh);
-  const std::vector<uint32_t> indices = getIndicesFromAssimpMesh(mesh);
+  std::vector<Vertex> vertices = getVerticesFromAssimp(mesh);
+  const std::vector<uint32_t> indices = getIndicesFromAssimp(mesh);
 
   // compute dn/dp, dn/dv
   for (std::size_t i = 0; i < indices.size(); i += 3) {
@@ -302,11 +302,11 @@ Mesh Model::processAssimpMesh(const aiMesh* mesh, const aiScene* scene,
   return Mesh(vertices, indices, material_index.value());
 }
 
-std::size_t Model::loadMaterial(const aiScene* scene, assimpMaterialIndex index,
-                                const std::filesystem::path& parent_path)
+MaterialID Model::loadMaterial(const aiScene* scene, AssimpMaterialIndex index,
+                               const std::filesystem::path& parent_path)
 {
   const aiMaterial* m = scene->mMaterials[index];
-  materials.push_back(getMaterialFromAssimpMesh(m, parent_path));
+  materials.push_back(getMaterialFromAssimp(m, parent_path));
   loaded_materials.push_back(index);
   return materials.size() - 1;
 }
@@ -332,7 +332,7 @@ std::vector<uint8_t> Model::loadImage(const std::filesystem::path& filepath,
   return ret;
 }
 
-std::optional<std::size_t> Model::loadTexture(
+std::optional<TextureID> Model::loadTexture(
     const aiMaterial* material, const TextureType& type,
     const std::filesystem::path& parentPath)
 {
@@ -370,7 +370,7 @@ std::optional<std::size_t> Model::loadTexture(
   return textures.size() - 1;
 }
 
-std::optional<std::size_t> Model::getMaterialIndex(
+std::optional<MaterialID> Model::getMaterialIndex(
     uint32_t assimp_material_index) const
 {
   for (std::size_t i = 0; i < loaded_materials.size(); ++i) {
@@ -379,7 +379,7 @@ std::optional<std::size_t> Model::getMaterialIndex(
   return std::nullopt;
 }
 
-std::optional<std::size_t> Model::getTextureIndex(
+std::optional<TextureID> Model::getTextureIndex(
     const std::filesystem::path& filepath) const
 {
   for (std::size_t i = 0; i < loaded_textures.size(); ++i) {

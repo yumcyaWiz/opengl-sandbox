@@ -44,8 +44,8 @@ class Model
   std::vector<Material> materials;
   std::vector<Texture> textures;
 
-  using assimpMaterialIndex = uint32_t;
-  std::vector<assimpMaterialIndex> loaded_materials;
+  using AssimpMaterialIndex = uint32_t;
+  std::vector<AssimpMaterialIndex> loaded_materials;
   std::vector<std::filesystem::path> loaded_textures;
 
   void processAssimpNode(const aiNode* node, const aiScene* scene,
@@ -54,27 +54,23 @@ class Model
   Mesh processAssimpMesh(const aiMesh* mesh, const aiScene* scene,
                          const std::filesystem::path& parentPath);
 
-  // return offset of the material
-  std::size_t loadMaterial(const aiScene* scene, assimpMaterialIndex index,
-                           const std::filesystem::path& parent_path);
+  MaterialID loadMaterial(const aiScene* scene, AssimpMaterialIndex index,
+                          const std::filesystem::path& parent_path);
 
-  // return offset of the texture
-  std::optional<std::size_t> loadTexture(
-      const aiMaterial* material, const TextureType& type,
-      const std::filesystem::path& parentPath);
+  std::optional<MaterialID> getMaterialIndex(
+      AssimpMaterialIndex assimp_material_id) const;
 
-  // return offset of the texture
-  std::optional<std::size_t> getTextureIndex(
+  std::optional<TextureID> loadTexture(const aiMaterial* material,
+                                       const TextureType& type,
+                                       const std::filesystem::path& parentPath);
+
+  std::optional<TextureID> getTextureIndex(
       const std::filesystem::path& filepath) const;
 
-  // return offset of the material
-  std::optional<std::size_t> getMaterialIndex(
-      assimpMaterialIndex assimp_material_id) const;
-
-  static std::vector<Vertex> getVerticesFromAssimpMesh(const aiMesh* mesh);
-  static std::vector<uint32_t> getIndicesFromAssimpMesh(const aiMesh* mesh);
-  Material getMaterialFromAssimpMesh(const aiMaterial* material,
-                                     const std::filesystem::path& parent_path);
+  static std::vector<Vertex> getVerticesFromAssimp(const aiMesh* mesh);
+  static std::vector<uint32_t> getIndicesFromAssimp(const aiMesh* mesh);
+  Material getMaterialFromAssimp(const aiMaterial* material,
+                                 const std::filesystem::path& parent_path);
 
   static GLuint getTextureInternalFormat(const TextureType& type);
 
