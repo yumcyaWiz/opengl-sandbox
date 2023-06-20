@@ -9,11 +9,11 @@ Mesh::Mesh(const std::vector<Vertex>& vertices,
            const std::vector<unsigned int>& indices, const Material& material)
     : vertices{vertices}, indices{indices}, material{material}
 {
-  vbo.setData(vertices, GL_STATIC_DRAW);
-  ebo.setData(indices, GL_STATIC_DRAW);
+  vertex_buffer.setData(vertices, GL_STATIC_DRAW);
+  index_buffer.setData(indices, GL_STATIC_DRAW);
 
-  vao.bindVertexBuffer(vbo, 0, 0, sizeof(Vertex));
-  vao.bindElementBuffer(ebo);
+  vao.bindVertexBuffer(vertex_buffer, 0, 0, sizeof(Vertex));
+  vao.bindElementBuffer(index_buffer);
 
   // position
   vao.activateVertexAttribution(0, 0, 3, GL_FLOAT, 0);
@@ -34,8 +34,8 @@ Mesh::Mesh(Mesh&& other)
   vertices = std::move(other.vertices);
   indices = std::move(other.indices);
   material = std::move(other.material);
-  vbo = std::move(other.vbo);
-  ebo = std::move(other.ebo);
+  vertex_buffer = std::move(other.vertex_buffer);
+  index_buffer = std::move(other.index_buffer);
   vao = std::move(other.vao);
 }
 
@@ -45,8 +45,8 @@ Mesh& Mesh::operator=(Mesh&& other)
   vertices = std::move(other.vertices);
   indices = std::move(other.indices);
   material = std::move(other.material);
-  vbo = std::move(other.vbo);
-  ebo = std::move(other.ebo);
+  vertex_buffer = std::move(other.vertex_buffer);
+  index_buffer = std::move(other.index_buffer);
   vao = std::move(other.vao);
   return *this;
 }

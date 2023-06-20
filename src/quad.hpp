@@ -14,8 +14,8 @@ class Quad
 {
  private:
   VertexArrayObject VAO;
-  Buffer VBO;
-  Buffer EBO;
+  Buffer vertex_buffer;
+  Buffer index_buffer;
 
  public:
   Quad();

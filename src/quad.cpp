@@ -9,15 +9,15 @@ Quad::Quad()
   const std::vector<GLfloat> vertices = {
       -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f,  -1.0f, 0.0f, 1.0f, 0.0f,
       1.0f,  1.0f,  0.0f, 1.0f, 1.0f, -1.0f, 1.0f,  0.0f, 0.0f, 1.0f};
-  VBO.setData(vertices, GL_STATIC_DRAW);
+  vertex_buffer.setData(vertices, GL_STATIC_DRAW);
 
   // setup EBO
   const std::vector<GLuint> indices = {0, 1, 2, 2, 3, 0};
-  EBO.setData(indices, GL_STATIC_DRAW);
+  index_buffer.setData(indices, GL_STATIC_DRAW);
 
   // setup VAO
-  VAO.bindVertexBuffer(VBO, 0, 0, 5 * sizeof(GLfloat));
-  VAO.bindElementBuffer(EBO);
+  VAO.bindVertexBuffer(vertex_buffer, 0, 0, 5 * sizeof(GLfloat));
+  VAO.bindElementBuffer(index_buffer);
 
   // position
   VAO.activateVertexAttribution(0, 0, 3, GL_FLOAT, 0);

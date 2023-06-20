@@ -71,8 +71,8 @@ class Mesh
   Material material;
 
   VertexArrayObject vao;
-  Buffer vbo;
-  Buffer ebo;
+  Buffer vertex_buffer;
+  Buffer index_buffer;
 };
 
 }  // namespace ogls
