@@ -10,146 +10,146 @@ namespace ogls
 {
 
 enum class TextureType {
-  Diffuse,
-  Specular,
-  Ambient,
-  Emissive,
-  Height,
-  Normal,
-  Shininess,
-  Displacement,
-  Light
+    Diffuse,
+    Specular,
+    Ambient,
+    Emissive,
+    Height,
+    Normal,
+    Shininess,
+    Displacement,
+    Light
 };
 
 class Texture
 {
- public:
-  class TextureBuilder
-  {
-   private:
-    glm::uvec2 resolution = {0, 0};
-
-    GLint internalFormat = GL_SRGB;
-    GLenum format = GL_RGB;
-    GLenum type = GL_UNSIGNED_BYTE;
-    GLenum wrap_s = GL_REPEAT;
-    GLenum wrap_t = GL_REPEAT;
-    GLenum mag_filter = GL_LINEAR;
-    GLenum min_filter = GL_LINEAR;
-    bool generate_mipmap = false;
-    bool depth_compare_mode = false;
-
-    const void* image = nullptr;
-
    public:
-    TextureBuilder(const glm::vec2& resolution) : resolution(resolution) {}
-
-    TextureBuilder setInternalFormat(GLint internalFormat)
+    class TextureBuilder
     {
-      this->internalFormat = internalFormat;
-      return *this;
-    }
+       private:
+        glm::uvec2 resolution = {0, 0};
 
-    TextureBuilder setFormat(GLenum format)
-    {
-      this->format = format;
-      return *this;
-    }
+        GLint internalFormat = GL_SRGB;
+        GLenum format = GL_RGB;
+        GLenum type = GL_UNSIGNED_BYTE;
+        GLenum wrap_s = GL_REPEAT;
+        GLenum wrap_t = GL_REPEAT;
+        GLenum mag_filter = GL_LINEAR;
+        GLenum min_filter = GL_LINEAR;
+        bool generate_mipmap = false;
+        bool depth_compare_mode = false;
 
-    TextureBuilder setType(GLenum type)
-    {
-      this->type = type;
-      return *this;
-    }
+        const void* image = nullptr;
 
-    TextureBuilder setWrapS(GLenum wrap_s)
-    {
-      this->wrap_s = wrap_s;
-      return *this;
-    }
+       public:
+        TextureBuilder(const glm::vec2& resolution) : resolution(resolution) {}
 
-    TextureBuilder setWrapT(GLenum wrap_t)
-    {
-      this->wrap_t = wrap_t;
-      return *this;
-    }
+        TextureBuilder setInternalFormat(GLint internalFormat)
+        {
+            this->internalFormat = internalFormat;
+            return *this;
+        }
 
-    TextureBuilder setMagFilter(GLenum mag_filter)
-    {
-      this->mag_filter = mag_filter;
-      return *this;
-    }
+        TextureBuilder setFormat(GLenum format)
+        {
+            this->format = format;
+            return *this;
+        }
 
-    TextureBuilder setMinFilter(GLenum min_filter)
-    {
-      this->min_filter = min_filter;
-      return *this;
-    }
+        TextureBuilder setType(GLenum type)
+        {
+            this->type = type;
+            return *this;
+        }
 
-    TextureBuilder setGenerateMipmap(bool generate_mipmap)
-    {
-      this->generate_mipmap = generate_mipmap;
-      return *this;
-    }
+        TextureBuilder setWrapS(GLenum wrap_s)
+        {
+            this->wrap_s = wrap_s;
+            return *this;
+        }
 
-    TextureBuilder setImage(const void* image)
-    {
-      this->image = image;
-      return *this;
-    }
+        TextureBuilder setWrapT(GLenum wrap_t)
+        {
+            this->wrap_t = wrap_t;
+            return *this;
+        }
 
-    TextureBuilder setDepthCompareMode(bool depth_compare_mode)
-    {
-      this->depth_compare_mode = depth_compare_mode;
-      return *this;
-    }
+        TextureBuilder setMagFilter(GLenum mag_filter)
+        {
+            this->mag_filter = mag_filter;
+            return *this;
+        }
 
-    Texture build() const { return Texture(*this); }
+        TextureBuilder setMinFilter(GLenum min_filter)
+        {
+            this->min_filter = min_filter;
+            return *this;
+        }
 
-    friend class Texture;
-  };
+        TextureBuilder setGenerateMipmap(bool generate_mipmap)
+        {
+            this->generate_mipmap = generate_mipmap;
+            return *this;
+        }
 
-  Texture();
-  Texture(const Texture& other) = delete;
-  Texture(Texture&& other);
-  ~Texture();
+        TextureBuilder setImage(const void* image)
+        {
+            this->image = image;
+            return *this;
+        }
 
-  Texture& operator=(const Texture& other) = delete;
-  Texture& operator=(Texture&& other);
+        TextureBuilder setDepthCompareMode(bool depth_compare_mode)
+        {
+            this->depth_compare_mode = depth_compare_mode;
+            return *this;
+        }
 
-  glm::uvec2 getResolution() const;
-  GLuint getTextureName() const;
-  GLint getInternalFormat() const;
-  GLenum getFormat() const;
-  GLenum getType() const;
+        Texture build() const { return Texture(*this); }
 
-  // bind texture to the specified texture unit
-  void bindToTextureUnit(GLuint texture_unit_number) const;
+        friend class Texture;
+    };
 
-  // bind texture to the specified image unit
-  void bindToImageUnit(GLuint image_unit_number, GLenum access) const;
+    Texture();
+    Texture(const Texture& other) = delete;
+    Texture(Texture&& other);
+    ~Texture();
 
- private:
-  Texture(const TextureBuilder& builder);
+    Texture& operator=(const Texture& other) = delete;
+    Texture& operator=(Texture&& other);
 
-  void createTexture();
+    glm::uvec2 getResolution() const;
+    GLuint getTextureName() const;
+    GLint getInternalFormat() const;
+    GLenum getFormat() const;
+    GLenum getType() const;
 
-  void setImage(const void* image) const;
+    // bind texture to the specified texture unit
+    void bindToTextureUnit(GLuint texture_unit_number) const;
 
-  glm::uvec2 resolution;
+    // bind texture to the specified image unit
+    void bindToImageUnit(GLuint image_unit_number, GLenum access) const;
 
-  GLuint texture;
-  GLint internalFormat;
-  GLenum format;
-  GLenum type;
-  GLenum wrap_s;
-  GLenum wrap_t;
-  GLenum mag_filter;
-  GLenum min_filter;
-  bool generate_mipmap;
-  bool depth_compare_mode;
+   private:
+    Texture(const TextureBuilder& builder);
 
-  void release();
+    void createTexture();
+
+    void setImage(const void* image) const;
+
+    glm::uvec2 resolution;
+
+    GLuint texture;
+    GLint internalFormat;
+    GLenum format;
+    GLenum type;
+    GLenum wrap_s;
+    GLenum wrap_t;
+    GLenum mag_filter;
+    GLenum min_filter;
+    bool generate_mipmap;
+    bool depth_compare_mode;
+
+    void release();
 };
 
 }  // namespace ogls

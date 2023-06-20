@@ -8,102 +8,102 @@ namespace sandbox
 SandboxBase::SandboxBase(uint32_t width, uint32_t height)
     : width{width}, height{height}
 {
-  initGlfw();
-  initGlad();
-  initImGui();
+    initGlfw();
+    initGlad();
+    initImGui();
 }
 
 SandboxBase::~SandboxBase() { release(); }
 
 void SandboxBase::initGlfw()
 {
-  if (!glfwInit()) { throw std::runtime_error("failed to initialize GLFW"); }
+    if (!glfwInit()) { throw std::runtime_error("failed to initialize GLFW"); }
 
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);  // required for Mac
-  // glfwWindowHint(GLFW_SAMPLES, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);  // required for Mac
+    // glfwWindowHint(GLFW_SAMPLES, 4);
 
-  window = glfwCreateWindow(width, height, "model-viewer", nullptr, nullptr);
-  if (!window) { throw std::runtime_error("failed to create window"); }
-  glfwMakeContextCurrent(window);
-  glfwSetWindowUserPointer(window, this);
+    window = glfwCreateWindow(width, height, "model-viewer", nullptr, nullptr);
+    if (!window) { throw std::runtime_error("failed to create window"); }
+    glfwMakeContextCurrent(window);
+    glfwSetWindowUserPointer(window, this);
 
-  glfwSetFramebufferSizeCallback(window, framebufferSizeCallbackStatic);
+    glfwSetFramebufferSizeCallback(window, framebufferSizeCallbackStatic);
 }
 
 void SandboxBase::initGlad()
 {
-  if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-    throw std::runtime_error("failed to initialize glad");
-  }
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+        throw std::runtime_error("failed to initialize glad");
+    }
 }
 
 void SandboxBase::initImGui()
 {
-  // initialize imgui
-  IMGUI_CHECKVERSION();
-  ImGui::CreateContext();
-  io = &ImGui::GetIO();
+    // initialize imgui
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    io = &ImGui::GetIO();
 
-  // set imgui style
-  ImGui::StyleColorsDark();
+    // set imgui style
+    ImGui::StyleColorsDark();
 
-  // initialize imgui backends
-  ImGui_ImplGlfw_InitForOpenGL(window, true);
-  ImGui_ImplOpenGL3_Init("#version 460 core");
+    // initialize imgui backends
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init("#version 460 core");
 }
 
 void SandboxBase::framebufferSizeCallback(GLFWwindow *window, int width,
                                           int height)
 {
-  this->width = width;
-  this->height = height;
-  glViewport(0, 0, width, height);
+    this->width = width;
+    this->height = height;
+    glViewport(0, 0, width, height);
 }
 
 void SandboxBase::framebufferSizeCallbackStatic(GLFWwindow *window, int width,
                                                 int height)
 {
-  SandboxBase *instance =
-      static_cast<SandboxBase *>(glfwGetWindowUserPointer(window));
-  instance->framebufferSizeCallback(window, width, height);
+    SandboxBase *instance =
+        static_cast<SandboxBase *>(glfwGetWindowUserPointer(window));
+    instance->framebufferSizeCallback(window, width, height);
 }
 
 void SandboxBase::release()
 {
-  ImGui_ImplOpenGL3_Shutdown();
-  ImGui_ImplGlfw_Shutdown();
-  ImGui::DestroyContext();
-  glfwDestroyWindow(window);
-  glfwTerminate();
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+    glfwDestroyWindow(window);
+    glfwTerminate();
 }
 
 void SandboxBase::run()
 {
-  beforeRender();
+    beforeRender();
 
-  while (!glfwWindowShouldClose(window)) {
-    glfwPollEvents();
+    while (!glfwWindowShouldClose(window)) {
+        glfwPollEvents();
 
-    // start imgui frame
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
-    ImGui::NewFrame();
+        // start imgui frame
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
 
-    runImGui();
+        runImGui();
 
-    handleInput();
+        handleInput();
 
-    render();
+        render();
 
-    // render imgui
-    ImGui::Render();
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        // render imgui
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-    glfwSwapBuffers(window);
-  }
+        glfwSwapBuffers(window);
+    }
 }
 
 }  // namespace sandbox

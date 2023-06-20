@@ -12,15 +12,15 @@ namespace ogls
 
 class Quad
 {
- private:
-  VertexArrayObject VAO;
-  Buffer vertex_buffer;
-  Buffer index_buffer;
+   private:
+    VertexArrayObject VAO;
+    Buffer vertex_buffer;
+    Buffer index_buffer;
 
- public:
-  Quad();
+   public:
+    Quad();
 
-  void draw(const Pipeline& pipeline) const;
+    void draw(const Pipeline& pipeline) const;
 };
 
 }  // namespace ogls
