@@ -1,13 +1,7 @@
 #include <filesystem>
-#include <iostream>
 
-#include "glad/glad.h"
-//
-#include "GLFW/glfw3.h"
-//
 #include "ogls.hpp"
 #include "sandbox-base.hpp"
-#include "shader.hpp"
 
 namespace sandbox
 {
