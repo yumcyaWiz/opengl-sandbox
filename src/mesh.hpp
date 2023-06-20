@@ -14,24 +14,36 @@ namespace ogls
 {
 
 struct Material {
-  glm::vec3 kd;  // diffuse color
-  glm::vec3 ks;  // specular color
-  glm::vec3 ka;  // ambient color
-  glm::vec3 ke;  // emissive color
-  float shininess;
+  // diffuse color
+  glm::vec3 kd = glm::vec3(0.0f);
+  // specular color
+  glm::vec3 ks = glm::vec3(0.0f);
+  // ambient color
+  glm::vec3 ka = glm::vec3(0.0f);
+  // emissive color
+  glm::vec3 ke = glm::vec3(0.0f);
+  float shininess = 0.0f;
 
-  std::optional<unsigned int> diffuse_map;    // index of diffuse map texture
-  std::optional<unsigned int> specular_map;   // index of specular map texture
-  std::optional<unsigned int> ambient_map;    // index of ambient map texture
-  std::optional<unsigned int> emissive_map;   // index of emissive map texture
-  std::optional<unsigned int> height_map;     // index of height map texture
-  std::optional<unsigned int> normal_map;     // index of normal map texture
-  std::optional<unsigned int> shininess_map;  // index of shininess map texture
-  std::optional<unsigned int>
-      displacement_map;                   // index of displacement map texture
-  std::optional<unsigned int> light_map;  // index of light map texture
+  // index of diffuse map texture
+  std::optional<unsigned int> diffuse_map = std::nullopt;
+  // index of specular map texture
+  std::optional<unsigned int> specular_map = std::nullopt;
+  // index of ambient map texture
+  std::optional<unsigned int> ambient_map = std::nullopt;
+  // index of emissive map texture
+  std::optional<unsigned int> emissive_map = std::nullopt;
+  // index of height map texture
+  std::optional<unsigned int> height_map = std::nullopt;
+  // index of normal map texture
+  std::optional<unsigned int> normal_map = std::nullopt;
+  // index of shininess map texture
+  std::optional<unsigned int> shininess_map = std::nullopt;
+  // index of displacement map texture
+  std::optional<unsigned int> displacement_map = std::nullopt;
+  // index of light map texture
+  std::optional<unsigned int> light_map = std::nullopt;
 
-  Material() : kd{0.0f}, ks{0.0f}, ka{0.0f}, ke{0.0f}, shininess{0.0f} {}
+  Material() {}
 };
 
 struct Vertex {
@@ -50,7 +62,7 @@ class Mesh
  public:
   Mesh();
   Mesh(const std::vector<Vertex>& vertices,
-       const std::vector<unsigned int>& indices, const Material& material);
+       const std::vector<unsigned int>& indices, uint32_t material_index);
   Mesh(const Mesh& other) = delete;
   Mesh(Mesh&& other);
   ~Mesh() = default;
@@ -59,16 +71,17 @@ class Mesh
   Mesh& operator=(Mesh&& other);
 
   // draw mesh by given shader
-  void draw(const Pipeline& pipeline,
+  void draw(const Pipeline& pipeline, const Material& material,
             const std::vector<Texture>& textures) const;
 
   uint32_t getNumberOfVertices() const;
   uint32_t getNumberOfFaces() const;
+  uint32_t getMaterialIndex() const;
 
  private:
   std::vector<Vertex> vertices;
   std::vector<unsigned int> indices;
-  Material material;
+  uint32_t material_index;
 
   VertexArrayObject vao;
   Buffer vertex_buffer;

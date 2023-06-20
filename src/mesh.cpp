@@ -6,8 +6,8 @@ namespace ogls
 Mesh::Mesh() {}
 
 Mesh::Mesh(const std::vector<Vertex>& vertices,
-           const std::vector<unsigned int>& indices, const Material& material)
-    : vertices{vertices}, indices{indices}, material{material}
+           const std::vector<unsigned int>& indices, uint32_t material_index)
+    : vertices{vertices}, indices{indices}, material_index{material_index}
 {
   vertex_buffer.setData(vertices, GL_STATIC_DRAW);
   index_buffer.setData(indices, GL_STATIC_DRAW);
@@ -33,7 +33,7 @@ Mesh::Mesh(Mesh&& other)
 {
   vertices = std::move(other.vertices);
   indices = std::move(other.indices);
-  material = std::move(other.material);
+  material_index = std::move(other.material_index);
   vertex_buffer = std::move(other.vertex_buffer);
   index_buffer = std::move(other.index_buffer);
   vao = std::move(other.vao);
@@ -44,14 +44,14 @@ Mesh& Mesh::operator=(Mesh&& other)
   if (this == &other) return *this;
   vertices = std::move(other.vertices);
   indices = std::move(other.indices);
-  material = std::move(other.material);
+  material_index = std::move(other.material_index);
   vertex_buffer = std::move(other.vertex_buffer);
   index_buffer = std::move(other.index_buffer);
   vao = std::move(other.vao);
   return *this;
 }
 
-void Mesh::draw(const Pipeline& pipeline,
+void Mesh::draw(const Pipeline& pipeline, const Material& material,
                 const std::vector<Texture>& textures) const
 {
   // set texture uniform
@@ -182,5 +182,7 @@ void Mesh::draw(const Pipeline& pipeline,
 uint32_t Mesh::getNumberOfVertices() const { return vertices.size(); }
 
 uint32_t Mesh::getNumberOfFaces() const { return indices.size() / 3; }
+
+uint32_t Mesh::getMaterialIndex() const { return material_index; }
 
 }  // namespace ogls

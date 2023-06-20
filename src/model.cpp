@@ -6,6 +6,7 @@
 #include "assimp/Importer.hpp"
 #include "assimp/material.h"
 #include "assimp/postprocess.h"
+#include "mesh.hpp"
 #include "spdlog/spdlog.h"
 #include "texture.hpp"
 
@@ -46,7 +47,9 @@ Model::Model(const std::filesystem::path& filepath) { loadModel(filepath); }
 
 Model::Model(Model&& other)
     : meshes(std::move(other.meshes)),
+      materials(std::move(other.materials)),
       textures(std::move(other.textures)),
+      loaded_materials(std::move(other.loaded_materials)),
       loaded_textures(std::move(other.loaded_textures))
 {
 }
@@ -55,7 +58,9 @@ Model& Model::operator=(Model&& other)
 {
   if (this == &other) return *this;
   meshes = std::move(other.meshes);
+  materials = std::move(other.materials);
   textures = std::move(other.textures);
+  loaded_materials = std::move(other.loaded_materials);
   loaded_textures = std::move(other.loaded_textures);
   return *this;
 }
@@ -109,6 +114,7 @@ void Model::loadModel(const std::filesystem::path& filepath)
                 std::to_string(getNumberOfVertices()));
   spdlog::debug("[Model] number of faces: " +
                 std::to_string(getNumberOfFaces()));
+  spdlog::debug("[Model] number of materials: {}", materials.size());
   spdlog::debug("[Model] number of textures: " +
                 std::to_string(getNumberOfTextures()));
 }
@@ -117,7 +123,8 @@ void Model::draw(const Pipeline& pipeline) const
 {
   // draw all meshes
   for (std::size_t i = 0; i < meshes.size(); i++) {
-    meshes[i].draw(pipeline, textures);
+    const Mesh& mesh = meshes[i];
+    mesh.draw(pipeline, materials[mesh.getMaterialIndex()], textures);
   }
 }
 
@@ -130,6 +137,7 @@ void Model::processAssimpNode(const aiNode* node, const aiScene* scene,
     meshes.push_back(processAssimpMesh(mesh, scene, parentPath));
   }
 
+  // process child nodes
   for (std::size_t i = 0; i < node->mNumChildren; i++) {
     processAssimpNode(node->mChildren[i], scene, parentPath);
   }
@@ -186,62 +194,61 @@ std::vector<uint32_t> Model::getIndicesFromAssimpMesh(const aiMesh* mesh)
 }
 
 Material Model::getMaterialFromAssimpMesh(
-    const aiMesh* mesh, const aiScene* scene,
-    const std::filesystem::path& parentPath)
+    const aiMaterial* material, const std::filesystem::path& parent_path)
 {
   Material ret;
 
-  if (!scene->mMaterials[mesh->mMaterialIndex]) return ret;
-  const aiMaterial* mat = scene->mMaterials[mesh->mMaterialIndex];
+  if (material == nullptr) return ret;
 
   // kd
   aiColor3D color;
-  mat->Get(AI_MATKEY_COLOR_DIFFUSE, color);
+  material->Get(AI_MATKEY_COLOR_DIFFUSE, color);
   // convert sRGB to linear
   ret.kd = glm::pow(glm::vec3(color.r, color.g, color.b), glm::vec3(2.2f));
 
   // ks
-  mat->Get(AI_MATKEY_COLOR_SPECULAR, color);
+  material->Get(AI_MATKEY_COLOR_SPECULAR, color);
   ret.ks = glm::vec3(color.r, color.g, color.b);
 
   // ka
-  mat->Get(AI_MATKEY_COLOR_AMBIENT, color);
+  material->Get(AI_MATKEY_COLOR_AMBIENT, color);
   ret.ka = glm::vec3(color.r, color.g, color.b);
 
   // ke
-  mat->Get(AI_MATKEY_COLOR_EMISSIVE, color);
+  material->Get(AI_MATKEY_COLOR_EMISSIVE, color);
   ret.ke = glm::vec3(color.r, color.g, color.b);
 
   // shininess
-  mat->Get(AI_MATKEY_SHININESS, ret.shininess);
+  material->Get(AI_MATKEY_SHININESS, ret.shininess);
 
   // diffuse map
-  ret.diffuse_map = loadTexture(mat, TextureType::Diffuse, parentPath);
+  ret.diffuse_map = loadTexture(material, TextureType::Diffuse, parent_path);
 
   // specular map
-  ret.specular_map = loadTexture(mat, TextureType::Specular, parentPath);
+  ret.specular_map = loadTexture(material, TextureType::Specular, parent_path);
 
   // ambient map
-  ret.ambient_map = loadTexture(mat, TextureType::Ambient, parentPath);
+  ret.ambient_map = loadTexture(material, TextureType::Ambient, parent_path);
 
   // emissive map
-  ret.emissive_map = loadTexture(mat, TextureType::Emissive, parentPath);
+  ret.emissive_map = loadTexture(material, TextureType::Emissive, parent_path);
 
   // height map
-  ret.height_map = loadTexture(mat, TextureType::Height, parentPath);
+  ret.height_map = loadTexture(material, TextureType::Height, parent_path);
 
   // normal map
-  ret.normal_map = loadTexture(mat, TextureType::Normal, parentPath);
+  ret.normal_map = loadTexture(material, TextureType::Normal, parent_path);
 
   // shininess map
-  ret.shininess_map = loadTexture(mat, TextureType::Shininess, parentPath);
+  ret.shininess_map =
+      loadTexture(material, TextureType::Shininess, parent_path);
 
   // displacement map
   ret.displacement_map =
-      loadTexture(mat, TextureType::Displacement, parentPath);
+      loadTexture(material, TextureType::Displacement, parent_path);
 
   // light map
-  ret.light_map = loadTexture(mat, TextureType::Light, parentPath);
+  ret.light_map = loadTexture(material, TextureType::Light, parent_path);
 
   return ret;
 }
@@ -284,9 +291,24 @@ Mesh Model::processAssimpMesh(const aiMesh* mesh, const aiScene* scene,
     vertices[idx3].dndv = dndv;
   }
 
-  const Material material = getMaterialFromAssimpMesh(mesh, scene, parentPath);
+  std::optional<std::size_t> material_index =
+      getMaterialIndex(mesh->mMaterialIndex);
 
-  return Mesh(vertices, indices, material);
+  // load material if it's not loaded yet
+  if (!material_index) {
+    material_index = loadMaterial(scene, mesh->mMaterialIndex, parentPath);
+  }
+
+  return Mesh(vertices, indices, material_index.value());
+}
+
+std::size_t Model::loadMaterial(const aiScene* scene, assimpMaterialIndex index,
+                                const std::filesystem::path& parent_path)
+{
+  const aiMaterial* m = scene->mMaterials[index];
+  materials.push_back(getMaterialFromAssimpMesh(m, parent_path));
+  loaded_materials.push_back(index);
+  return materials.size() - 1;
 }
 
 std::vector<uint8_t> Model::loadImage(const std::filesystem::path& filepath,
@@ -346,6 +368,15 @@ std::optional<std::size_t> Model::loadTexture(
   textures.emplace_back(std::move(texture));
 
   return textures.size() - 1;
+}
+
+std::optional<std::size_t> Model::getMaterialIndex(
+    uint32_t assimp_material_index) const
+{
+  for (std::size_t i = 0; i < loaded_materials.size(); ++i) {
+    if (loaded_materials[i] == assimp_material_index) return i;
+  }
+  return std::nullopt;
 }
 
 std::optional<std::size_t> Model::getTextureIndex(

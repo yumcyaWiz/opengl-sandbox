@@ -41,7 +41,11 @@ class Model
 
  private:
   std::vector<Mesh> meshes;
+  std::vector<Material> materials;
   std::vector<Texture> textures;
+
+  using assimpMaterialIndex = uint32_t;
+  std::vector<assimpMaterialIndex> loaded_materials;
   std::vector<std::filesystem::path> loaded_textures;
 
   void processAssimpNode(const aiNode* node, const aiScene* scene,
@@ -50,8 +54,9 @@ class Model
   Mesh processAssimpMesh(const aiMesh* mesh, const aiScene* scene,
                          const std::filesystem::path& parentPath);
 
-  Material getMaterialFromAssimpMesh(const aiMesh* mesh, const aiScene* scene,
-                                     const std::filesystem::path& parentPath);
+  // return offset of the material
+  std::size_t loadMaterial(const aiScene* scene, assimpMaterialIndex index,
+                           const std::filesystem::path& parent_path);
 
   // return offset of the texture
   std::optional<std::size_t> loadTexture(
@@ -62,10 +67,17 @@ class Model
   std::optional<std::size_t> getTextureIndex(
       const std::filesystem::path& filepath) const;
 
+  // return offset of the material
+  std::optional<std::size_t> getMaterialIndex(
+      assimpMaterialIndex assimp_material_id) const;
+
   static std::vector<Vertex> getVerticesFromAssimpMesh(const aiMesh* mesh);
   static std::vector<uint32_t> getIndicesFromAssimpMesh(const aiMesh* mesh);
+  Material getMaterialFromAssimpMesh(const aiMaterial* material,
+                                     const std::filesystem::path& parent_path);
 
   static GLuint getTextureInternalFormat(const TextureType& type);
+
   static std::vector<uint8_t> loadImage(const std::filesystem::path& filepath,
                                         glm::vec2& resolution);
 
