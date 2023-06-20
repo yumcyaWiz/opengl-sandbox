@@ -103,9 +103,9 @@ class SimpleShading : public SandboxBase
 
 int main()
 {
-    sandbox::SimpleShading sandbox(1280, 720);
+    sandbox::SimpleShading app(1280, 720);
 
-    sandbox.run();
+    app.run();
 
     return 0;
 }
