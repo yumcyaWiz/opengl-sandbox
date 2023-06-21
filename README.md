@@ -1,6 +1,6 @@
 # opengl-sandbox
 
-This is an experimental environment for implementing various rendering methods in OpenGL
+This is an experimental environment for implementing various rendering methods in OpenGL.
 
 ## Requirements
 
