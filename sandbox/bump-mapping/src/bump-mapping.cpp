@@ -1,136 +1,34 @@
 #include <filesystem>
-#include <iostream>
-#include <memory>
 
-#include "glad/glad.h"
-//
-#include "GLFW/glfw3.h"
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
-//
-#include "ogls.hpp"
+#include "sandbox-base.hpp"
 
-using namespace ogls;
-
-// globals
-std::unique_ptr<Camera> CAMERA;
-int WIDTH = 1600;
-int HEIGHT = 900;
-float LINE_LENGTH = 1;
-bool USE_HEIGHT_MAP = false;
-int HEIGHT_MAP_METHOD = 1;
-float HEIGHT_MAP_SCALE = 0.01f;
-
-void handleInput(GLFWwindow *window, const ImGuiIO &io)
+namespace sandbox
 {
-    // close application
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-        glfwSetWindowShouldClose(window, GLFW_TRUE);
-    }
 
-    // camera movement
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        CAMERA->move(CameraMovement::FORWARD, io.DeltaTime);
-    }
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-        CAMERA->move(CameraMovement::LEFT, io.DeltaTime);
-    }
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        CAMERA->move(CameraMovement::BACKWARD, io.DeltaTime);
-    }
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        CAMERA->move(CameraMovement::RIGHT, io.DeltaTime);
-    }
-
-    // camera look around
-    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
-        CAMERA->lookAround(io.MouseDelta.x, io.MouseDelta.y);
-    }
-}
-
-void framebuffer_size_callback([[maybe_unused]] GLFWwindow *window, int _width,
-                               int _height)
+class TangentSpace : public SandboxBase
 {
-    WIDTH = _width;
-    HEIGHT = _height;
-    glViewport(0, 0, WIDTH, HEIGHT);
-}
-
-int main()
-{
-    // initialize glfw
-    if (!glfwInit()) {
-        std::cerr << "failed to initialize GLFW" << std::endl;
-        return EXIT_FAILURE;
+   public:
+    TangentSpace(uint32_t width, uint32_t height) : SandboxBase(width, height)
+    {
     }
 
-    // setup window and OpenGL context
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);  // required for Mac
-    glfwWindowHint(GLFW_SAMPLES, 4);                      // 4x MSAA
-    GLFWwindow *window =
-        glfwCreateWindow(WIDTH, HEIGHT, "bump-mapping", nullptr, nullptr);
-    if (!window) {
-        std::cerr << "failed to create window" << std::endl;
-        return EXIT_FAILURE;
-    }
-    glfwMakeContextCurrent(window);
+    void beforeRender() override
+    {
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_MULTISAMPLE);
 
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+        scene.setPointLight({glm::vec3(10000), glm::vec3(0, 100, 0), 0});
 
-    // initialize glad
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-        std::cerr << "failed to initialize glad" << std::endl;
-        return EXIT_FAILURE;
+        pipeline.loadVertexShader(
+            std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+            "shaders/shader.vert");
+        pipeline.loadFragmentShader(
+            std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
+            "shaders/shader.frag");
     }
 
-    // initialize imgui
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO &io = ImGui::GetIO();
-    (void)io;
-
-    // set imgui style
-    ImGui::StyleColorsDark();
-
-    // initialize imgui backends
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Init("#version 460 core");
-
-    // enable depth test
-    glEnable(GL_DEPTH_TEST);
-    // enable MSAA
-    glEnable(GL_MULTISAMPLE);
-
-    // initialize camera
-    CAMERA = std::make_unique<Camera>();
-
-    // setup scene
-    Scene scene;
-    scene.setPointLight({glm::vec3(10000), glm::vec3(0, 100, 0), 0});
-
-    // setup shader
-    Pipeline pipeline;
-    pipeline.loadVertexShader(std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
-                              "shaders/shader.vert");
-    pipeline.loadFragmentShader(
-        std::filesystem::path(CMAKE_CURRENT_SOURCE_DIR) /
-        "shaders/shader.frag");
-
-    // app loop
-    float t = 0.0f;
-    while (!glfwWindowShouldClose(window)) {
-        glfwPollEvents();
-
-        // start imgui frame
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
-
-        // imgui
+    void runImGui() override
+    {
         ImGui::Begin("UI");
         {
             static char modelPath[100] = {"assets/sponza/sponza.obj"};
@@ -142,57 +40,89 @@ int main()
 
             ImGui::Separator();
 
-            ImGui::InputFloat("FOV", &CAMERA->fov);
-            ImGui::InputFloat("Movement Speed", &CAMERA->movement_speed);
-            ImGui::InputFloat("Look Around Speed", &CAMERA->look_around_speed);
+            ImGui::InputFloat("FOV", &camera.fov);
+            ImGui::InputFloat("Movement Speed", &camera.movement_speed);
+            ImGui::InputFloat("Look Around Speed", &camera.look_around_speed);
 
-            if (ImGui::Button("Reset Camera")) { CAMERA->reset(); }
+            if (ImGui::Button("Reset Camera")) { camera.reset(); }
 
             ImGui::Separator();
 
-            ImGui::Checkbox("Use Height Map", &USE_HEIGHT_MAP);
-            ImGui::Combo("Height Map Method", &HEIGHT_MAP_METHOD,
+            ImGui::Checkbox("Use Height Map", &use_height_map);
+            ImGui::Combo("Height Map Method", &height_map_method,
                          "Strict\0Usual\0\0");
-            ImGui::InputFloat("Height Map Scale", &HEIGHT_MAP_SCALE);
+            ImGui::InputFloat("Height Map Scale", &height_map_scale);
         }
         ImGui::End();
+    }
 
-        handleInput(window, io);
+    void handleInput() override
+    {
+        // close application
+        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+            glfwSetWindowShouldClose(window, GLFW_TRUE);
+        }
 
+        // camera movement
+        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+            camera.move(ogls::CameraMovement::FORWARD, io->DeltaTime);
+        }
+        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+            camera.move(ogls::CameraMovement::LEFT, io->DeltaTime);
+        }
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+            camera.move(ogls::CameraMovement::BACKWARD, io->DeltaTime);
+        }
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+            camera.move(ogls::CameraMovement::RIGHT, io->DeltaTime);
+        }
+
+        // camera look around
+        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
+            camera.lookAround(io->MouseDelta.x, io->MouseDelta.y);
+        }
+    }
+
+    void render() override
+    {
         // set light position
-        t += io.DeltaTime;
+        t += io->DeltaTime;
         scene.setPointLight({glm::vec3(10000.0f),
-                             CAMERA->cam_pos + 200.0f * CAMERA->cam_forward,
+                             camera.cam_pos + 200.0f * camera.cam_forward,
                              0.0f});
 
         // set uniform variables
-        const glm::mat4 view = CAMERA->computeViewMatrix();
+        const glm::mat4 view = camera.computeViewMatrix();
         const glm::mat4 projection =
-            CAMERA->computeProjectionMatrix(WIDTH, HEIGHT);
+            camera.computeProjectionMatrix(width, height);
         pipeline.setUniform("view", view);
         pipeline.setUniform("projection", projection);
-        pipeline.setUniform("camPos", CAMERA->cam_pos);
-        pipeline.setUniform("useHeightMap", USE_HEIGHT_MAP);
-        pipeline.setUniform("heightMapMethod", HEIGHT_MAP_METHOD);
-        pipeline.setUniform("heightMapScale", HEIGHT_MAP_SCALE);
+        pipeline.setUniform("camPos", camera.cam_pos);
+        pipeline.setUniform("useHeightMap", use_height_map);
+        pipeline.setUniform("heightMapMethod", height_map_method);
+        pipeline.setUniform("heightMapScale", height_map_scale);
 
         // render
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         scene.draw(pipeline);
-
-        // render imgui
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-        glfwSwapBuffers(window);
     }
 
-    // exit
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
-    glfwDestroyWindow(window);
-    glfwTerminate();
+   private:
+    ogls::Pipeline pipeline;
+
+    float t = 0.0f;
+    bool use_height_map = false;
+    int height_map_method = 1;
+    float height_map_scale = 0.01f;
+};
+
+}  // namespace sandbox
+
+int main()
+{
+    sandbox::TangentSpace app(1280, 720);
+
+    app.run();
 
     return 0;
 }
