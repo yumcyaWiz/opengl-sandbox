@@ -12,6 +12,7 @@ class NormalMapping : public SandboxBase
     {
     }
 
+   private:
     void beforeRender() override
     {
         glEnable(GL_DEPTH_TEST);
@@ -98,7 +99,6 @@ class NormalMapping : public SandboxBase
         scene.draw(pipeline);
     }
 
-   private:
     ogls::Pipeline pipeline;
 
     bool use_normal_map = false;

@@ -12,6 +12,7 @@ class SimpleShading : public SandboxBase
     {
     }
 
+   private:
     void beforeRender() override
     {
         glEnable(GL_DEPTH_TEST);
@@ -94,7 +95,6 @@ class SimpleShading : public SandboxBase
         scene.draw(pipeline);
     }
 
-   private:
     float t = 0.0f;
     ogls::Pipeline pipeline;
 };

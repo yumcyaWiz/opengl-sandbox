@@ -11,6 +11,7 @@ class TangentSpace : public SandboxBase
     {
     }
 
+   private:
     void beforeRender() override
     {
         glEnable(GL_DEPTH_TEST);
@@ -107,7 +108,6 @@ class TangentSpace : public SandboxBase
         scene.draw(tangent_space_pipeline);
     }
 
-   private:
     ogls::Pipeline pipeline;
     ogls::Pipeline tangent_space_pipeline;
 

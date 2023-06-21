@@ -9,6 +9,7 @@ class Triangle : public SandboxBase
    public:
     Triangle(uint32_t width, uint32_t height) : SandboxBase(width, height) {}
 
+   private:
     void beforeRender() override
     {
         float vertices[] = {
@@ -52,7 +53,6 @@ class Triangle : public SandboxBase
         pipeline.deactivate();
     }
 
-   private:
     ogls::Buffer buffer;
     ogls::VertexArrayObject vao;
     ogls::Pipeline pipeline;

@@ -1,4 +1,3 @@
-#include <cstdlib>
 #include <filesystem>
 
 #include "depth-map.h"
@@ -15,6 +14,7 @@ class ShadowMap : public SandboxBase
     {
     }
 
+   private:
     void beforeRender() override
     {
         glEnable(GL_DEPTH_TEST);
@@ -145,7 +145,6 @@ class ShadowMap : public SandboxBase
         quad.draw(show_depthmap_pipeline);
     }
 
-   private:
     ogls::Quad quad;
     ogls::Pipeline show_depthmap_pipeline;
     ogls::Pipeline pipeline;
