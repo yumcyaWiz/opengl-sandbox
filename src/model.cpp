@@ -198,8 +198,8 @@ std::vector<uint32_t> Model::getIndicesFromAssimp(const aiMesh* mesh)
     return ret;
 }
 
-Material Model::getMaterialFromAssimp(const aiMaterial* material,
-                                      const std::filesystem::path& parent_path)
+Material Model::loadMaterialFromAssimp(const aiMaterial* material,
+                                       const std::filesystem::path& parent_path)
 {
     Material ret;
 
@@ -317,7 +317,7 @@ MaterialID Model::loadMaterial(const aiScene* scene, AssimpMaterialIndex index,
                                const std::filesystem::path& parent_path)
 {
     const aiMaterial* m = scene->mMaterials[index];
-    materials.push_back(getMaterialFromAssimp(m, parent_path));
+    materials.push_back(loadMaterialFromAssimp(m, parent_path));
     loaded_materials.push_back(index);
     return materials.size() - 1;
 }

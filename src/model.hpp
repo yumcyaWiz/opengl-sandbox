@@ -60,6 +60,9 @@ class Model
     std::optional<MaterialID> getMaterialIndex(
         AssimpMaterialIndex assimp_material_id) const;
 
+    Material loadMaterialFromAssimp(const aiMaterial* material,
+                                    const std::filesystem::path& parent_path);
+
     std::optional<TextureID> loadTexture(
         const aiMaterial* material, const TextureType& type,
         const std::filesystem::path& parentPath);
@@ -69,8 +72,6 @@ class Model
 
     static std::vector<Vertex> getVerticesFromAssimp(const aiMesh* mesh);
     static std::vector<uint32_t> getIndicesFromAssimp(const aiMesh* mesh);
-    Material getMaterialFromAssimp(const aiMaterial* material,
-                                   const std::filesystem::path& parent_path);
 
     static GLuint getTextureInternalFormat(const TextureType& type);
 
