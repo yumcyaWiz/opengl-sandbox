@@ -77,11 +77,10 @@ void Texture::createTexture()
 
 void Texture::setImage(const void* image) const
 {
-    glBindTexture(GL_TEXTURE_2D, texture);
-    glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, resolution.x, resolution.y,
-                 0, format, type, image);
-    if (generate_mipmap) { glGenerateMipmap(GL_TEXTURE_2D); }
-    glBindTexture(GL_TEXTURE_2D, 0);
+    glTextureStorage2D(texture, 1, internalFormat, resolution.x, resolution.y);
+    glTextureSubImage2D(texture, 0, 0, 0, resolution.x, resolution.y, format,
+                        type, image);
+    if (generate_mipmap) { glGenerateTextureMipmap(texture); }
 }
 
 void Texture::bindToTextureUnit(GLuint texture_unit_number) const
