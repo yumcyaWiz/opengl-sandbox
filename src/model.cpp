@@ -35,9 +35,9 @@ GLuint Model::getTextureInternalFormat(const TextureType& type)
         case TextureType::Diffuse:
         case TextureType::Ambient:
         case TextureType::Emissive:
-            return GL_SRGB;
+            return GL_SRGB8;
         default:
-            return GL_RGB;
+            return GL_RGB8;
     }
 }
 
