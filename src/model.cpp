@@ -333,14 +333,9 @@ std::vector<uint8_t> Model::loadImage(const std::filesystem::path& filepath,
         throw std::runtime_error("Failed to load image " + filepath.string());
     }
 
-    if (c != 3) {
-        spdlog::error("[Model] Failed to load image " + filepath.string());
-        throw std::runtime_error("component is not 3");
-    }
-
     resolution = glm::vec2(x, y);
 
-    std::vector<uint8_t> ret(x * y * c);
+    std::vector<uint8_t> ret(x * y * 3);
     std::memcpy(ret.data(), image, ret.size());
 
     stbi_image_free(image);

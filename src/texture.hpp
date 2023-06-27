@@ -29,7 +29,7 @@ class Texture
        private:
         glm::uvec2 resolution = {0, 0};
 
-        GLint internalFormat = GL_SRGB;
+        GLint internalFormat = GL_SRGB8;
         GLenum format = GL_RGB;
         GLenum type = GL_UNSIGNED_BYTE;
         GLenum wrap_s = GL_REPEAT;
