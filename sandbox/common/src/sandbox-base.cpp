@@ -8,8 +8,15 @@ namespace sandbox
 SandboxBase::SandboxBase(uint32_t width, uint32_t height)
     : width{width}, height{height}
 {
+#ifdef NDEBUG
+    spdlog::set_level(spdlog::level::warn);
+#else
+    spdlog::set_level(spdlog::level::debug);
+#endif
+
     initGlfw();
     initGlad();
+    initGL();
     initImGui();
 }
 
@@ -55,6 +62,15 @@ void SandboxBase::initImGui()
     ImGui_ImplOpenGL3_Init("#version 460 core");
 }
 
+void SandboxBase::initGL()
+{
+#ifndef NDEBUG
+    glEnable(GL_DEBUG_OUTPUT);
+    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+    glDebugMessageCallback(debugMessageCallback, nullptr);
+#endif
+}
+
 void SandboxBase::framebufferSizeCallback(GLFWwindow *window, int width,
                                           int height)
 {
@@ -69,6 +85,27 @@ void SandboxBase::framebufferSizeCallbackStatic(GLFWwindow *window, int width,
     SandboxBase *instance =
         static_cast<SandboxBase *>(glfwGetWindowUserPointer(window));
     instance->framebufferSizeCallback(window, width, height);
+}
+
+void SandboxBase::debugMessageCallback(GLenum source, GLenum type, GLuint id,
+                                       GLenum severity, GLsizei length,
+                                       GLchar const *message,
+                                       void const *user_param)
+{
+    switch (severity) {
+        case GL_DEBUG_SEVERITY_HIGH:
+            spdlog::critical("[gl] {}", message);
+            break;
+        case GL_DEBUG_SEVERITY_MEDIUM:
+            spdlog::error("[gl] {}", message);
+            break;
+        case GL_DEBUG_SEVERITY_LOW:
+            spdlog::warn("[gl] {}", message);
+            break;
+        case GL_DEBUG_SEVERITY_NOTIFICATION:
+            spdlog::info("[gl] {}", message);
+            break;
+    }
 }
 
 void SandboxBase::release()

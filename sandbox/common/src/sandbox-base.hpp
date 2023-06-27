@@ -33,6 +33,7 @@ class SandboxBase
     void initGlfw();
     void initGlad();
     void initImGui();
+    void initGL();
 
     // implement setup actions before rendering loop
     virtual void beforeRender() = 0;
@@ -55,6 +56,35 @@ class SandboxBase
 
     static void framebufferSizeCallbackStatic(GLFWwindow* window, int width,
                                               int height);
+
+    // OpenGL debug message callback
+    static void debugMessageCallback(GLenum source, GLenum type, GLuint id,
+                                     GLenum severity, GLsizei length,
+                                     GLchar const* message,
+                                     void const* user_param);
+
+    const std::map<GLenum, std::string> severity_map = {
+        {GL_DEBUG_SEVERITY_HIGH, "HIGH"},
+        {GL_DEBUG_SEVERITY_MEDIUM, "MEDIUM"},
+        {GL_DEBUG_SEVERITY_LOW, "LOW"},
+        {GL_DEBUG_SEVERITY_NOTIFICATION, "NOTIFICATION"}};
+
+    const std::map<GLenum, std::string> source_map = {
+        {GL_DEBUG_SOURCE_API, "API"},
+        {GL_DEBUG_SOURCE_WINDOW_SYSTEM, "WINDOW SYSTEM"},
+        {GL_DEBUG_SOURCE_SHADER_COMPILER, "SHADER COMPILER"},
+        {GL_DEBUG_SOURCE_THIRD_PARTY, "THIRD PARTY"},
+        {GL_DEBUG_SOURCE_APPLICATION, "APPLICATION"},
+        {GL_DEBUG_SOURCE_OTHER, "OTHER"}};
+
+    const std::map<GLenum, std::string> type_map = {
+        {GL_DEBUG_TYPE_ERROR, "ERROR"},
+        {GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR, "DEPRECATED_BEHAVIOR"},
+        {GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR, "UNDEFINED_BEHAVIOR"},
+        {GL_DEBUG_TYPE_PORTABILITY, "PORTABILITY"},
+        {GL_DEBUG_TYPE_PERFORMANCE, "PERFORMANCE"},
+        {GL_DEBUG_TYPE_MARKER, "MARKER"},
+        {GL_DEBUG_TYPE_OTHER, "OTHER"}};
 };
 
 }  // namespace sandbox
