@@ -60,6 +60,9 @@ class Scene
 {
    private:
     Model model;
+
+    Texture null_texture;
+
     PointLight pointLight;
     DirectionalLight directionalLight;
 
@@ -71,6 +74,8 @@ class Scene
 
     Scene& operator=(const Scene& other) = delete;
     Scene& operator=(Scene&& other) = default;
+
+    void init();
 
     void draw(const Pipeline& pipeline) const;
 

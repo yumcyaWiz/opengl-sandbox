@@ -119,10 +119,13 @@ void Model::loadModel(const std::filesystem::path& filepath)
                   std::to_string(getNumberOfTextures()));
 }
 
-void Model::draw(const Pipeline& pipeline) const
+void Model::draw(const Pipeline& pipeline, const Texture& null_texture) const
 {
     // draw all meshes
     for (std::size_t i = 0; i < meshes.size(); i++) {
+        // reset textures
+        for (int j = 0; j < 10; ++j) { null_texture.bindToTextureUnit(j); }
+
         const Mesh& mesh = meshes[i];
         mesh.draw(pipeline, materials[mesh.getMaterialID()], textures);
     }

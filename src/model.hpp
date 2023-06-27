@@ -37,7 +37,7 @@ class Model
     uint32_t getNumberOfFaces() const;
     uint32_t getNumberOfTextures() const;
 
-    void draw(const Pipeline& pipeline) const;
+    void draw(const Pipeline& pipeline, const Texture& null_texture) const;
 
    private:
     std::vector<Mesh> meshes;

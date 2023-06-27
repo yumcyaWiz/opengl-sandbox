@@ -18,6 +18,8 @@ SandboxBase::SandboxBase(uint32_t width, uint32_t height)
     initGlad();
     initGL();
     initImGui();
+
+    scene.init();
 }
 
 SandboxBase::~SandboxBase() { release(); }
